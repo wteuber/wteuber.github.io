@@ -1,22 +1,36 @@
-let ball, paddle, blocks;
+let ball;
 let ballSize = 35;
+
+let paddle
 let paddleWidth = 1000;
 let paddleHeight = 20;
-let numLives = 3;
-let currentLevel = 2;
-let maxLevels = 5;
+
+let blocks;
 let blockWidth = 100;
 let blockHeight = 40;
 let blockPadding = 10;
 let blockOffsetTop = 200;
 let blockOffsetLeft = 10;
-let blockColors = ['#ffff00', '#ff00ff', '#00ffff', '#ff0000', '#00ff00'];
+let blockColors = ['#05445E', '#189AB4', '#75E6DA', '#D4F1F4', '#c3e5ec'];
+
+let initialLives = 5;
+let numLives = initialLives;
+let initialLevel = 1;
+let currentLevel = initialLevel;
+let maxLevels = 5;
 var lastBlockHit = -1;
 
 function setup() {
-	createCanvas(1904, 1000);
+	paddleWidth = windowWidth/3;
+	createCanvas(windowWidth, windowHeight);
 	frameRate(60);
-	resetGame();
+	resetGame(initialLevel);
+}
+
+let isGameStarted = false;
+
+function mouseClicked() {
+	isGameStarted = true;
 }
 
 function draw() {
@@ -31,10 +45,12 @@ function draw() {
 	showLevel();
 }
 
-function resetGame() {
+function resetGame(level) {
+	currentLevel = level;
+	isGameStarted = false;
 	ball = {
 		x: width / 2,
-		y: height / 2,
+		y: height - 2 * ballSize,
 		dx: 15,
 		dy: -15,
 	};
@@ -46,8 +62,6 @@ function resetGame() {
 	for (let i = 0; i < maxLevels; i++) {
 		blocks[i] = createBlocks(i + 1);
 	}
-	numLives = 3;
-	currentLevel = 4;
 }
 
 function createBlocks(level) {
@@ -99,36 +113,57 @@ function drawBlocks() {
 }
 
 function moveBall() {
-	ball.x += ball.dx;
-	ball.y += ball.dy;
-	if (ball.x + ballSize / 2 > width || ball.x - ballSize / 2 < 0) {
-		ball.dx *= -1;
-	}
-	if (ball.y - ballSize / 2 < 0) {
-		ball.dy *= -1;
-	}
-	if (ball.y + ballSize / 2 > height) {
-		numLives--;
-		if (numLives > 0) {
-			ball = {
-				x: width / 2,
-				y: height / 2,
-				dx: 15,
-				dy: -15,
-			};
-			paddle = {
-				x: width / 2 - paddleWidth / 2,
-				y: height - paddleHeight - 10
-			};
-		} else {
-			resetGame();
+	if (isGameStarted) {
+		ball.x += ball.dx;
+		ball.y += ball.dy;
+		if (ball.x + ballSize / 2 > width || ball.x - ballSize / 2 < 0) {
+			ball.dx *= -1;
 		}
+		if (ball.y - ballSize / 2 < 0) {
+			ball.dy *= -1;
+		}
+		if (ball.y + ballSize / 2 > height) {
+			numLives--;
+			if (numLives > 0) {
+				isGameStarted = false;
+				ball = {
+					x: width / 2,
+					y: height - 2 * ballSize,
+					dx: 15,
+					dy: -15,
+				};
+				paddle = {
+					x: width / 2 - paddleWidth / 2,
+					y: height - paddleHeight - 10
+				};
+			} else {
+				resetGame(currentLevel + 1);
+			}
+		}
+	} else {
+		ball.x = paddle.x + paddleWidth/2;
 	}
+}
+
+function playBeep(pitch, length) {
+// AudioContext erstellen
+	const audioContext = new AudioContext();
+
+// OscillatorNode erstellen, um einen Ton zu erzeugen
+	const oscillator = audioContext.createOscillator();
+	oscillator.type = "sine"; // Sinus-Wellenform
+	oscillator.frequency.setValueAtTime(pitch, audioContext.currentTime); // Frequenz von 1000 Hz
+	oscillator.connect(audioContext.destination); // Verbindung zum Audioausgang
+
+// Starte den Ton und stoppe ihn nach 0.1 Sekunden
+	oscillator.start();
+	oscillator.stop(audioContext.currentTime + length);
 }
 
 function checkCollisions() {
 	// check collision with paddle
 	if (ball.y + ballSize / 2 > paddle.y && ball.y + ballSize / 2 < paddle.y + paddleHeight && ball.x > paddle.x && ball.x < paddle.x + paddleWidth) {
+		playBeep(200, 0.1);
 		ball.dy *= -1;
 		let dx = map(ball.x, paddle.x, paddle.x + paddleWidth, -10, 10);
 		ball.dx = dx;
@@ -139,6 +174,7 @@ function checkCollisions() {
 			let block = blocks[currentLevel - 1][i][j];
 			if (block.lives > 0) {
 				if (ball.y - ballSize / 2 < block.y + blockHeight && ball.y + ballSize / 2 > block.y && ball.x > block.x && ball.x < block.x + blockWidth) {
+					playBeep(500, 0.03);
 					block.lives--;
 					ball.dy *= -1;
 					if (block.lives == 0) {
@@ -165,8 +201,7 @@ function checkGameOver() {
 	}
 	if (blocksLeft == 0) {
 		if (currentLevel < maxLevels) {
-			currentLevel++;
-			resetGame();
+			resetGame(currentLevel + 1);
 		} else {
 			textAlign(CENTER, CENTER);
 			textSize(32);
