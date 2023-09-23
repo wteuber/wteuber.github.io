@@ -1,1 +1,1 @@
-My personal blog: https://knugie.github.io
+My personal blog: https://wteuber.com

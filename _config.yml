@@ -1,21 +1,15 @@
 # Site settings
-title: 'knugie'
+title: 'Wolfgang Teuber'
 description: Focus - Passion - Innovation
-url: 'https://knugie.github.io'
+url: 'https://wteuber.com'
 baseurl: ''
-google_analytics: 'UA-123642678-1'
+google_analytics: 'G-C0DBB0L4SX'
 
 author:
   name: 'Wolfgang Teuber'
-  email: knugie@gmx.net
-  twitter_username: knugie
-  facebook_username: knugie
-  gitlab_username: knugie
-  gitlab_alt_username: wolfgang.teuber.food
-  github_username: knugie
-  github_alt_username:  wteuber
-  stack_overflow_user_id: 1288687
+  github_username: wteuber
   linkedin_username: wolfgang-teuber
+  twitter_username: wolfgang_teuber
 
 defaults:
   -
