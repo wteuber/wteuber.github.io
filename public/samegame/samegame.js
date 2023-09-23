@@ -126,18 +126,14 @@ function clickBall(numba) {
       total = (adj.length - 2) * (adj.length - 2) + total;
       document.scores.show.value = total;
       document.scores.click.value = 0;
-      winTotal = total + 1000;
       if (checkWinner()) {
-        //Allows you to write high scores to a file.
-        //document.location = ("score.cgi?s=s&shots=" + winTotal)
-        //winner = 1;
         document.scores.round.value = parseInt(document.scores.round.value) + 1;
         seed(false);
       }
       q = 0;
       checkLoser();
       if (q == 60 && winner == 0) {
-        alert("Game Over!\n You scored "+document.scores.show.value+" points.");
+        window.setTimeout(() => {alert("Game Over!\n You scored "+document.scores.show.value+" points.");}, 0);
       }
     }
   }
