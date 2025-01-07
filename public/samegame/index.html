@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SameGame</title>
+    <script src="samegame.js"></script>
+    <link rel="stylesheet" href="samegame.css" />
+  </head>
+  <body>
+
+    <div id="config">
+      <label for="rows">Rows</label> <input type="range" name="rows" min="4" max="20"/>
+      <label for="cols">Columns</label> <input type="range" name="cols" min="12" max="30" />
+      <input type="button" name="new" value="New Game" class="button" />
+    </div>
+
+    <h1>SameGame</h1>
+    <table id="gameboard"></table>
+
+    <div id="scoreboard">
+      <div>Round <br><span name="round"></span></div>
+      <div>Click Score <br><span name="click"></span></div>
+      <div>Total Score <br><span name="total"></span></div>
+    </div>
+
+    <script>
+      SameGame.initGame();
+    </script>
+  </body>
+</html>
