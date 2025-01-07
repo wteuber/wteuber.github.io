@@ -2,8 +2,8 @@
 layout: post
 title: Sample blog post to learn markdown tips
 subtitle: There's lots to learn!
-gh-repo: daattali/beautiful-jekyll
-gh-badge: [star, fork, follow]
+gh-repo: wteuber/wteuber.github.io
+gh-badge: []
 tags: [test]
 comments: true
 mathjax: true
@@ -41,12 +41,12 @@ It can also be centered!
 
 Here's a code chunk:
 
-~~~
+```
 var foo = function(x) {
   return(x + 5);
 }
 foo(3)
-~~~
+```
 
 And here is the same code with syntax highlighting:
 
