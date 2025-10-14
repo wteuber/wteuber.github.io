@@ -21,7 +21,18 @@ mv /tmp/wtghio.tmp public/index.html
 
 ### Convert Scratch projects to JavaScript
 
-$ sb-edit --input path/to/project.sb3 --output path/to/output-folder
-
+```sh
+sb-edit --input path/to/project.sb3 --output path/to/output-folder
+```
 FMI, see https://github.com/leopard-js/sb-edit
 https://leopardjs.com/
+
+
+### Turn text into dashed file name
+```sh
+echo "This is: Text!" | tr -sc '[:alnum:]' ' ' | tr '[:upper:]' '[:lower:]' | xargs | tr ' ' '-'
+```
+=>
+```
+this-is-text
+```
