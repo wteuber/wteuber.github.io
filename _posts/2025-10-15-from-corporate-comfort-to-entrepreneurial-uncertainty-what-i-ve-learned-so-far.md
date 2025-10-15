@@ -13,6 +13,7 @@ Are you thinking about leaving a stable job to build something meaningful? If so
 
 **Why should you care?** Because if you’re considering a similar path, or even just a big change, the emotional rollercoaster is real. Here’s what I wish I’d known before I started, and what might help you on your own journey.
 
+
 ## The Emotional Cycle of Change: More Than a Buzzword
 
 We all love the idea of transformation, but the reality is messy. The “Emotional Cycle of Change” isn’t just a diagram. It’s a lived experience. Here’s how it plays out for me:
@@ -26,6 +27,9 @@ We all love the idea of transformation, but the reality is messy. The “Emotion
 ![Emotional Cycle of Change](/assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/emotional-cycle-of-change.png)
 
 If you’re in the Valley of Despair, you’re not failing - you’re learning. That’s where growth happens.
+
+<small><em>Source: Emotional Cycle of Change by Don Kelley and Daryl Conner, published in "The 1979 Annual Handbook For Group Facilitators"</em></small>
+
 
 ## The 5 Fundamentals: What Actually Matters
 
@@ -41,8 +45,10 @@ There’s endless advice out there, but these five fundamentals have made the bi
 
 **5. Finance:** Track every Euro. Cash flow is king, and small leaks can sink big dreams.
 
-## My Hard-Won Lesson
+<small><em>Source: 5 Parts of Every Business by Josh Kaufman, from his book "The Personal MBA"</em></small>
 
+
+## My Hard-Won Lesson
 
 The biggest trap? Confusing “planning” with “doing.” Right now, I’m still in the very early stages - doing my homework on how to register a business and figuring out what it takes to start selling effectively. I haven’t sold a single product yet. I’ve spent weeks perfecting spreadsheets, pitch decks, and the company logo, but I know that nothing will teach me more than talking to real customers and shipping real products - even if imperfectly, when the time comes.
 
