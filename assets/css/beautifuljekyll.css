@@ -940,7 +940,8 @@ pre {
 }
 
 #social-share-section a {
-  color: #fff;
+  color: var(--page-col);
+  background-color: var(--footer-link-col);
 }
 
 /* --- Notification boxes --- */
