@@ -46,16 +46,16 @@ round-avatar: true
 # You can change the order that they show up on the page by changing the order here.
 # Uncomment the links you want to show and add your information to each one.
 social-network-links:
-#  email: "someone@example.com"
   rss: false  # remove this line if you don't want to show an RSS link at the bottom
-  facebook: teuber.wolfgang
-  github: wteuber
+#  email: "someone@example.com"
+  linkedin: wolfgang-teuber
   twitter: wolfgang_teuber
+  github: wteuber
+  facebook: teuber.wolfgang
+  stackoverflow: "1288687/wteuber"
 #  medium: yourname
 #  reddit: yourname or r/yoursubreddit
-  linkedin: wolfgang-teuber
 #  xing: yourname
-  stackoverflow: "1288687/wteuber"
 #  snapchat: yourname
 #  instagram: yourname
 #  spotify: yourname
