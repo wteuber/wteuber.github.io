@@ -944,6 +944,11 @@ pre {
   background-color: var(--footer-link-col);
 }
 
+#social-share-section a:hover,
+#social-share-section a:focus {
+  background-color: var(--hover-col);
+}
+
 /* --- Notification boxes --- */
 .box-note,
 .box-warning,
