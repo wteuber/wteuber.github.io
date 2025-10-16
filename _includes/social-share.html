@@ -10,27 +10,27 @@
 <section id = "social-share-section">
   <span class="sr-only">Share: </span>
 
+  {% if site.share-links-active.linkedin %}
+    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | url_encode }}"
+      class="btn btn-social-icon " title="Share on LinkedIn" target="_blank" rel="noopener noreferrer">
+      <span class="fab fa-2xl fa-linkedin" aria-hidden="true"></span>
+      <span class="sr-only">LinkedIn</span>
+    </a>
+  {% endif %}
+
   {% if site.share-links-active.twitter %}
     <a href="https://twitter.com/intent/tweet?text={{ page.title | strip_html | url_encode }}&url={{ page.url | absolute_url | url_encode }}"
-      class="btn btn-social-icon btn-twitter" title="Share on X (Twitter)">
+      class="btn btn-social-icon" title="Share on X" target="_blank" rel="noopener noreferrer">
       <span class="fab fa-fw fa-x-twitter" aria-hidden="true"></span>
-      <span class="sr-only">X (Twitter)</span>
+      <span class="sr-only">X</span>
     </a>
   {% endif %}
 
   {% if site.share-links-active.facebook %}
     <a href="https://www.facebook.com/sharer/sharer.php?u={{ page.url | absolute_url | url_encode }}"
-      class="btn btn-social-icon btn-facebook" title="Share on Facebook">
+      class="btn btn-social-icon" title="Share on Facebook" target="_blank" rel="noopener noreferrer">
       <span class="fab fa-fw fa-facebook" aria-hidden="true"></span>
       <span class="sr-only">Facebook</span>
-    </a>
-  {% endif %}
-
-  {% if site.share-links-active.linkedin %}
-    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ page.url | absolute_url | url_encode }}"
-      class="btn btn-social-icon btn-linkedin" title="Share on LinkedIn">
-      <span class="fab fa-fw fa-linkedin" aria-hidden="true"></span>
-      <span class="sr-only">LinkedIn</span>
     </a>
   {% endif %}
 
