@@ -27,6 +27,18 @@
   </li>
   {%- endif -%}
 
+  {%- if network[0] == "google-calendar-appointment-scheduling" -%}
+  <li class="list-inline-item">
+    <a href="https://calendar.google.com/appointments/schedules/{{ network[1] }}" title="Schedule a meeting with me"  target="_blank" rel="noopener">
+      <span class="fa-stack fa-lg" aria-hidden="true">
+        <i class="fas fa-circle fa-stack-2x"></i>
+        <i class="fas fa-calendar-check fa-stack-1x fa-inverse"></i>
+      </span>
+      <span class="sr-only">Schedule a meeting with me</span>
+   </a>    
+  </li>
+  {%- endif -%}
+
   {%- if network[0] == "calendly" -%}
   <li class="list-inline-item">
     <a href="https://calendly.com/{{ network[1] }}" title="Schedule a meeting with me">
@@ -41,7 +53,7 @@
 
   {%- if network[0] == "facebook" -%}
   <li class="list-inline-item">
-    <a href="https://www.facebook.com/{{ network[1] }}" title="Facebook">
+    <a href="https://www.facebook.com/{{ network[1] }}" title="Facebook"  target="_blank" rel="noopener">
       <span class="fa-stack fa-lg" aria-hidden="true">
         <i class="fas fa-circle fa-stack-2x"></i>
         <i class="fab fa-facebook fa-stack-1x fa-inverse"></i>
@@ -77,7 +89,7 @@
 
   {%- if network[0] == "github" -%}
   <li class="list-inline-item">
-    <a href="https://github.com/{{ network[1] }}" title="GitHub">
+    <a href="https://github.com/{{ network[1] }}" title="GitHub"  target="_blank" rel="noopener">
       <span class="fa-stack fa-lg" aria-hidden="true">
         <i class="fas fa-circle fa-stack-2x"></i>
         <i class="fab fa-github fa-stack-1x fa-inverse"></i>
@@ -101,7 +113,7 @@
 
   {%- if network[0] == "twitter" -%}
   <li class="list-inline-item">
-    <a href="https://twitter.com/{{ network[1] }}" title="X (Twitter)">
+    <a href="https://twitter.com/{{ network[1] }}" title="X (Twitter)" target="_blank" rel="noopener">
       <span class="fa-stack fa-lg" aria-hidden="true">
         <i class="fas fa-circle fa-stack-2x"></i>
         <i class="fab fa-x-twitter fa-stack-1x fa-inverse"></i>
@@ -129,7 +141,7 @@
 
   {%- if network[0] == "linkedin" -%}
   <li class="list-inline-item">
-    <a href="https://linkedin.com/in/{{ network[1] }}" title="LinkedIn">
+    <a href="https://linkedin.com/in/{{ network[1] }}" title="LinkedIn" target="_blank" rel="noopener">
       <span class="fa-stack fa-lg" aria-hidden="true">
         <i class="fas fa-circle fa-stack-2x"></i>
         <i class="fab fa-linkedin fa-stack-1x fa-inverse"></i>
@@ -153,7 +165,7 @@
 
   {%- if network[0] == "stackoverflow" -%}
   <li class="list-inline-item">
-    <a href="https://stackoverflow.com/users/{{ network[1] }}" title="StackOverflow">
+    <a href="https://stackoverflow.com/users/{{ network[1] }}" title="StackOverflow"  target="_blank" rel="noopener">
       <span class="fa-stack fa-lg" aria-hidden="true">
         <i class="fas fa-circle fa-stack-2x"></i>
         <i class="fab fa-stack-overflow fa-stack-1x fa-inverse"></i>
