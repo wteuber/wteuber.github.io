@@ -2,9 +2,9 @@
 layout: post
 title: "From Corporate Comfort to Entrepreneurial Uncertainty: What I’ve Learned So Far"
 subtitle: Lessons for Anyone Starting a Purpose-Driven Business
-cover-img: /assets/img/path.jpg
-thumbnail-img: /assets/img/thumb.png
-share-img: /assets/img/path.jpg
+cover-img: /assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/path.jpg
+thumbnail-img: /assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/seedling.png
+share-img: /assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/path.jpg
 tags: [blog, entrepreneurship, mindset]
 author: Wolfgang Teuber
 ---
