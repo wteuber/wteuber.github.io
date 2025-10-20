@@ -4,6 +4,7 @@ class SameGame {
   // Colors of the balls
   // define CSS classes for each color in samegame.css
   colors = ["blue", "yellow", "red"];
+  //colors = ["blue", "yellow", "red", "green"];
 
   adj = [];
   main = new Array();
@@ -120,7 +121,8 @@ class SameGame {
   }
 
   randomColor() {
-    const randomIndex = Math.floor((Math.random() * this.colors.length));
+    const randomIndex = Math.floor((Math.random() * (this.colors.length)));
+    //const randomIndex = 2;
 
     return this.colors[randomIndex];
   }
