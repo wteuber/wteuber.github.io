@@ -96,3 +96,7 @@ h1 {
 .red {
   background: radial-gradient(circle at 33% 27%, white 0px, rgb(255 70 94) 17%, rgb(90, 0, 0) 75%, rgb(255 70 94) 100%);
 }
+.green {
+  background: radial-gradient(circle at 33% 27%, white 0px, rgb(25, 206, 25) 17%, rgb(0, 90, 0) 75%, rgb(25, 206, 25) 100%);
+}
+
