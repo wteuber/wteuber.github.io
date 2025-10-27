@@ -24,7 +24,7 @@ We all love the idea of transformation, but the reality is messy. The “Emotion
 * **Informed Optimism:** Small wins start to appear. I will need to learn from mistakes and see a path forward.
 * **Success:** Not there yet - but I now know it’s a process, not a moment.
 
-![Emotional Cycle of Change](/assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/emotional-cycle-of-change.png)
+![Emotional Cycle of Change](/assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/emotional-cycle-of-change.png){:style="border-radius: 8px;"}
 
 If you’re in the Valley of Despair, you’re not failing - you’re learning. That’s where growth happens.
 
