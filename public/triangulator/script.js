@@ -760,7 +760,6 @@ function handleExportCombinedSVG() {
     const height = backgroundImage.height;
 
     let svgContent = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">\n`;
-
     // --- Define a clip-path to clip the seam lines to the exact mesh boundary ---
     svgContent += `  <defs>\n`;
     svgContent += `    <clipPath id="mesh-clip-path">\n`;
@@ -819,6 +818,20 @@ function handleExportCombinedSVG() {
             const v1 = uniqueVertices[idx1];
             const v2 = uniqueVertices[idx2];
             const strokeColor = averageColors(adjacentTris[0].color, adjacentTris[1].color);
+            svgContent += `    <line x1="${v1.x.toFixed(2)}" y1="${v1.y.toFixed(2)}" x2="${v2.x.toFixed(2)}" y2="${v2.y.toFixed(2)}" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" />\n`;
+        }
+    });
+    svgContent += `  </g>\n`;
+
+    // 4. Create edge lines without clipping
+    svgContent += `  <g id="edge-lines" display="none">\n`;
+    edgeMap.forEach((adjacentTris, key) => {
+        // Only create an edge line if the edge is not shared with another triangle
+        if (adjacentTris.length === 1) {
+            const [idx1, idx2] = key.split('-').map(Number);
+            const v1 = uniqueVertices[idx1];
+            const v2 = uniqueVertices[idx2];
+            const strokeColor = adjacentTris[0].color;
             svgContent += `    <line x1="${v1.x.toFixed(2)}" y1="${v1.y.toFixed(2)}" x2="${v2.x.toFixed(2)}" y2="${v2.y.toFixed(2)}" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" />\n`;
         }
     });
