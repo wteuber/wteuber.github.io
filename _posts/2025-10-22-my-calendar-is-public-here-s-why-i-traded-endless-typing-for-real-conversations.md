@@ -2,7 +2,7 @@
 layout: post
 title: My Calendar Is Public. Here’s Why I Traded Endless Typing for Real Conversations.
 subtitle: How reclaiming face-to-face conversation can restore clarity, connection, and focus to your work.
-cover-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/video-call.png
+cover-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/video-call-dark.png
 thumbnail-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/30-min-with-wolfgang.png
 share-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/video-call.png
 tags: [communication, teamwork, productivity, remote work, leadership, culture]
