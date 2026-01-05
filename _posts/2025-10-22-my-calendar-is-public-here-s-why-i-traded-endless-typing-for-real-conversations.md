@@ -51,9 +51,9 @@ Ultimately, it all comes down to one thing: Get to know your team personally as 
 
 If this post resonated with you and you're ready to go deeper, my calendar is open. I set aside time each week for focused, 30-minute chats to exchange ideas, projects, or opportunities in business, creativity, or something completely new.
 
-If you'd like to connect, you can [schedule a Google Meet call with me](https://calendar.google.com/appointments/schedules/AcZssZ3u13m5yP5nfz9l1zI2A5f-QmDRTCx1LjXfNYRZSCcml5XR0G1-1O1yJqV7ighP6YSPS_0Gg58v).
+If you'd like to connect, you can [schedule a Google Meet call with me](https://meet.wteuber.com/).
 
-[![30 min with Wolfgang](/assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/30-min-with-wolfgang.png){:style="border-radius: 8px;"}](https://calendar.google.com/appointments/schedules/AcZssZ3u13m5yP5nfz9l1zI2A5f-QmDRTCx1LjXfNYRZSCcml5XR0G1-1O1yJqV7ighP6YSPS_0Gg58v){:target="_blank"}
+[![30 min with Wolfgang](/assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/30-min-with-wolfgang.png){:style="border-radius: 8px;"}](https://meet.wteuber.com/){:target="_blank"}
 {: style="text-align: center;"}
 
 -------
