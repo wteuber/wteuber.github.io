@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="470" viewBox="0 0 1300 470">
+<rect width="1300" height="470" rx="10" fill="#FAFAF7"/>
+<rect x="0.75" y="0.75" width="1298.5" height="468.5" rx="10" fill="none" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="46" y="56" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="25" font-weight="700" fill="#1A1D1A">One purchase. 149 days. Two systems that never spoke.</text>
+<text x="46" y="84" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15.5" fill="#6E756E">Every date the retailer put in writing and let pass, against every email asking me to rate the experience.</text>
+<text x="46" y="139" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" letter-spacing="1.6" fill="#A31E14">PROMISED, THEN MISSED</text>
+<text x="46" y="159" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#6E756E">7 delivery dates</text>
+<text x="46" y="382" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" letter-spacing="1.6" fill="#D9531A">ASKED ME TO RATE IT</text>
+<text x="46" y="402" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#6E756E">6 surveys and review requests</text>
+<line x1="150.0" y1="272" x2="1150.0" y2="272" stroke="#1A1D1A" stroke-width="2"/>
+<line x1="150.0" y1="272" x2="150.0" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="150.0" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">Day 0</text>
+<line x1="346.1" y1="272" x2="346.1" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="346.1" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">30</text>
+<line x1="542.2" y1="272" x2="542.2" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="542.2" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">60</text>
+<line x1="738.2" y1="272" x2="738.2" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="738.2" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">90</text>
+<line x1="934.3" y1="272" x2="934.3" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="934.3" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">120</text>
+<line x1="1123.9" y1="272" x2="1123.9" y2="279" stroke="#DDDDD5" stroke-width="1.5"/>
+<text x="1123.9" y="297" font-family="Menlo, Consolas, monospace" font-size="11.5" fill="#6E756E" text-anchor="middle">Day 149</text>
+<line x1="385.3" y1="272" x2="914.7" y2="272" stroke="#FAFAF7" stroke-width="6"/>
+<line x1="385.3" y1="272" x2="914.7" y2="272" stroke="#DDDDD5" stroke-width="2" stroke-dasharray="5 6"/>
+<text x="650.0" y="190" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="#6E756E" text-anchor="middle">out of stock &#8212; nothing to do but wait for it to come back</text>
+<line x1="176.1" y1="266" x2="176.1" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="168.6" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 176.1 188.0)"/>
+<line x1="182.7" y1="266" x2="182.7" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="175.2" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 182.7 188.0)"/>
+<line x1="313.4" y1="266" x2="313.4" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="305.9" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 313.4 188.0)"/>
+<line x1="953.9" y1="266" x2="953.9" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="946.4" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 953.9 188.0)"/>
+<line x1="960.5" y1="266" x2="960.5" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="953.0" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 960.5 188.0)"/>
+<line x1="986.6" y1="266" x2="986.6" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="979.1" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 986.6 188.0)"/>
+<line x1="1104.2" y1="266" x2="1104.2" y2="196" stroke="#A31E14" stroke-width="1" opacity="0.35"/>
+<rect x="1096.7" y="180.5" width="15.0" height="15.0" rx="1.4" fill="#FAFAF7" stroke="#A31E14" stroke-width="2.2" transform="rotate(45 1104.2 188.0)"/>
+<line x1="287.3" y1="278" x2="287.3" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="287.3" cy="356" r="7" fill="#D9531A"/>
+<line x1="300.3" y1="278" x2="300.3" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="300.3" cy="356" r="7" fill="#D9531A"/>
+<line x1="378.8" y1="278" x2="378.8" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="378.8" cy="356" r="7" fill="#D9531A"/>
+<line x1="973.5" y1="278" x2="973.5" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="973.5" cy="356" r="7" fill="#D9531A"/>
+<line x1="1058.5" y1="278" x2="1058.5" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="1058.5" cy="356" r="7" fill="#D9531A"/>
+<line x1="1150.0" y1="278" x2="1150.0" y2="348" stroke="#D9531A" stroke-width="1" opacity="0.35"/>
+<circle cx="1150.0" cy="356" r="7" fill="#D9531A"/>
+<line x1="921.2" y1="242" x2="921.2" y2="302" stroke="#1A1D1A" stroke-width="1.6"/>
+<text x="907.0" y="240" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1A1D1A" text-anchor="end">Day 118 &#8212; I re-order the same goods</text>
+<circle cx="306.9" cy="272" r="8.5" fill="#8A918A" stroke="#FAFAF7" stroke-width="3"/>
+<circle cx="359.2" cy="272" r="8.5" fill="#8A918A" stroke="#FAFAF7" stroke-width="3"/>
+<circle cx="999.7" cy="272" r="8.5" fill="#8A918A" stroke="#FAFAF7" stroke-width="3"/>
+<circle cx="1123.9" cy="272" r="8.5" fill="#33684A" stroke="#FAFAF7" stroke-width="3"/>
+<text x="322.9" y="232" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1A1D1A" text-anchor="start">Day 24 &#8212; half the order arrives,</text>
+<text x="322.9" y="249" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6E756E" text-anchor="start">unannounced, 19 days late</text>
+<text x="375.2" y="318" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1A1D1A" text-anchor="start">Day 32 &#8212; the missing half is</text>
+<text x="375.2" y="335" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6E756E" text-anchor="start">cancelled and refunded</text>
+<text x="983.7" y="318" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#1A1D1A" text-anchor="end">Day 130 &#8212; half again, unannounced</text>
+<text x="1150.0" y="318" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#33684A" text-anchor="end">complete</text>
+<text x="987.5" y="408" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#D9531A" text-anchor="end">Day 126: &#8220;Our records suggest you recently</text>
+<text x="987.5" y="425" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#D9531A" text-anchor="end">received a delivery from us.&#8221;</text>
+<text x="987.5" y="443" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12.5" fill="#6E756E" text-anchor="end">Nothing had been delivered.</text>
+</svg>
