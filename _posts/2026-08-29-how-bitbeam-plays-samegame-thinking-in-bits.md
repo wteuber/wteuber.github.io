@@ -98,7 +98,7 @@ For a reference point I used [sgbust](https://github.com/chausner/sgbust), anoth
 
 The pattern holds from 10×10 up to 20×20 and from three colours to seven: 3.2 to 4.0 times faster on group enumeration, 4.8 to 5.8 times per child position, 3.6 to 4.1 times on a complete game. Two things to keep in mind about it. sgbust links the mimalloc allocator and my transcription of it does not, which handicaps the parts of it that allocate heavily. And these are the small routines each solver runs millions of times, not the two programs end to end.
 
-None of this makes bit-packing a good idea everywhere. I tried the same representation in a Ruby version of the solver and it came out 2.65 times slower than plain arrays. Ruby has no popcount method on `Integer` and no way to reach PEXT, so the two instructions that make the C++ version quick are simply unavailable. What replaces them is an interpreted method call for every shift and every mask, competing against array indexing that is already written in C. The technique is worth having when it lines up with instructions the processor really has.
+None of this makes bit-packing a good idea everywhere. I tried the same representation in a Ruby version of the solver and it came out 2.65 times slower than plain arrays. That is a limit of the implementation rather than the language. CRuby has no popcount method on `Integer` and no way to emit a PEXT, so the two instructions that do the work in C++ cannot be reached from Ruby at all, and no just-in-time compiler can conjure up an instruction the runtime never generates. What is left is an interpreted method call for every shift and every mask, running against array indexing that is already written in C. Nothing in the language rules out either primitive. They are simply not there today, and a technique that depends on them is worth having only where the processor and the runtime both cooperate.
 
 ## Idea 3: don't write down what you are about to delete
 
@@ -149,14 +149,22 @@ Every rule is checked against exhaustive search on thousands of small boards bef
 
 ## Does it play any better?
 
-Here it is against the [genetic algorithm](https://github.com/wteuber/samegame_autoplay/tree/master/software/solver/evolutionary) I had been using, on six random 15×10 three-colour boards, with both programs asked to empty the board and both invoked the way the bot invokes them. The genetic algorithm ran a population of 10 for 200 generations, bitbeam at a beam of 5,000.
+Here it is against the genetic algorithm I had been using, on six random 15×10 three-colour boards, with every configuration asked to empty the board. The genetic algorithm is a current rewrite of [the 2011 solver](https://github.com/wteuber/samegame_autoplay/tree/master/software/solver/evolutionary) that used to drive the bot, running on Ruby 4.0.4. The first row is how the bot invokes it, at a population of 10 for 200 generations. Times are wall clock and include process startup.
 
 | Solver | Mean score | Boards cleared | Mean time |
 |---|---:|---:|---:|
-| Genetic algorithm | 1,993 | 6/6 | 775 ms |
-| bitbeam | 3,295 | 6/6 | 205 ms |
+| Genetic algorithm, one core, no JIT | 2,031 | 6/6 | 666 ms |
+| Genetic algorithm, YJIT and 8 Ractors, population 64 | 2,613 | 6/6 | 3.3 s |
+| Genetic algorithm, YJIT and 8 Ractors, population 256 | 2,852 | 6/6 | 13.4 s |
+| bitbeam, beam 5,000, 16 threads | 3,676 | 6/6 | 136 ms |
 
-Two thirds more points in a quarter of the time. The time column is the weaker half of that claim. The genetic algorithm is Ruby on a single core and bitbeam is C++ across all sixteen hardware threads, so this compares two programs as they actually get used rather than two algorithms, and a genetic algorithm will buy more score if you give it more generations. The score column is the one I would defend, and it is not close.
+The first row and the last one are the two the bot would actually choose between: bitbeam scores 81 percent higher and takes a fifth of the time. The rows in between are there because the obvious objection to that comparison is that Ruby is slow, and I do not think slowness is what the table shows.
+
+The evaluation loop in the Ruby solver got twelve times faster when I rewrote it, on identical work, and the language had nothing to do with it. The 2011 version copied the board with `Marshal.dump` and `Marshal.load` for every candidate move, and a profile put 82 percent of its runtime inside those two calls and the garbage collection needed to clean up after them. Swapping the nested arrays for one flat array and reusing the scratch buffers took 40 evaluations of a 15×15 board from 1.75 seconds to 0.14, and the objects allocated from 1.6 million to 213. Turning on YJIT, Ruby's just-in-time compiler, takes that to 0.054 seconds, a further 2.7 times. It did nothing measurable for the 2011 code, because there was no Ruby bytecode left to compile: that version had already handed its real work to `Marshal`, which is C.
+
+Ractors, Ruby's mechanism for running code on several cores at once, cut a population-64 run from 7.9 seconds to 3.3 across eight of them, with results identical to the serial version. Those two features are what the middle rows use, along with the bigger populations they make affordable. The extra score is real, and it is expensive: the last row spends about a hundred times bitbeam's runtime to land 22 percent below it.
+
+So the gap is not the language. A genetic algorithm samples whole sequences of moves and breeds the ones that worked. Beam search looks at every legal move at every depth and keeps the best few thousand positions under an ordering it can justify. The second approach suits this puzzle better, and neither a JIT nor more cores changes that. What Ruby costs here is a constant factor, and a smaller one than its reputation suggests.
 
 sgbust is missing from the table, and not because it lost. For the build reasons above I have no end-to-end figure for it that would be about its algorithm rather than its dependencies, so the routine-level comparison earlier stands in for it.
 
