@@ -13,7 +13,7 @@ SameGame looks simple. You get a grid of coloured tiles. Click any group of two 
 
 The difficulty shows up within a minute or two. Every click rearranges the board, so the group you were saving for later might not exist by the time you get to it. There is no way to judge a move except by playing out everything that follows from it.
 
-I wrote a solver for this called [bitbeam](https://github.com/wteuber/samegame-solver). It plays a 30×20 board in a couple of seconds. The three ideas that make that possible show up in plenty of software that has nothing to do with puzzle games, which is the reason this is worth writing up.
+I wrote a solver for this called bitbeam. It plays a 30×20 board in a couple of seconds. The three ideas that make that possible show up in plenty of software that has nothing to do with puzzle games, which is the reason this is worth writing up.
 
 ## Why you cannot just try every move
 
@@ -35,19 +35,40 @@ The hard part is the scoring. Ranking positions by points scored so far works ba
 
 The obvious way to store the board is one number per tile in a grid. Removing a group then means a recursive flood fill to find the connected tiles, and applying gravity means a nested loop that shuffles tiles downward one at a time.
 
-bitbeam stores each column as three 32-bit integers instead. Every tile gets three bits, one in each integer, which is enough to encode eight colours, and a fourth number records how tall the column is. The whole 30×20 board comes to a few hundred bytes, and a single column fits in one CPU register.
-
-That last part is what makes it fast, because of one instruction. PEXT, short for parallel bit extract, takes a value and a mask of the bits you want to keep, and packs those bits down to the bottom in order. It does this in one instruction. That operation is not a metaphor for gravity. It is gravity.
-
-Removing a group from a column, normally a loop over every tile that survives, becomes three instructions and a population count:
+bitbeam stores each column as three 32-bit integers instead. Every tile gets three bits, one in each of the three integers, which is enough to encode eight colours. A fourth number records how tall the column is. That is the entire board:
 
 ```cpp
-Bits keep = occ(x) & ~groupMask[x];
-p0[x] = pext(p0[x], keep);       // every surviving tile in this column
-p1[x] = pext(p1[x], keep);       // lands where gravity puts it,
-p2[x] = pext(p2[x], keep);       // in three instructions
-colh[x] = popcount(keep);
+using Bits = uint32_t;
+
+struct Board {
+  uint8_t w;                          // columns still standing
+  uint8_t colh[MAXW];                 // how tall each column is
+  Bits p0[MAXW], p1[MAXW], p2[MAXW];  // three colour bitplanes per column
+
+  int colorAt(int x, int y) const {   // read one tile back out
+    return ((p0[x] >> y) & 1)
+         | (((p1[x] >> y) & 1) << 1)
+         | (((p2[x] >> y) & 1) << 2);
+  }
+};
 ```
+
+The whole 30×20 board comes to a few hundred bytes, and a single column fits in one CPU register. That last part is what makes it fast, because of one instruction.
+
+PEXT, short for parallel bit extract, takes a value and a mask of the bits you want to keep, then packs those bits down to the bottom in order. It does this in a single instruction. That operation is not a metaphor for gravity. It is gravity, so removing a group and letting everything fall is not a loop over tiles at all:
+
+```cpp
+for (int x = lo; x <= hi; ++x) {   // only the columns the group touches
+  if (!mask[x]) continue;
+  Bits keep = b.occ(x) & ~mask[x]; // the tiles that survive this click
+  b.p0[x] = pext(b.p0[x], keep);   // each plane drops to the column floor,
+  b.p1[x] = pext(b.p1[x], keep);   // original order preserved,
+  b.p2[x] = pext(b.p2[x], keep);   // one instruction per plane
+  b.colh[x] = popcnt(keep);        // new column height, from a bit count
+}
+```
+
+Three instructions and a population count, on the two or three columns the group actually spans, instead of a nested loop over the board.
 
 Finding groups gets similar treatment. Instead of walking tile by tile, each column is broken into runs of a single colour, and neighbouring columns are compared by XOR-ing their bit patterns together. A set bit in the result means two runs touch and match. The loop then runs once per boundary between groups rather than once per tile, which took group linking on a 15×15 board from 3,450 nanoseconds to 605.
 
@@ -63,7 +84,14 @@ The natural way to write beam search is to produce every child position in full.
 
 Nearly all of that work goes into positions that get deleted moments later.
 
-bitbeam writes down six bytes per candidate instead: the score the move would produce, and the move itself. It finds the exact cut-off using those six-byte stubs, then replays only the moves that survived it. The search is the same and the output is the same, byte for byte. Runtime went from 3,718 milliseconds to 1,306.
+bitbeam writes down six bytes per candidate instead. That is the whole of what the first pass records for a move it is considering:
+
+```cpp
+w.objs.push_back(objective(cscore, w.child, w.cmg)); // 4 bytes: how good
+w.mvs.push_back(static_cast<uint16_t>(g));           // 2 bytes: which move
+```
+
+No board is copied into storage, nothing is serialised, nothing is hashed. The solver finds the exact cut-off using those six-byte stubs, then goes back and replays only the moves that survived it. The search is the same and the output is the same, byte for byte. Runtime went from 3,718 milliseconds to 1,306.
 
 Sorting cheap descriptions and expanding only the winners beats expanding everything and then sorting.
 
@@ -71,15 +99,25 @@ Sorting cheap descriptions and expanding only the winners beats expanding everyt
 
 Run a parallel search twice and you will usually get two different answers. Neither is wrong. They differ because the boundary between "good enough to keep" and "cut" landed in a slightly different place depending on which thread happened to finish first. That makes bugs hard to reproduce, and it makes the question "did my change help?" unanswerable.
 
-Fixing it meant defining a tiebreak for every comparison in the search. Rank by score, then by a hash of the board. If two different move sequences reach the same position, compare the sequences. If two finished games score the same, prefer the shorter one, then the alphabetically smaller one.
+Fixing it meant defining a tiebreak for every comparison in the search, so that no ordering is ever left to whichever thread got there first. The comparison that decides who makes the shortlist is the important one:
+
+```cpp
+auto better = [](const uint8_t* a, const uint8_t* b) {
+  float oa = getObj(a), ob = getObj(b);
+  if (oa != ob) return oa > ob;   // best objective wins
+  return getHash(a) < getHash(b); // tie: the board itself decides
+};
+```
+
+The same treatment applies further down. If two different move sequences reach the same position, compare the sequences. If two finished games score the same, prefer the shorter one, then the alphabetically smaller one.
 
 The result is that the output is byte-identical whether the solver runs on 1, 2, 4, 8 or 16 threads, which the test suite checks on random boards. It costs nothing in speed. Sixteen threads still finish 5.7 times faster than one.
 
 ## Knowing when a board cannot be cleared
 
-Clearing a SameGame board completely is NP-complete, and it stays hard at surprisingly small sizes. [Two colours and two columns is already enough](https://erikdemaine.org/papers/Clickomania_JIP/). Some boards cannot be cleared at all, and a search that does not know this will grind away at them until you give up waiting.
+Clearing a SameGame board completely is NP-complete, and it stays hard at surprisingly small sizes. [Two colours and two columns is already enough](https://erikdemaine.org/papers/Clickomania_MOVES2015/). Some boards cannot be cleared at all, and a search that does not know this will grind away at them until you give up waiting.
 
-bitbeam carries a small set of refutations, which are rules that can prove a board is impossible but can never claim a board is fine. A colour with exactly one tile left can never be removed, so that board is dead. A single column is clearable if and only if its colour sequence matches a specific grammar, a result from the theory literature that fires constantly here because boards get narrow as columns collapse. A two-colour board whose bottom half is a chessboard pattern cannot be cleared regardless of what sits above it.
+bitbeam carries a small set of refutations, which are rules that can prove a board is impossible but can never claim a board is fine. A colour with exactly one tile left can never be removed, so that board is dead. A single column is clearable if and only if its colour sequence matches a specific grammar, a [result from the theory literature](https://erikdemaine.org/papers/ClickomaniaGameTheory2000/) that fires constantly here because boards get narrow as columns collapse. A two-colour board whose bottom half is a chessboard pattern cannot be cleared regardless of what sits above it.
 
 Every rule is checked against exhaustive search on thousands of small boards. A rule that wrongly refutes a solvable board is worse than no rule at all.
 
@@ -108,4 +146,4 @@ None of the three ideas here is novel. Beam search has been around for decades, 
 
 The determinism work paid off in a way I had not planned for. Once the output stopped varying between runs, evaluating every other change became straightforward, because any difference in the result had to have been caused by the change.
 
-*The solver is [on GitHub](https://github.com/wteuber/samegame-solver), along with the [bot](https://github.com/wteuber/samegame-bot) that plays the game in a browser by reading pixels off the screen and moving the mouse. That is a story for another post.*
+*The bot in the recording above is a separate program. It reads the board by looking at pixels on the screen and plays by moving the actual mouse, which is a story for another post.*
