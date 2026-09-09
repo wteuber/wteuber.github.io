@@ -13,4 +13,34 @@
         async>
 </script>
 
+<script>
+  // Keep giscus in sync with the night mode button (assets/js/skin-switch.js),
+  // which toggles .page-dark-mode on <body>.
+  (function () {
+    var origin = "https://{{ site.giscus.hostname }}";
+    var listening = false;
+
+    function syncTheme() {
+      if (!listening) { return; }
+      var frame = document.querySelector("iframe.giscus-frame");
+      if (!frame) { return; }
+      var theme = document.body.classList.contains("page-dark-mode") ? "dark" : "light";
+      frame.contentWindow.postMessage({ giscus: { setConfig: { theme: theme } } }, origin);
+    }
+
+    // The iframe loads asynchronously; its first message means it is ready for setConfig.
+    window.addEventListener("message", function (event) {
+      if (event.origin !== origin || !event.data || !event.data.giscus) { return; }
+      listening = true;
+      syncTheme();
+    });
+
+    // Watch the class rather than the click, so this works regardless of which
+    // click handler runs first, and also covers the toggle skin-switch.js fires
+    // on page load when dark mode is remembered in localStorage.
+    new MutationObserver(syncTheme)
+      .observe(document.body, { attributes: true, attributeFilter: ["class"] });
+  })();
+</script>
+
 {% endif %}
