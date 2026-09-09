@@ -13,7 +13,7 @@ SameGame looks simple. You get a grid of coloured tiles. Click any group of two 
 
 The difficulty shows up within a minute or two. Every click rearranges the board, so the group you were saving for later might not exist by the time you get to it. There is no way to judge a move except by playing out everything that follows from it.
 
-I wrote a solver for this called bitbeam. It plays a 30×20 board in a couple of seconds. The three ideas that make that possible show up in plenty of software that has nothing to do with puzzle games, which is the reason this is worth writing up.
+I wrote a solver for this called bitbeam. It clears a 30×20 three-colour board in three to ten seconds, and a 15×10 one in about a fifth of a second. The three ideas that make that possible show up in plenty of software that has nothing to do with puzzle games, which is the reason this is worth writing up.
 
 ## Why you cannot just try every move
 
@@ -101,7 +101,7 @@ w.objs.push_back(objective(cscore, w.child, w.cmg)); // 4 bytes: how good
 w.mvs.push_back(static_cast<uint16_t>(g));           // 2 bytes: which move
 ```
 
-No board is copied into storage, nothing is serialised, nothing is hashed. The solver finds the exact cut-off using those six-byte stubs, then goes back and replays only the moves that survived it. The search is the same and the output is the same, byte for byte. Runtime went from 3,718 milliseconds to 1,306.
+No board is copied into storage, nothing is serialised, nothing is hashed. The solver finds the exact cut-off using those six-byte stubs, then goes back and replays only the moves that survived it. The search is the same and the output is the same, byte for byte. On a 15×15 board at a beam of 10,000, runtime went from 3,718 milliseconds to 1,306.
 
 Sorting cheap descriptions and expanding only the winners beats expanding everything and then sorting.
 
