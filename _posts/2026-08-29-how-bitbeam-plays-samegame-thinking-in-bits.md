@@ -55,7 +55,7 @@ struct Board {
 
 The whole 30×20 board comes to a few hundred bytes, and a single column fits in one CPU register. That last part is what makes it fast, because of one instruction.
 
-PEXT, short for parallel bit extract, takes a value and a mask of the bits you want to keep, then packs those bits down to the bottom in order. It does this in a single instruction. That operation is not a metaphor for gravity. It is gravity, so removing a group and letting everything fall is not a loop over tiles at all:
+[PEXT](https://www.felixcloutier.com/x86/pext), short for parallel bit extract, takes a value and a mask of the bits you want to keep, then packs those bits down to the bottom in order. It does this in a single instruction. That operation is not a metaphor for gravity. It is gravity, so removing a group and letting everything fall is not a loop over tiles at all:
 
 ```cpp
 for (int x = lo; x <= hi; ++x) {   // only the columns the group touches
@@ -72,7 +72,15 @@ Three instructions and a population count, on the two or three columns the group
 
 Finding groups gets similar treatment. Instead of walking tile by tile, each column is broken into runs of a single colour, and neighbouring columns are compared by XOR-ing their bit patterns together. A set bit in the result means two runs touch and match. The loop then runs once per boundary between groups rather than once per tile, which took group linking on a 15×15 board from 3,450 nanoseconds to 605.
 
-Measured against the equivalent routines in [sgbust](https://github.com/chausner/sgbust), an existing solver I used as a reference, the bit versions find groups 3 to 4 times faster and play a move roughly 5 times faster.
+[sgbust](https://github.com/chausner/sgbust) is the solver I used as a reference point. It has the same shape, beam search over a hash set, and stores the board as one byte per cell. Running its routines and bitbeam's on the same 20×20 five-colour boards, in the same process, interleaved:
+
+| | bitbeam | sgbust | speedup |
+|---|---:|---:|---:|
+| Enumerate groups | 5,175 ns | 18,410 ns | 3.6× |
+| Expand one child | 100 ns | 569 ns | 5.7× |
+| Play a game to the end | 248 µs | 1,008 µs | 4.1× |
+
+From 10×10 up to 20×20, and three to seven colours, the pattern holds: 3.2 to 4.0 times on group enumeration, 4.8 to 5.8 times per child, 3.6 to 4.1 times on a whole game. Two caveats. sgbust links the mimalloc allocator and this transcription of it does not, which handicaps its allocation-heavy paths, and these are the per-node primitives rather than the two solvers end to end.
 
 That comes with a caveat. I tried the same representation in a Ruby version of the solver and it ran 2.65 times slower than plain arrays, because Ruby allocates an object for every bit shift and has no popcount. The trick works when it maps onto instructions the processor actually has, and not otherwise.
 
@@ -123,7 +131,7 @@ Every rule is checked against exhaustive search on thousands of small boards. A 
 
 ## Does it play better?
 
-Against the genetic algorithm I had been using, on the same boards under the same conditions, with both asked to clear the board completely:
+Against the [genetic algorithm](https://github.com/wteuber/samegame_autoplay/tree/master/software/solver/evolutionary) I had been using, on six random 15×10 three-colour boards, with both asked to clear the board completely:
 
 | Solver | Mean score | Boards cleared | Mean time |
 |---|---:|---:|---:|
@@ -132,13 +140,15 @@ Against the genetic algorithm I had been using, on the same boards under the sam
 
 Two thirds more points in a quarter of the time.
 
+sgbust is absent from this table, and not because it lost. It needs vcpkg and TBB and does not build on my machine, so rather than quote an end-to-end number I cannot produce, the comparison earlier in this post runs its core routines against bitbeam's directly.
+
 ## What it looks like
 
 This is easier to show than to describe. Below is a bot playing [the browser version of SameGame](/public/samegame){:target="_blank"} with bitbeam choosing the moves. Real clicks on a real page, seven boards cleared in a row:
 
 ![A bot playing SameGame in the browser, clearing board after board with moves found by bitbeam](/assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/bitbeam-bot-playing-samegame.gif){:style="border-radius: 8px;"}
 
-There is not much deliberation to watch. The search finishes before the clicking starts, so most of what you are seeing is a mouse working through a list, at a pace slow enough for a human to follow.
+That is a real-time recording, not sped up. There is no deliberation in it to watch, because none is happening: bitbeam solves the whole board before the first click lands, and the bot then works down the list at twenty clicks a second. Fast enough that you cannot tell why any particular group was chosen, slow enough to watch the board come apart.
 
 ## Wrapping up
 
