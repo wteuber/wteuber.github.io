@@ -15,7 +15,7 @@ There are two different things you can play for, and they pull against each othe
 
 The trouble starts a minute or two in. Every click rearranges everything above it, so the group you were saving might not be there by the time you get to it. To know for certain whether a click was a good one, you would have to play out every game that follows from it, which nobody can afford to do. The alternative is to guess quickly, and the quality of that guess is what separates a good solver from a bad one.
 
-I wrote one called bitbeam. On a 30×20 board with three colours, 600 tiles in all, it finds a sequence of clicks that empties the whole thing in two to four seconds. A 15×10 board takes a fifth of a second or less. Three ideas account for most of that, and two things I had filed under nice-to-have turned out to matter more than I expected.
+I wrote one called bitbeam. On a 30×20 board with three colours, 600 tiles in all, it finds a sequence of clicks that empties the whole thing in two to four seconds. A 15×10 board takes a fifth of a second or less. Three ideas account for most of that, and two things I had filed under nice-to-have turned out to matter more than I expected. If you would rather see it than read about it, there is [a recording of a bot clearing seven boards](#what-it-looks-like) at the bottom.
 
 Every timing below comes from the machine I wrote it on: an Intel i9-9880H with 8 cores and 16 hardware threads, built with Apple clang and `-O3 -march=native`. Board sizes vary between sections because each measurement was taken where it was interesting, so every number says which board it belongs to.
 
