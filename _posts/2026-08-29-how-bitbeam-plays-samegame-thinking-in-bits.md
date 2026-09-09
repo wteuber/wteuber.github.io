@@ -74,7 +74,7 @@ Three instructions and a population count, on the two or three columns the group
 
 Finding groups gets similar treatment. Instead of walking tile by tile, each column is broken into runs of a single colour, and neighbouring columns are compared by XOR-ing their bit patterns together. A set bit in the result means two runs touch and match. The loop then runs once per boundary between groups rather than once per tile, which took group linking on a 15×15 board from 3,450 nanoseconds to 605.
 
-[sgbust](https://github.com/chausner/sgbust) is the solver I used as a reference point. It has the same shape, beam search over a hash set, and stores the board as one byte per cell. Running its routines and bitbeam's on the same 20×20 five-colour boards, in the same process, interleaved:
+[sgbust](https://github.com/chausner/sgbust) is the solver I used as a reference point. It has the same shape, beam search over a hash set, and stores the board as one byte per cell. It builds through vcpkg against TBB and parallelises with `std::execution::par`, which the standard library on my machine does not implement, so running the two programs against each other was not an option. What I did instead was transcribe its three core routines into bitbeam's benchmark, where both versions run on the same 20×20 five-colour board, in the same process, interleaved, single-threaded, best of four rounds:
 
 | | bitbeam | sgbust | speedup |
 |---|---:|---:|---:|
@@ -84,7 +84,7 @@ Finding groups gets similar treatment. Instead of walking tile by tile, each col
 
 From 10×10 up to 20×20, and three to seven colours, the pattern holds: 3.2 to 4.0 times on group enumeration, 4.8 to 5.8 times per child, 3.6 to 4.1 times on a whole game. Two caveats. sgbust links the mimalloc allocator and this transcription of it does not, which handicaps its allocation-heavy paths, and these are the per-node primitives rather than the two solvers end to end.
 
-That comes with a caveat. I tried the same representation in a Ruby version of the solver and it ran 2.65 times slower than plain arrays, because Ruby allocates an object for every bit shift and has no popcount. The trick works when it maps onto instructions the processor actually has, and not otherwise.
+The representation is not a universal win, either. I tried the same trick in a Ruby version of the solver and it ran 2.65 times slower than plain arrays, because Ruby allocates an object for every bit shift and has no popcount. It pays off when it maps onto instructions the processor actually has, and not otherwise.
 
 ## Idea 3: Do not build what you are about to delete
 
@@ -127,7 +127,7 @@ The result is that the output is byte-identical whether the solver runs on 1, 2,
 
 Clearing a SameGame board completely is NP-complete, and it stays hard at surprisingly small sizes. [Two colours and two columns is already enough](https://erikdemaine.org/papers/Clickomania_MOVES2015/). Some boards cannot be cleared at all, and a search that does not know this will grind away at them until you give up waiting.
 
-bitbeam carries a small set of refutations, which are rules that can prove a board is impossible but can never claim a board is fine. A colour with exactly one tile left can never be removed, so that board is dead. A single column is clearable if and only if its colour sequence matches a specific grammar, a [result from the theory literature](https://erikdemaine.org/papers/ClickomaniaGameTheory2000/) that fires constantly here because boards get narrow as columns collapse. A two-colour board whose bottom half is a chessboard pattern cannot be cleared regardless of what sits above it.
+bitbeam carries a small set of refutations, which are rules that can prove a board is impossible but can never claim a board is fine. A colour with exactly one tile left can never be removed, so that board is dead. A single column is clearable if and only if its colour sequence matches a specific grammar, a result from the theory literature that fires constantly here because boards get narrow as columns collapse. A two-colour board whose bottom half is a chessboard pattern cannot be cleared regardless of what sits above it.
 
 Every rule is checked against exhaustive search on thousands of small boards. A rule that wrongly refutes a solvable board is worse than no rule at all.
 
@@ -142,13 +142,13 @@ Against the [genetic algorithm](https://github.com/wteuber/samegame_autoplay/tre
 
 Two thirds more points in a quarter of the time.
 
-sgbust is absent from this table, and not because it lost. It needs vcpkg and TBB and does not build on my machine, so rather than quote an end-to-end number I cannot produce, the comparison earlier in this post runs its core routines against bitbeam's directly.
+sgbust is absent from this table, and not because it lost. For the dependency reasons above I cannot run it here, so an end-to-end number for it is not one I can honestly produce. The per-routine comparison earlier is the substitute.
 
 ## What it looks like
 
 This is easier to show than to describe. Below is a bot playing [the browser version of SameGame](/public/samegame){:target="_blank"} with bitbeam choosing the moves. Real clicks on a real page, seven boards cleared in a row:
 
-![A bot playing SameGame in the browser, clearing board after board with moves found by bitbeam](/assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/bitbeam-bot-playing-samegame.gif){:style="border-radius: 8px;"}
+![A bot playing SameGame in the browser, clearing board after board with moves found by bitbeam](/assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/bitbeam-bot-playing-samegame.gif){:style="border-radius: 8px; display: block; margin: 0 auto;"}
 
 That is a real-time recording, not sped up. There is no deliberation in it to watch, because none is happening: bitbeam solves the whole board before the first click lands, and the bot then works down the list at twenty clicks a second. Fast enough that you cannot tell why any particular group was chosen, slow enough to watch the board come apart.
 
