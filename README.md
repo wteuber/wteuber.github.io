@@ -37,6 +37,9 @@ echo "This is: Text!" | tr -sc '[:alnum:]' ' ' | tr '[:upper:]' '[:lower:]' | xa
 this-is-text
 ```
 
+### Check for relevant updates in the original upstream
+https://github.com/wteuber/wteuber.github.io/compare/master...daattali:beautiful-jekyll:master
+
 ### Improve blog post quality using an AI Expert Panel Discussion
 ```
 # The Blog Post Podium: Expert Panel Review and Coaching Role Play
