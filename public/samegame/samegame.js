@@ -180,12 +180,18 @@ class SameGame {
 
         if (this.isGameOver()) {
           window.setTimeout(() => {
-            alert("Game Over!\n You scored " + scores.total + " points.");
-            this.seed(true);
+            this.gameOver(scores.total);
           }, 10);
         }
       }
     }
+  }
+
+  // Called once the board has no legal moves left. Override this to present the
+  // result differently (the blog embed swaps it for an on-board message).
+  gameOver(total) {
+    alert("Game Over!\n You scored " + total + " points.");
+    this.seed(true);
   }
 
   isGameOver() {
