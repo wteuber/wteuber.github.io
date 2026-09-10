@@ -19,6 +19,14 @@ I wrote one called bitbeam. On a 30×20 board with three colours, 600 tiles in a
 
 Every timing below comes from the machine I wrote it on: an Intel i9-9880H with 8 cores and 16 hardware threads, built with Apple clang and `-O3 -march=native`. Board sizes vary between sections because each measurement was taken where it was interesting, so every number says which board it belongs to.
 
+## Try it yourself
+
+Here is the same puzzle at a size you can finish by hand: six rows, twelve columns, three colours. Click any group of two or more touching tiles of one colour and it clears; everything above falls in, and an emptied column pulls the rest leftward. The middle counter previews what the group under your cursor would pay, and big groups are worth far more than the small ones they could have been split into. Clear the board and the next one appears.
+
+{% include samegame-mini.html %}
+
+The rest of this post is about playing the full board, thirty columns by twenty, well enough to empty it in a couple of seconds.
+
 ## Why brute force is out
 
 On a 30×20 board, a typical position offers a few dozen legal clicks, and a full game runs about fifty clicks deep. Multiply those together and you get a number with more than a hundred digits. There are fewer atoms in the observable universe.

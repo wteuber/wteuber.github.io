@@ -1,0 +1,57 @@
+<!--
+  A playable 6x12 SameGame, embedded in a blog post.
+  Reuses the standalone game logic verbatim (public/samegame/samegame.js) and a
+  scoped build of its stylesheet (public/samegame/samegame-embed.css). The board
+  size is pinned through the game's own config proxy once the script has loaded,
+  and the game-over alert is swapped for a message centred on the board.
+-->
+<link rel="stylesheet" href="{{ '/public/samegame/samegame-embed.css' | relative_url }}">
+
+<div class="samegame-embed">
+  <!-- Hidden controls that the shared game logic wires itself to. -->
+  <input type="range" name="rows" min="4" max="20" value="6" hidden />
+  <input type="range" name="cols" min="12" max="30" value="12" hidden />
+  <input type="button" name="new" value="New Game" hidden />
+
+  <div class="sg-board-wrap">
+    <table id="gameboard"></table>
+    <p id="sg-message" hidden></p>
+  </div>
+
+  <div id="scoreboard">
+    <div>Round <br><span name="round"></span></div>
+    <div>Click Score <br><span name="click"></span></div>
+    <div>Total Score <br><span name="total"></span></div>
+  </div>
+</div>
+
+<script src="{{ '/public/samegame/samegame.js' | relative_url }}"></script>
+<script>
+  (function () {
+    // samegame.js loads synchronously above, so window.SameGame exists here.
+    var sg = window.SameGame;
+    var message = document.getElementById('sg-message');
+    var restart = document.querySelector('[name="new"]');
+
+    // Replace the standalone game's blocking alert with a note centred on the
+    // board. "Try again!" reuses the game's own restart (the hidden control).
+    sg.gameOver = function (total) {
+      message.textContent = 'Game over — you scored ' + total +
+        (total === 1 ? ' point. ' : ' points. ');
+      var again = document.createElement('button');
+      again.type = 'button';
+      again.className = 'sg-again';
+      again.textContent = 'Try again!';
+      again.addEventListener('click', function () {
+        message.hidden = true;
+        restart.click();
+      });
+      message.appendChild(again);
+      message.hidden = false;
+    };
+
+    // Setting either config value seeds a fresh board at the new dimensions.
+    sg.config.rows = 6;
+    sg.config.cols = 12;
+  })();
+</script>
