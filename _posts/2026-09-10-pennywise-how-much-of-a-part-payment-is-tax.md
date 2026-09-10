@@ -2,9 +2,9 @@
 layout: post
 title: "PennyWise: How Much of a Part-Payment Is Tax?"
 subtitle: The rounding bug that turns up when a taxed bill is paid in installments, and the one idea that kills it, a running tax total you are only ever allowed to floor. Splitting a bill between diners is the same problem.
-# cover-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase-cover.png
-# thumbnail-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase.png
-# share-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase-share.png
+cover-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase-cover-dark.png
+thumbnail-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase.png
+share-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase-share.png
 tags: [algorithms, ruby, mathematics, money, engineering]
 author: Wolfgang Teuber
 ---
@@ -144,6 +144,8 @@ And because `split_payment` only needs `previously_paid_atoms` plus the two bill
 It is tempting to round `tax_through` to the nearest atom instead of flooring. Don't. Flooring means a customer is never told they have paid tax they have not yet paid, at any point in the sequence. The ramp sits at or just below the true proportional line the whole way along, and only catches up to it exactly at the final payment. Rounding would let intermediate payments run slightly ahead of the true share and then claw it back later, which is harder to explain on a receipt.
 
 The shape this produces, a diagonal line approximated by a staircase of unit steps placed as evenly as the integers allow, is the same shape you get when a computer draws a slanted line on a pixel grid. That is [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm), from 1962. It is also what a good analogue photograph does with a gradient, and what audio dithering does with a fade. "Distribute N indivisible things across M slots as evenly as possible, with no drift" is a genuinely old problem with a genuinely settled answer, and splitting tax across payments is just another instance of it wearing a suit.
+
+{% include pennywise-bresenham.html %}
 
 ## Testing a claim like "always"
 

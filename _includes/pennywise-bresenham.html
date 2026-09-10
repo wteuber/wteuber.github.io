@@ -1,0 +1,217 @@
+<style>
+.pw-bres{
+  --pwb-border:#d0d7de;--pwb-bg:#f6f8fa;--pwb-panel:#fff;--pwb-ink:#1f2328;--pwb-mut:#656d76;
+  --pwb-net:#54aeff;--pwb-tax:#e3a008;--pwb-line:#1f2328;--pwb-bad:#cf222e;
+  border:1px solid var(--pwb-border);border-radius:10px;padding:1.1rem 1.2rem 1.3rem;margin:1.8rem 0;
+  background:var(--pwb-bg);color:var(--pwb-ink);font-size:.95rem;line-height:1.5;
+}
+body.page-dark-mode .pw-bres{
+  --pwb-border:#3d444d;--pwb-bg:#22272e;--pwb-panel:#2d333b;--pwb-ink:#e4e6eb;--pwb-mut:#9aa4af;
+  --pwb-net:#316dca;--pwb-tax:#d29922;--pwb-line:#e4e6eb;--pwb-bad:#ff7b72;
+}
+.pw-bres h4{margin:0 0 .3rem;font-size:1.05rem}
+.pw-bres__head p{margin:0 0 .9rem;color:var(--pwb-mut);font-size:.85rem}
+.pw-bres__controls{display:flex;flex-wrap:wrap;gap:.9rem 1.5rem;align-items:flex-end}
+.pw-bres__controls label{display:flex;flex-direction:column;gap:.35rem;font-weight:700;font-size:.72rem;
+  color:var(--pwb-mut);text-transform:uppercase;letter-spacing:.04em}
+.pw-bres input[type=range]{width:11rem;accent-color:var(--link-col,#008AFF)}
+.pw-bres output{font-weight:700;color:var(--pwb-ink);font-size:.95rem}
+.pw-bres__toggle{display:flex;gap:.5rem;align-items:flex-start;margin:.95rem 0 .2rem;font-size:.8rem;
+  color:var(--pwb-mut);cursor:pointer;max-width:46rem}
+.pw-bres__toggle input{margin-top:.15rem;accent-color:var(--link-col,#008AFF)}
+.pw-bres__legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin:.9rem 0 .3rem;font-size:.78rem;color:var(--pwb-mut)}
+.pw-bres__legend span{display:inline-flex;align-items:center;gap:.4rem}
+.pw-bres__legend i{width:.85rem;height:.85rem;border-radius:2px;display:inline-block}
+.pw-bres__plot{overflow-x:auto}
+.pw-bres__plot svg{display:block;max-width:100%;height:auto;color:var(--pwb-mut)}
+.pw-bres__plot text{font-size:11px;font-family:inherit}
+.pw-bres__cap{font-size:.8rem;color:var(--pwb-mut);margin:.7rem 0 0}
+.pw-bres__cap b{color:var(--pwb-ink)}
+@media (max-width:560px){
+  .pw-bres input[type=range]{width:8.5rem}
+  .pw-bres__plot svg{max-width:none}
+}
+</style>
+
+<div class="pw-bres" id="pw-bres">
+  <div class="pw-bres__head">
+    <h4>The tax staircase is a Bresenham line</h4>
+    <p>A 36-atom bill, paid in equal installments. Laid out atom by atom along the bottom, the tax owed rises as a straight line to the right. The floored running total lights one whole pixel per atom, kept as close to that line as the grid allows &mdash; <b style="color:var(--pwb-net)">blue</b> where the atom is net, <b style="color:var(--pwb-tax)">orange</b> where it is tax. The orange pixels land by the same rule a screen uses to draw a slanted line. (The vertical axis is stretched so a shallow real-world rate stays legible.)</p>
+  </div>
+
+  <div class="pw-bres__controls">
+    <label>Installments &nbsp;<output id="pwb-n-out">4</output>
+      <input type="range" id="pwb-n" min="1" max="12" value="4">
+    </label>
+    <label>Tax rate &nbsp;<output id="pwb-r-out">12%</output>
+      <input type="range" id="pwb-r" min="1" max="50" value="12">
+    </label>
+  </div>
+
+  <label class="pw-bres__toggle">
+    <input type="checkbox" id="pwb-round">
+    Round each atom to the nearest tax level instead of flooring &mdash; watch the staircase climb above the true line.
+  </label>
+
+  <div class="pw-bres__legend">
+    <span><i style="background:var(--pwb-net)"></i> net atom</span>
+    <span><i style="background:var(--pwb-tax)"></i> tax atom</span>
+    <span><i style="background:var(--pwb-line)"></i> true proportional line</span>
+  </div>
+
+  <div class="pw-bres__plot">
+    <svg id="pwb-svg" role="img" aria-label="Bresenham staircase of the floored running tax total across a bill's atoms, cut into installments"></svg>
+  </div>
+
+  <p class="pw-bres__cap" id="pwb-cap" aria-live="polite"></p>
+  <noscript><p class="pw-bres__cap">This widget needs JavaScript. The worked example earlier in the post walks the same staircase by hand.</p></noscript>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('pw-bres');
+  if (!root) return;
+
+  var A = 36;                       // atoms in the whole bill
+  var $n = document.getElementById('pwb-n');
+  var $r = document.getElementById('pwb-r');
+  var $nOut = document.getElementById('pwb-n-out');
+  var $rOut = document.getElementById('pwb-r-out');
+  var $round = document.getElementById('pwb-round');
+  var $svg = document.getElementById('pwb-svg');
+  var $cap = document.getElementById('pwb-cap');
+
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+  function update() {
+    var N = parseInt($n.value, 10);
+    var rate = parseInt($r.value, 10);
+    $nOut.textContent = N;
+    $rOut.textContent = rate + '%';
+
+    var round = $round.checked;
+    var T = Math.floor(A * rate / (100 + rate));           // total tax atoms (single floor)
+    var stepFloor = function (x) { return Math.floor(x * T / A); };
+    var step = round ? function (x) { return Math.round(x * T / A); } : stepFloor;
+
+    var Cx = 18, rows = Math.max(T, 1);
+    var Cy = Math.min(150 / rows, 44), gridH = Cy * rows;
+    var padL = 20, padR = 10, padT = 10, padB = 46;
+    var gridW = A * Cx;
+    var W = padL + gridW + padR, H = padT + gridH + padB;
+    var x0 = padL, yBase = padT + gridH;
+    function sx(a) { return x0 + a * Cx; }
+    function sy(t) { return yBase - t * Cy; }
+
+    // installment boundaries (near-equal, first `rem` are one atom larger)
+    var b = Math.floor(A / N), rem = A % N, cuts = [0];
+    for (var i = 0; i < N; i++) cuts.push(cuts[i] + b + (i < rem ? 1 : 0));
+
+    var g = [];
+
+    // alternating installment bands
+    for (i = 0; i < N; i++) {
+      g.push('<rect x="' + sx(cuts[i]) + '" y="' + padT + '" width="' + ((cuts[i + 1] - cuts[i]) * Cx) +
+             '" height="' + gridH + '" fill="currentColor" fill-opacity="' + (i % 2 ? 0.07 : 0.03) + '"/>');
+    }
+
+    // grid
+    for (var c = 0; c <= A; c++) {
+      g.push('<line x1="' + sx(c) + '" y1="' + padT + '" x2="' + sx(c) + '" y2="' + yBase +
+             '" stroke="currentColor" stroke-opacity="0.12"/>');
+    }
+    for (var rr = 0; rr <= rows; rr++) {
+      g.push('<line x1="' + x0 + '" y1="' + sy(rr) + '" x2="' + sx(A) + '" y2="' + sy(rr) +
+             '" stroke="currentColor" stroke-opacity="' + (rr <= T ? 0.22 : 0.12) + '"/>');
+      if (rr <= T) g.push('<text x="' + (x0 - 5) + '" y="' + (sy(rr) + 4) +
+             '" text-anchor="end" fill="currentColor">' + rr + '</text>');
+    }
+
+    // one lit pixel per atom, on the tax level the staircase occupies there,
+    // coloured net (blue) where the line stayed flat, tax (orange) where it rose
+    for (var j = 1; j <= A; j++) {
+      var hc = step(j), hp = step(j - 1);
+      var isTax = hc > hp;
+      var rowIdx = clamp(isTax ? hc - 1 : hc, 0, rows - 1);
+      var cx = sx(j - 1), cy = sy(rowIdx + 1);
+      g.push('<rect x="' + cx + '" y="' + cy + '" width="' + Cx + '" height="' + Cy +
+             '" fill="' + (isTax ? 'var(--pwb-tax)' : 'var(--pwb-net)') + '" fill-opacity="0.9"/>');
+      g.push('<circle cx="' + (cx + Cx / 2).toFixed(1) + '" cy="' + (cy + Cy / 2).toFixed(1) +
+             '" r="2" fill="var(--pwb-line)" fill-opacity="0.3"/>');
+    }
+
+    // when rounding, trace both staircases so the climb above the line is obvious
+    if (round) {
+      var d = 'M ' + sx(0) + ' ' + sy(step(0));
+      for (j = 1; j <= A; j++) d += ' L ' + sx(j) + ' ' + sy(step(j - 1)) + ' L ' + sx(j) + ' ' + sy(step(j));
+      g.push('<path d="' + d + '" fill="none" stroke="var(--pwb-bad)" stroke-width="2"/>');
+      var df = 'M ' + sx(0) + ' ' + sy(stepFloor(0));
+      for (j = 1; j <= A; j++) df += ' L ' + sx(j) + ' ' + sy(stepFloor(j - 1)) + ' L ' + sx(j) + ' ' + sy(stepFloor(j));
+      g.push('<path d="' + df + '" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.8"/>');
+    }
+
+    // the true proportional line
+    g.push('<line x1="' + sx(0) + '" y1="' + sy(0) + '" x2="' + sx(A) + '" y2="' + sy(T) +
+           '" stroke="var(--pwb-line)" stroke-width="2.5" stroke-opacity="0.85"/>');
+
+    // dividers + per-installment net/tax split, printed below the grid
+    var taxList = [];
+    for (i = 0; i < N; i++) {
+      var a0 = cuts[i], a1 = cuts[i + 1];
+      var tk = stepFloor(a1) - stepFloor(a0);       // the fair share is always the floor split
+      taxList.push(tk);
+      if (i > 0) g.push('<line x1="' + sx(a0) + '" y1="' + padT + '" x2="' + sx(a0) + '" y2="' + yBase +
+                        '" stroke="currentColor" stroke-opacity="0.4"/>');
+      var mid = sx((a0 + a1) / 2);
+      g.push('<text x="' + mid + '" y="' + (yBase + 17) + '" text-anchor="middle" fill="currentColor">' +
+             (a1 - a0 - tk) + ' + <tspan fill="var(--pwb-tax)" font-weight="700">' + tk + '</tspan></text>');
+    }
+
+    // fixed-size axis caption
+    g.push('<text x="' + (x0 + gridW / 2) + '" y="' + (H - 8) +
+           '" text-anchor="middle" fill="currentColor">36 atoms of the bill &nbsp;&middot;&nbsp; ' + N +
+           ' installment' + (N === 1 ? '' : 's') + ', each shown as net + tax &rarr;</text>');
+
+    $svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    $svg.setAttribute('width', W);
+    $svg.setAttribute('height', H);
+    $svg.innerHTML = g.join('');
+
+    // caption
+    if (T === 0) {
+      $cap.innerHTML = 'At <b>' + rate + '%</b> the 36-atom bill does not contain a whole tax atom &mdash; ' +
+        'the floored running total never leaves zero, so every installment is charged nothing. ' +
+        'Nudge the rate up and the first tax atom appears.';
+      return;
+    }
+    if (round) {
+      var lead = 0, leadAt = 0;
+      for (j = 1; j <= A; j++) {
+        var ahead = step(j) - j * T / A;
+        if (ahead > lead) { lead = ahead; leadAt = j; }
+      }
+      var li = 0;
+      for (i = 0; i < N; i++) if (leadAt > cuts[i]) li = i + 1;
+      $cap.innerHTML = 'Rounding lets the red staircase climb <b>' + lead.toFixed(2) +
+        '</b> of an atom above the true line, around installment ' + li +
+        '. For that stretch the running tax is ahead of what has been paid &mdash; a receipt promising tax the customer has not reached yet. The books still balance at the end, but the middle of the story is wrong. Flooring (dashed) never crosses above the line.';
+    } else {
+      var sum = taxList.reduce(function (p, q) { return p + q; }, 0);
+      var spread = T === 1
+        ? 'Bresenham&rsquo;s rule puts that one atom in the last installment &mdash; the floored line does not reach a whole tax atom until the bill is fully paid'
+        : 'Bresenham&rsquo;s line spreads them across the installments as <b>' + taxList.join(' &middot; ') +
+          '</b> &mdash; never differing by more than one, summing to exactly ' + sum;
+      $cap.innerHTML = 'At <b>' + rate + '%</b> the 36-atom bill contains <b>' + T +
+        '</b> tax atom' + (T === 1 ? '' : 's') + '. ' + spread +
+        '. The staircase stays on or below the true line the whole way and only meets it at the last atom, so no installment is charged tax before it is paid.';
+    }
+  }
+
+  ['input', 'change'].forEach(function (ev) {
+    $n.addEventListener(ev, update);
+    $r.addEventListener(ev, update);
+    $round.addEventListener(ev, update);
+  });
+  update();
+})();
+</script>
