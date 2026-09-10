@@ -1,0 +1,144 @@
+/*
+ * Scoped build of samegame.css for embedding the game inside a blog post.
+ * Same ball gradients, board and scoreboard styling as the standalone game
+ * (public/samegame/samegame.css); every rule is confined to .samegame-embed so
+ * it cannot leak into the surrounding page, and the blog's default table styles
+ * are reset on the board.
+ */
+
+.samegame-embed {
+  --ball-size: 30px;
+  --ball-margin: 2px;
+
+  background-color: rgb(79 67 39);
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 1.5rem 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+/* The board and the game-over overlay share this positioning context so the
+   message can sit dead-centre on the board without affecting the layout. */
+.samegame-embed .sg-board-wrap {
+  position: relative;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.samegame-embed #sg-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: max-content;
+  max-width: calc(100% - 20px);
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 2px solid #cf812c;
+  background-color: rgba(28, 23, 13, 0.94);
+  color: white;
+  font-weight: bold;
+  line-height: 1.45;
+}
+
+.samegame-embed .sg-again {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  font-weight: bold;
+  color: #f4a259;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.samegame-embed .sg-again:hover { color: #ffcf9e }
+
+.samegame-embed #scoreboard {
+  display: grid;
+  grid-gap: 10px;
+  grid-auto-columns: minmax(0, 1fr);
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.samegame-embed #scoreboard div {
+  text-align: center;
+  grid-row: 1;
+  border-radius: 0px 0px 10px 10px;
+  border: 2px solid #cf812c;
+  border-top: 0;
+  /* 4px (not the standalone's 5px) keeps the scoreboard the same width as the
+     12-column board, so the rounded corners meet with no seam. */
+  padding: 4px;
+}
+
+.samegame-embed #scoreboard span {
+  display: block;
+}
+
+.samegame-embed #gameboard {
+  border-radius: 10px;
+  border: 2px solid #cf812c;
+  border-spacing: 0;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Reset the blog's default table styling (assets/css/beautifuljekyll.css). */
+.samegame-embed #gameboard tr,
+.samegame-embed #gameboard tr:nth-child(2n) {
+  border: 0;
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.samegame-embed #gameboard td {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.samegame-embed .cell {
+  display: flex;
+}
+
+.samegame-embed .ball {
+  display: block;
+  width: var(--ball-size);
+  height: var(--ball-size);
+  margin: var(--ball-margin);
+  border-radius: 50%;
+}
+
+.samegame-embed .on {
+  width: calc((var(--ball-size) + 2 * var(--ball-margin)) * 0.6);
+  height: calc((var(--ball-size) + 2 * var(--ball-margin))* 0.6);
+  margin: calc((var(--ball-size) + 2 * var(--ball-margin)) * 0.2);
+}
+
+.samegame-embed .blue {
+  background: radial-gradient(circle at 33% 27%, white 0px, rgb(0 99 255) 17%, rgb(1 0 67) 75%, rgb(0 99 255) 100%);
+}
+.samegame-embed .yellow {
+  background: radial-gradient(circle at 33% 27%, white 2px, rgb(255 238 0) 27%, rgb(90, 90, 0) 75%, rgb(255 238 0) 100%);
+}
+.samegame-embed .red {
+  background: radial-gradient(circle at 33% 27%, white 0px, rgb(255 70 94) 17%, rgb(90, 0, 0) 75%, rgb(255 70 94) 100%);
+}
+.samegame-embed .green {
+  background: radial-gradient(circle at 33% 27%, white 0px, rgb(25, 206, 25) 17%, rgb(0, 90, 0) 75%, rgb(25, 206, 25) 100%);
+}
+
+/* Keep the 12-column board on screen on narrow phones. */
+@media (max-width: 575px) {
+  .samegame-embed {
+    --ball-size: 20px;
+    padding: 10px;
+  }
+}
