@@ -1,0 +1,276 @@
+<style>
+.pw-meter{
+  --pw-border:#d0d7de;--pw-bg:#f6f8fa;--pw-panel:#fff;--pw-ink:#1f2328;--pw-mut:#656d76;
+  --pw-good:#1a7f37;--pw-bad:#cf222e;--pw-goodbg:rgba(26,127,55,.09);--pw-badbg:rgba(207,34,46,.10);
+  border:1px solid var(--pw-border);border-radius:10px;padding:1.1rem 1.2rem 1.3rem;margin:1.8rem 0;
+  background:var(--pw-bg);color:var(--pw-ink);font-size:.95rem;line-height:1.5;
+}
+body.page-dark-mode .pw-meter{
+  --pw-border:#3d444d;--pw-bg:#22272e;--pw-panel:#2d333b;--pw-ink:#e4e6eb;--pw-mut:#9aa4af;
+  --pw-good:#3fb950;--pw-bad:#ff7b72;--pw-goodbg:rgba(63,185,80,.14);--pw-badbg:rgba(255,123,114,.14);
+}
+.pw-meter h4{margin:0 0 .3rem;font-size:1.05rem}
+.pw-meter__head p{margin:0 0 .9rem;color:var(--pw-mut);font-size:.85rem}
+.pw-meter__controls{display:flex;flex-wrap:wrap;gap:.9rem 1.5rem;align-items:flex-end}
+.pw-meter__controls label{display:flex;flex-direction:column;gap:.35rem;font-weight:700;font-size:.72rem;
+  color:var(--pw-mut);text-transform:uppercase;letter-spacing:.04em}
+.pw-meter .pw-input{display:inline-flex;align-items:center;background:var(--pw-panel);border:1px solid var(--pw-border);
+  border-radius:6px;padding:0 .5rem}
+.pw-meter .pw-input span{color:var(--pw-mut);font-weight:400}
+.pw-meter .pw-input input{border:0;background:transparent;color:var(--pw-ink);width:6rem;padding:.42rem .3rem;
+  font-size:.95rem;outline:none}
+.pw-meter input[type=range]{width:11rem;accent-color:var(--link-col,#008AFF)}
+.pw-meter output{font-weight:700;color:var(--pw-ink);font-size:.95rem}
+.pw-meter__toggle{display:flex;gap:.5rem;align-items:flex-start;margin:.95rem 0 0;font-size:.8rem;
+  color:var(--pw-mut);cursor:pointer;max-width:46rem}
+.pw-meter__toggle input{margin-top:.15rem;accent-color:var(--link-col,#008AFF)}
+.pw-meter__headline{margin:.95rem 0 .7rem;font-size:.95rem;color:var(--pw-ink)}
+.pw-meter__headline b{color:var(--pw-ink)}
+.pw-meter__tablewrap{overflow-x:auto}
+.pw-meter__table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.84rem}
+.pw-meter__table th,.pw-meter__table td{padding:.34rem .55rem;text-align:right;border-bottom:1px solid var(--pw-border);white-space:nowrap}
+.pw-meter__table thead th{color:var(--pw-mut);font-size:.68rem;text-transform:uppercase;letter-spacing:.03em}
+.pw-meter__table thead tr:first-child th{border-bottom:0;padding-bottom:.1rem}
+.pw-meter__table td:first-child,.pw-meter__table th:first-child{text-align:left;color:var(--pw-mut)}
+.pw-meter__table tbody td:nth-child(5),.pw-meter__table tbody td:nth-child(6){background:var(--pw-goodbg)}
+.pw-meter__table tfoot td{font-weight:700;border-top:2px solid var(--pw-border);border-bottom:0}
+.pw-meter__table tfoot td:nth-child(5),.pw-meter__table tfoot td:nth-child(6){background:var(--pw-goodbg)}
+.pw-meter .pw-recon{color:var(--pw-good)}
+.pw-meter .pw-drift{color:var(--pw-bad)}
+.pw-meter .pw-plug-cell{background:var(--pw-badbg) !important;color:var(--pw-bad);font-weight:700}
+.pw-meter__strip{margin:1.05rem 0 .2rem}
+.pw-meter__striptitle{font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:var(--pw-mut);margin-bottom:.35rem}
+.pw-meter__strip svg{width:100%;height:78px;display:block;color:var(--pw-mut)}
+.pw-meter__note{font-size:.77rem;color:var(--pw-mut);margin:.65rem 0 0}
+.pw-meter__note code{font-size:.9em;background:var(--pw-panel);padding:.05rem .25rem;border-radius:4px}
+@media (max-width:560px){
+  .pw-meter input[type=range]{width:8.5rem}
+  .pw-meter .pw-input input{width:4.4rem}
+}
+</style>
+
+<div class="pw-meter" id="pw-meter">
+  <div class="pw-meter__head">
+    <h4>Tax meter</h4>
+    <p>A tax-inclusive bill, paid in equal installments. Each installment is split two ways: the everyday accounting-software approach of rounding its tax on its own, and PennyWise&rsquo;s running floor. Watch the totals reconcile, or not.</p>
+  </div>
+
+  <div class="pw-meter__controls">
+    <label>Bill total
+      <span class="pw-input"><span>$</span><input type="number" id="pw-total" value="1200.00" min="0.01" max="1000000" step="0.01" inputmode="decimal"></span>
+    </label>
+    <label>Tax rate
+      <span class="pw-input"><input type="number" id="pw-rate" value="7.5" min="0" max="100" step="0.05" inputmode="decimal"><span>%</span></span>
+    </label>
+    <label>Installments &nbsp;<output id="pw-n-out">12</output>
+      <input type="range" id="pw-n" min="2" max="12" value="12">
+    </label>
+  </div>
+
+  <label class="pw-meter__toggle">
+    <input type="checkbox" id="pw-plug">
+    Force the books to balance by dropping the leftover onto the last installment &mdash; what most accounting software does, usually without saying so.
+  </label>
+
+  <p class="pw-meter__headline" id="pw-headline" aria-live="polite"></p>
+
+  <div class="pw-meter__tablewrap">
+    <table class="pw-meter__table">
+      <thead>
+        <tr><th></th><th></th><th colspan="2">Standard rounding</th><th colspan="2">PennyWise</th><th></th></tr>
+        <tr><th>#</th><th>Installment</th><th>net</th><th>tax</th><th>net</th><th>tax</th><th>&Delta; tax</th></tr>
+      </thead>
+      <tbody id="pw-rows"></tbody>
+      <tfoot id="pw-foot"></tfoot>
+    </table>
+  </div>
+
+  <div class="pw-meter__strip">
+    <div class="pw-meter__striptitle">Standard method&rsquo;s running tax error &mdash; above the line it has collected too much, below, too little</div>
+    <svg id="pw-svg" viewBox="0 0 400 78" role="img" aria-label="Cumulative rounding error, in cents, after each installment"></svg>
+  </div>
+
+  <p class="pw-meter__note">&ldquo;Standard rounding&rdquo; here is each installment&rsquo;s tax taken on its own as <code>round(installment &times; rate &divide; (1 + rate))</code>, then netted &mdash; exactly what a receipt line shows. Across a plan the pieces rarely add back to the invoice. PennyWise reads one floored running total instead, so the installments always sum to the bill and no receipt is ever off by more than a cent.</p>
+  <noscript><p class="pw-meter__note">This widget needs JavaScript. The worked example just above walks through the same calculation by hand.</p></noscript>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('pw-meter');
+  if (!root || typeof BigInt === 'undefined') return;
+
+  var $total = document.getElementById('pw-total');
+  var $rate  = document.getElementById('pw-rate');
+  var $n     = document.getElementById('pw-n');
+  var $nOut  = document.getElementById('pw-n-out');
+  var $plug  = document.getElementById('pw-plug');
+  var $head  = document.getElementById('pw-headline');
+  var $rows  = document.getElementById('pw-rows');
+  var $foot  = document.getElementById('pw-foot');
+  var $svg   = document.getElementById('pw-svg');
+
+  function money(a) {                       // a: BigInt >= 0  ->  "$1,234.05"
+    var s = a.toString();
+    while (s.length < 3) s = '0' + s;
+    var d = s.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + d + '.' + s.slice(-2);
+  }
+  function signed(a) {                      // a: BigInt (any sign)
+    if (a === 0n) return '$0.00';
+    return (a > 0n ? '+' : '−') + money(a > 0n ? a : -a);
+  }
+  function parseAtoms(v) {
+    var f = parseFloat(v);
+    if (!isFinite(f) || f < 0) return null;
+    return BigInt(Math.round(f * 100));
+  }
+  function parseRateScaled(v) {             // returns ratePct * 1000 as BigInt
+    var f = parseFloat(v);
+    if (!isFinite(f) || f < 0) return null;
+    return BigInt(Math.round(f * 1000));
+  }
+  function cell(text, cls) {
+    var td = document.createElement('td');
+    td.textContent = text;
+    if (cls) td.className = cls;
+    return td;
+  }
+
+  function update() {
+    var totalAtoms = parseAtoms($total.value);
+    var rateScaled = parseRateScaled($rate.value);
+    var N = parseInt($n.value, 10);
+    $nOut.textContent = N;
+
+    if (totalAtoms === null || totalAtoms === 0n || rateScaled === null) {
+      $head.textContent = 'Enter a positive bill total and tax rate.';
+      $rows.innerHTML = ''; $foot.innerHTML = ''; $svg.innerHTML = '';
+      return;
+    }
+
+    // Cap installments so none is empty.
+    var cap = Number(totalAtoms);
+    if (cap < N) N = Math.max(2, cap);
+
+    var taxNum = rateScaled;                    // ratePct * 1000
+    var taxDen = 100000n + rateScaled;          // (100 + ratePct) * 1000
+    var totalTax = totalAtoms * taxNum / taxDen;  // floor, >= 0
+    var totalNet = totalAtoms - totalTax;
+
+    // Equal-ish installments: the first `rem` are one atom larger.
+    var Nb = BigInt(N);
+    var base = totalAtoms / Nb, rem = totalAtoms % Nb;
+    var gross = [];
+    for (var i = 0; i < N; i++) gross.push(base + (BigInt(i) < rem ? 1n : 0n));
+
+    // PennyWise: difference of two floored running totals.
+    var pw = [], cum = 0n, prev = 0n, pwCum = [];
+    for (i = 0; i < N; i++) {
+      cum += gross[i];
+      var through = cum * totalTax / totalAtoms;
+      pw.push(through - prev);
+      pwCum.push(through);
+      prev = through;
+    }
+
+    // Standard: round each installment's tax independently.
+    var stdRaw = [];
+    for (i = 0; i < N; i++) {
+      var q = gross[i] * taxNum, fl = q / taxDen, r = q % taxDen;
+      stdRaw.push((2n * r >= taxDen) ? fl + 1n : fl);
+    }
+    var std = stdRaw.slice();
+    var stdRawSum = stdRaw.reduce(function (a, b) { return a + b; }, 0n);
+    var drift = stdRawSum - totalTax;
+
+    var plug = $plug.checked;
+    if (plug) {
+      var head = stdRaw.slice(0, N - 1).reduce(function (a, b) { return a + b; }, 0n);
+      std[N - 1] = totalTax - head;
+    }
+    var stdSum = std.reduce(function (a, b) { return a + b; }, 0n);
+
+    // Rows
+    $rows.innerHTML = '';
+    for (i = 0; i < N; i++) {
+      var tr = document.createElement('tr');
+      tr.appendChild(cell(String(i + 1)));
+      tr.appendChild(cell(money(gross[i])));
+      tr.appendChild(cell(money(gross[i] - std[i])));
+      var plugged = plug && i === N - 1 && std[i] !== stdRaw[i];
+      var taxTd = cell(money(std[i]), plugged ? 'pw-plug-cell' : null);
+      if (plugged) taxTd.title = 'Its own amount implies ' + money(stdRaw[i] < 0n ? -stdRaw[i] : stdRaw[i]) + '; adjusted by ' + signed(std[i] - stdRaw[i]) + ' to make the books balance.';
+      tr.appendChild(taxTd);
+      tr.appendChild(cell(money(gross[i] - pw[i])));
+      tr.appendChild(cell(money(pw[i])));
+      tr.appendChild(cell(signed(pw[i] - std[i])));
+      $rows.appendChild(tr);
+    }
+
+    // Footer
+    $foot.innerHTML = '';
+    var stdReconciles = (stdSum === totalTax);
+    var ft = document.createElement('tr');
+    ft.appendChild(cell(''));
+    ft.appendChild(cell(money(totalAtoms)));
+    ft.appendChild(cell(money(totalAtoms - stdSum)));
+    var stdFootTax = cell(money(stdSum), stdReconciles ? 'pw-recon' : 'pw-drift');
+    stdFootTax.title = stdReconciles ? 'Matches the invoice.' : signed(stdSum - totalTax) + ' against the ' + money(totalTax) + ' on the invoice.';
+    ft.appendChild(stdFootTax);
+    ft.appendChild(cell(money(totalNet), 'pw-recon'));
+    ft.appendChild(cell(money(totalTax), 'pw-recon'));
+    var deltaFoot = cell(signed(totalTax - stdSum), stdReconciles ? 'pw-recon' : 'pw-drift');
+    deltaFoot.title = 'PennyWise tax total minus Standard tax total.';
+    ft.appendChild(deltaFoot);
+    $foot.appendChild(ft);
+
+    // Headline
+    if (!plug) {
+      if (drift === 0n) {
+        $head.innerHTML = 'For these numbers the round-each-installment method happens to land exactly on the invoice. Nudge the total, the rate, or the installment count and it drifts.';
+      } else {
+        $head.innerHTML = 'The round-each-installment column comes to <b class="pw-drift">' + money(stdRawSum) + '</b> of tax, ' + signed(drift) + ' against the ' + money(totalTax) + ' the invoice actually contains. PennyWise distributes exactly ' + money(totalTax) + ', <b class="pw-recon">every time</b>.';
+      }
+    } else {
+      var plugDelta = std[N - 1] - stdRaw[N - 1];
+      if (plugDelta === 0n) {
+        $head.innerHTML = 'Here the leftover is zero &mdash; the rounded installments already summed to the invoice. PennyWise reaches the same place without a correction step.';
+      } else {
+        $head.innerHTML = 'The books balance, but only because installment #' + N + '&rsquo;s tax was quietly moved by <b class="pw-drift">' + signed(plugDelta) + '</b> to soak up the rounding. PennyWise spreads that same difference so <b class="pw-recon">no installment is ever off by more than a cent</b>.';
+      }
+    }
+
+    // Running-error strip: standard's cumulative tax minus PennyWise's, cent by cent.
+    var W = 400, n = N, top = 8, bot = 68;
+    var errs = [], acc = 0n;
+    for (i = 0; i < n; i++) {
+      acc += std[i];
+      errs.push(Number(acc - pwCum[i]));
+    }
+    var maxV = Math.max.apply(null, errs.concat([0]));
+    var minV = Math.min.apply(null, errs.concat([0]));
+    var span = (maxV - minV) || 1;
+    var zeroY = top + (maxV / span) * (bot - top);
+    function yFor(v) { return top + ((maxV - v) / span) * (bot - top); }
+    var slot = W / n, gap = Math.min(6, slot * 0.3), bw = Math.min(30, slot - gap);
+    var parts = ['<line x1="0" y1="' + zeroY.toFixed(1) + '" x2="' + W + '" y2="' + zeroY.toFixed(1) + '" stroke="currentColor" stroke-opacity="0.55"/>'];
+    for (i = 0; i < n; i++) {
+      var v = errs[i];
+      var x = i * slot + (slot - bw) / 2;
+      var yv = yFor(v);
+      var y = Math.min(yv, zeroY), h = Math.max(Math.abs(yv - zeroY), v === 0 ? 0 : 1.5);
+      var fill = v === 0 ? 'var(--pw-good)' : 'var(--pw-bad)';
+      parts.push('<rect x="' + x.toFixed(1) + '" y="' + (v === 0 ? (zeroY - 1).toFixed(1) : y.toFixed(1)) + '" width="' + bw.toFixed(1) + '" height="' + (v === 0 ? 2 : h.toFixed(1)) + '" fill="' + fill + '"><title>after installment ' + (i + 1) + ': ' + signed(BigInt(v)) + '</title></rect>');
+    }
+    $svg.innerHTML = parts.join('');
+  }
+
+  ['input', 'change'].forEach(function (ev) {
+    $total.addEventListener(ev, update);
+    $rate.addEventListener(ev, update);
+    $n.addEventListener(ev, update);
+    $plug.addEventListener(ev, update);
+  });
+  update();
+})();
+</script>
