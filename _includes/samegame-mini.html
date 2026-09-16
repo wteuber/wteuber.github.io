@@ -36,7 +36,7 @@
     // Replace the standalone game's blocking alert with a note centred on the
     // board. "Try again!" reuses the game's own restart (the hidden control).
     sg.gameOver = function (total) {
-      message.textContent = 'Game over — you scored ' + total +
+      message.textContent = 'Game over! You scored ' + total +
         (total === 1 ? ' point. ' : ' points. ');
       var again = document.createElement('button');
       again.type = 'button';

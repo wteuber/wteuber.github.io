@@ -36,7 +36,7 @@ body.page-dark-mode .pw-bres{
 <div class="pw-bres" id="pw-bres">
   <div class="pw-bres__head">
     <h4>The tax staircase is a Bresenham line</h4>
-    <p>A 36-atom bill, paid in equal installments. Laid out atom by atom along the bottom, the tax owed rises as a straight line to the right. The floored running total lights one whole pixel per atom, kept as close to that line as the grid allows &mdash; <b style="color:var(--pwb-net)">blue</b> where the atom is net, <b style="color:var(--pwb-tax)">orange</b> where it is tax. The orange pixels land by the same rule a screen uses to draw a slanted line. (The vertical axis is stretched so a shallow real-world rate stays legible.)</p>
+    <p>A 36-atom bill, paid in equal installments. Laid out atom by atom along the bottom, the tax owed rises as a straight line to the right. The floored running total lights one whole pixel per atom, kept as close to that line as the grid allows: <b style="color:var(--pwb-net)">blue</b> where the atom is net, <b style="color:var(--pwb-tax)">orange</b> where it is tax. The orange pixels land by the same rule a screen uses to draw a slanted line. (The vertical axis is stretched so a shallow real-world rate stays legible.)</p>
   </div>
 
   <div class="pw-bres__controls">
@@ -50,7 +50,7 @@ body.page-dark-mode .pw-bres{
 
   <label class="pw-bres__toggle">
     <input type="checkbox" id="pwb-round">
-    Round each atom to the nearest tax level instead of flooring &mdash; watch the staircase climb above the true line.
+    Round each atom to the nearest tax level instead of flooring, and watch the staircase climb above the true line.
   </label>
 
   <div class="pw-bres__legend">
@@ -179,8 +179,8 @@ body.page-dark-mode .pw-bres{
 
     // caption
     if (T === 0) {
-      $cap.innerHTML = 'At <b>' + rate + '%</b> the 36-atom bill does not contain a whole tax atom &mdash; ' +
-        'the floored running total never leaves zero, so every installment is charged nothing. ' +
+      $cap.innerHTML = 'At <b>' + rate + '%</b> the 36-atom bill does not contain a whole tax atom. ' +
+        'The floored running total never leaves zero, so every installment is charged nothing. ' +
         'Nudge the rate up and the first tax atom appears.';
       return;
     }
@@ -194,13 +194,13 @@ body.page-dark-mode .pw-bres{
       for (i = 0; i < N; i++) if (leadAt > cuts[i]) li = i + 1;
       $cap.innerHTML = 'Rounding lets the red staircase climb <b>' + lead.toFixed(2) +
         '</b> of an atom above the true line, around installment ' + li +
-        '. For that stretch the running tax is ahead of what has been paid &mdash; a receipt promising tax the customer has not reached yet. The books still balance at the end, but the middle of the story is wrong. Flooring (dashed) never crosses above the line.';
+        '. For that stretch the running tax is ahead of what has been paid, a receipt promising tax the customer has not reached yet. The books still balance at the end, but the middle of the story is wrong. Flooring (dashed) never crosses above the line.';
     } else {
       var sum = taxList.reduce(function (p, q) { return p + q; }, 0);
       var spread = T === 1
-        ? 'Bresenham&rsquo;s rule puts that one atom in the last installment &mdash; the floored line does not reach a whole tax atom until the bill is fully paid'
+        ? 'Bresenham&rsquo;s rule puts that one atom in the last installment; the floored line does not reach a whole tax atom until the bill is fully paid'
         : 'Bresenham&rsquo;s line spreads them across the installments as <b>' + taxList.join(' &middot; ') +
-          '</b> &mdash; never differing by more than one, summing to exactly ' + sum;
+          '</b>, never differing by more than one, summing to exactly ' + sum;
       $cap.innerHTML = 'At <b>' + rate + '%</b> the 36-atom bill contains <b>' + T +
         '</b> tax atom' + (T === 1 ? '' : 's') + '. ' + spread +
         '. The staircase stays on or below the true line the whole way and only meets it at the last atom, so no installment is charged tax before it is paid.';
