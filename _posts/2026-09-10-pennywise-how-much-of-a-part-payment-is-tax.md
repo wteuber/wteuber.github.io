@@ -47,11 +47,12 @@ Before the fix, get a feel for the size of it. Put in a bill total, a tax rate, 
 
 On any one bill the standard method is rarely more than a few cents out. Multiply that by a year of invoices, or by every seller on a marketplace, and it is the reconciliation line nobody can account for. The next three sections are how PennyWise gets the right-hand column to reconcile every time.
 
-## Part 1: count in atoms, not in whole-currency units
+## Part 1: count in atomic units, not in whole-currency units
 
-The first move is the one every "don't store money in a float" article tells you to make. Pick the smallest unit the currency has, an **atom**, and do all the arithmetic in whole numbers of atoms.
+The first move is the one every "don't store money in a float" article tells you to make. Pick a fixed, indivisible unit, an **atom**, and do all the arithmetic in whole numbers of atoms. The atom is not necessarily the smallest denomination anyone can hand over; it is the smallest unit *your system* refuses to split any further. It just has to be small enough, and fixed for the life of the calculation, that every amount you will ever see divides into a whole number of them.
 
 - A typical currency: the atom is one cent. `10.70` is `1070`.
+- A banking system that needs sub-cent precision for interest or fees: the atom is a hundredth of a cent. `10.70` is `107000`, and a rate applied mid-calculation can land on `0.0001` without being forced to round early.
 - Bitcoin: the atom is one satoshi, `0.00000001` BTC. One bitcoin is `100_000_000`.
 - A currency with no minor unit: the atom is one whole unit.
 
