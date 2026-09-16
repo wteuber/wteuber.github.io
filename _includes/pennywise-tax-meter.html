@@ -69,7 +69,7 @@ body.page-dark-mode .pw-meter{
 
   <label class="pw-meter__toggle">
     <input type="checkbox" id="pw-plug">
-    Force the books to balance by dropping the leftover onto the last installment &mdash; what most accounting software does, usually without saying so.
+    Force the books to balance by dropping the leftover onto the last installment. That is what most accounting software does, usually without saying so.
   </label>
 
   <p class="pw-meter__headline" id="pw-headline" aria-live="polite"></p>
@@ -86,11 +86,11 @@ body.page-dark-mode .pw-meter{
   </div>
 
   <div class="pw-meter__strip">
-    <div class="pw-meter__striptitle">Standard method&rsquo;s running tax error &mdash; above the line it has collected too much, below, too little</div>
+    <div class="pw-meter__striptitle">Standard method&rsquo;s running tax error: above the line it has collected too much, below, too little</div>
     <svg id="pw-svg" viewBox="0 0 400 78" role="img" aria-label="Cumulative rounding error, in cents, after each installment"></svg>
   </div>
 
-  <p class="pw-meter__note">&ldquo;Standard rounding&rdquo; here is each installment&rsquo;s tax taken on its own as <code>round(installment &times; rate &divide; (1 + rate))</code>, then netted &mdash; exactly what a receipt line shows. Across a plan the pieces rarely add back to the invoice. PennyWise reads one floored running total instead, so the installments always sum to the bill and no receipt is ever off by more than a cent.</p>
+  <p class="pw-meter__note">&ldquo;Standard rounding&rdquo; here is each installment&rsquo;s tax taken on its own as <code>round(installment &times; rate &divide; (1 + rate))</code>, then netted: exactly what a receipt line shows. Across a plan the pieces rarely add back to the invoice. PennyWise reads one floored running total instead, so the installments always sum to the bill and no receipt is ever off by more than a cent.</p>
   <noscript><p class="pw-meter__note">This widget needs JavaScript. The worked example just above walks through the same calculation by hand.</p></noscript>
 </div>
 
@@ -234,7 +234,7 @@ body.page-dark-mode .pw-meter{
     } else {
       var plugDelta = std[N - 1] - stdRaw[N - 1];
       if (plugDelta === 0n) {
-        $head.innerHTML = 'Here the leftover is zero &mdash; the rounded installments already summed to the invoice. PennyWise reaches the same place without a correction step.';
+        $head.innerHTML = 'Here the leftover is zero. The rounded installments already summed to the invoice, and PennyWise reaches the same place without a correction step.';
       } else {
         $head.innerHTML = 'The books balance, but only because installment #' + N + '&rsquo;s tax was quietly moved by <b class="pw-drift">' + signed(plugDelta) + '</b> to soak up the rounding. PennyWise spreads that same difference so <b class="pw-recon">no installment is ever off by more than a cent</b>.';
       }
