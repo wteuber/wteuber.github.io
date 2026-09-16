@@ -20,12 +20,16 @@
   overflow-x: auto;
 }
 
+/* Sized by the board alone, so the scoreboard below can match its width. */
+.samegame-embed .sg-frame {
+  width: fit-content;
+  margin: 0 auto;
+}
+
 /* The board and the game-over overlay share this positioning context so the
    message can sit dead-centre on the board without affecting the layout. */
 .samegame-embed .sg-board-wrap {
   position: relative;
-  width: fit-content;
-  margin: 0 auto;
 }
 
 .samegame-embed #sg-message {
@@ -62,8 +66,12 @@
   display: grid;
   grid-gap: 10px;
   grid-auto-columns: minmax(0, 1fr);
-  width: fit-content;
-  margin: 0 auto;
+  /* Exactly the board's width: width 0 keeps the labels from widening the
+     frame, min-width 100% stretches the grid back out to the board's edges. */
+  width: 0;
+  min-width: 100%;
+  font-size: 16px;
+  line-height: 1.4;
 }
 
 .samegame-embed #scoreboard div {
@@ -72,17 +80,18 @@
   border-radius: 0px 0px 10px 10px;
   border: 2px solid #cf812c;
   border-top: 0;
-  /* 4px (not the standalone's 5px) keeps the scoreboard the same width as the
-     12-column board, so the rounded corners meet with no seam. */
-  padding: 4px;
+  padding: 4px 0;
+  white-space: nowrap;
 }
 
 .samegame-embed #scoreboard span {
   display: block;
 }
 
+/* Square bottom corners let the board's side borders run straight into the
+   outer scoreboard boxes. */
 .samegame-embed #gameboard {
-  border-radius: 10px;
+  border-radius: 10px 10px 0 0;
   border: 2px solid #cf812c;
   border-spacing: 0;
   margin: 0 auto;
@@ -140,5 +149,10 @@
   .samegame-embed {
     --ball-size: 20px;
     padding: 10px;
+  }
+
+  .samegame-embed #scoreboard {
+    grid-gap: 6px;
+    font-size: 12px;
   }
 }
