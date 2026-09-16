@@ -9,14 +9,14 @@ tags: [blog, entrepreneurship, mindset]
 author: Wolfgang Teuber
 ---
 
-Are you thinking about leaving a stable job to build something meaningful? If so, you’re not alone - and you’re not crazy. I recently made the leap from corporate life to starting a business that helps conscious consumers discover high-quality, hand-crafted goods. It’s been exhilarating, terrifying, and most of all eye-opening.
+Every piece I sell is hand-crafted in Europe. That’s partly about values: I want to help European makers succeed and put quality, made-to-last products in front of people who’d rather pay for something that lasts than replace a cheaper, poorer-quality alternative. It’s also practical: staying within Europe means one shipping zone and one set of tax rules to figure out, rather than a different set for every country I might otherwise source from. I left my corporate job in August 2025 to build this business, and it’s been exhilarating, terrifying, and eye-opening in roughly equal measure.
 
-**Why should you care?** Because if you’re considering a similar path, or even just a big change, the emotional rollercoaster is real. Here’s what I wish I’d known before I started, and what might help you on your own journey.
+I’m writing this a couple of months in, before I’ve sold a single product. Here’s what I’ve learned so far.
 
 
 ## The Emotional Cycle of Change: More Than a Buzzword
 
-We all love the idea of transformation, but the reality is messy. The “Emotional Cycle of Change” isn’t just a diagram. It’s a lived experience. Here’s how it plays out for me:
+We all love the idea of transformation, but the reality is messier. Here’s how the “Emotional Cycle of Change” has played out for me so far:
 
 * **Uninformed Optimism:** The honeymoon phase - and honestly, that’s where I am right now. Everything seems possible. I’m full of ideas and energy, riding the initial wave of excitement.
 * **Informed Pessimism:** Reality sets in. The to-do list grows, and doubts creep in. Am I really cut out for this?
@@ -28,31 +28,31 @@ We all love the idea of transformation, but the reality is messy. The “Emotion
 
 If you’re in the Valley of Despair, you’re not failing - you’re learning. That’s where growth happens.
 
-<small><em>Source: Emotional Cycle of Change by Don Kelley and Daryl Conner, published in "The 1979 Annual Handbook For Group Facilitators"</em></small>
+<small><em>Source: Emotional Cycle of Change by Don Kelley and Daryl Conner, published in "The 1979 Annual Handbook For Group Facilitators." Some sources give the original name for the third stage as "Hopeful Realism" rather than "Valley of Despair" - the latter is the more common popular label.</em></small>
 
 
 ## The 5 Fundamentals: What Actually Matters
 
-There’s endless advice out there, but these five fundamentals have made the biggest difference for me:
+There’s endless advice out there, but Josh Kaufman’s five fundamentals are the framework I keep coming back to. I’m still early enough that most of this is thinking rather than proof - I’ll find out what actually works as I go.
 
-**1. Value Creation:** What real problem are you solving? For me, it’s helping people find products that align with their values, not just their needs.
+**1. Value Creation:** What real problem am I solving? For me, it’s helping people find products that align with their values, not just their needs.
 
-**2. Marketing:** How will people discover you? I’ve learned that authentic storytelling and community engagement beat big ad budgets - especially early on.
+**2. Marketing:** How will people discover me? My working assumption is that authentic storytelling and community engagement will beat big ad budgets, especially early on - but that’s untested so far.
 
-**3. Sales:** Turning interest into revenue is harder than it looks. I’m experimenting with different approaches, from direct outreach to partnerships, to see what resonates.
+**3. Sales:** Turning interest into revenue is harder than it looks, and I haven’t done either yet. I’m weighing direct outreach against partnerships with the crafters themselves, but what will actually work is for the future to tell.
 
-**4. Value Delivery:** Can you consistently deliver what you promise? I’m building systems to ensure every customer feels valued, not just sold to.
+**4. Value Delivery:** Can I consistently deliver what I promise? I’m still building the systems for this - it’s one of the pieces I understand least well right now.
 
-**5. Finance:** Track every Euro. Cash flow is king, and small leaks can sink big dreams.
+**5. Finance:** Track every Euro. It’s the one fundamental I can already act on, even before there’s revenue to track.
 
 <small><em>Source: 5 Parts of Every Business by Josh Kaufman, from his book "The Personal MBA"</em></small>
 
 
 ## My Hard-Won Lesson
 
-The biggest trap? Confusing “planning” with “doing.” Right now, I’m still in the very early stages - doing my homework on how to register a business and figuring out what it takes to start selling effectively. I haven’t sold a single product yet. I’ve spent weeks perfecting spreadsheets, pitch decks, and the company logo, but I know that nothing will teach me more than talking to real customers and shipping real products - even if imperfectly, when the time comes.
+The biggest trap so far has been procrastination dressed up as productivity. Spreadsheets, a pitch deck, the company logo - all things I could finish in a day or two. Easy, compared to the actual hard task: learning how to build a profitable business and facing the fear of failing at it. I haven’t sold a single product yet, and I know nothing will teach me more than talking to real customers and shipping real products, even imperfectly, when the time comes.
 
-**If you’re on this path, act before you feel ready. You’ll learn faster, and your audience will appreciate your honesty.**
+If there’s one habit I’m trying to build, it’s this: make the hard decision now, so the decisions later get easier. If entrepreneurship is something you want to learn and do, don’t put yourself in the position of regretting that you never tried.
 
 ## What About You?
 
