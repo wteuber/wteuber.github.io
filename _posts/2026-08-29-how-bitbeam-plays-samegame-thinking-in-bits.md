@@ -33,6 +33,8 @@ On a 30×20 board, a typical position offers a few dozen legal clicks, and a ful
 
 That rules out checking every possibility, and not just on my laptop. No machine anyone is going to build will manage it either. So the design problem is one of discarding: which positions to throw away, and how little time you can spend deciding.
 
+(For what it's worth, the reason I picked this project up at all was ordinary curiosity: scrolling through my old repos and wondering how I'd tackle SameGame if I started today, and what a modern machine would let me get away with.)
+
 ## Idea 1: keep a shortlist
 
 The algorithm is called [beam search](https://en.wikipedia.org/wiki/Beam_search), and it is close to the simplest thing that works.
@@ -159,6 +161,8 @@ Every rule is checked against exhaustive search on thousands of small boards bef
 
 Here it is against the genetic algorithm I had been using, on six random 15×10 three-colour boards, with every configuration asked to empty the board. The genetic algorithm is a current rewrite of [the 2011 solver](https://github.com/wteuber/samegame_autoplay/tree/master/software/solver/evolutionary) that used to drive the bot, running on Ruby 4.0.4. The first row is how the bot invokes it, at a population of 10 for 200 generations. Times are wall clock and include process startup.
 
+Beam search was not the first thing I tried. I had read a few papers on other heuristic attempts at SameGame that used evolutionary algorithms, and it seemed worth a look before settling on anything. What sent me away from it was not anything those papers argued, it was watching the overhead an EA needs for this particular game. Gravity and column collapse mean that two board states with similar fitness are not necessarily close relatives of each other, so mutating or crossing over a promising individual does not reliably get you closer to a better one. Beam search does not have that problem, since it inspects every legal move at every depth directly and keeps the ones that already look good.
+
 | Solver | Mean score | Boards cleared | Mean time |
 |---|---:|---:|---:|
 | Genetic algorithm, one core, no JIT | 2,031 | 6/6 | 666 ms |
@@ -172,7 +176,7 @@ The evaluation loop in the Ruby solver got twelve times faster when I rewrote it
 
 Ractors, Ruby's mechanism for running code on several cores at once, cut a population-64 run from 7.9 seconds to 3.3 across eight of them, with results identical to the serial version. Those two features are what the middle rows use, along with the bigger populations they make affordable. The extra score is real, and it is expensive: the last row spends about a hundred times bitbeam's runtime to land 22 percent below it.
 
-So the gap is not the language. A genetic algorithm samples whole sequences of moves and breeds the ones that worked. Beam search looks at every legal move at every depth and keeps the best few thousand positions under an ordering it can justify. The second approach suits this puzzle better, and neither a JIT nor more cores changes that. What Ruby costs here is a constant factor, and a smaller one than its reputation suggests.
+So the gap is not the language. A genetic algorithm samples whole sequences of moves and breeds the ones that worked, which is the overhead I ran into earlier. Beam search looks at every legal move at every depth and keeps the best few thousand positions under an ordering it can justify. The second approach suits this puzzle better, and neither a JIT nor more cores changes that. What Ruby costs here is a constant factor, and a smaller one than its reputation suggests.
 
 sgbust is missing from the table, and not because it lost. For the build reasons above I have no end-to-end figure for it that would be about its algorithm rather than its dependencies, so the routine-level comparison earlier stands in for it.
 
@@ -188,6 +192,8 @@ The recording runs in real time: 74 seconds for the seven boards, roughly ten se
 
 None of the ideas here is new. Beam search dates back to speech recognition work in the 1970s, PEXT has been in Intel processors since 2013, and not doing work you are about to throw away is ordinary engineering advice. What made the difference was applying them to one problem and measuring after every step, including the step in Ruby that made things slower and got reverted.
 
+The goal I set myself was narrow: the fastest general solver I could get running on this machine, an Intel Mac with PEXT available. Everything above follows from that. A different chip, a different language runtime, or a different goal, say fewer moves rather than raw speed, would point some of these ideas in different directions and rule others out entirely.
+
 The determinism work paid off in a way I had not planned for. Once the output stopped changing between runs, judging every other change became easy, because any difference in the result had to have come from the change. The refutations went the other way. They are sound, they were satisfying to implement, and they are worth almost nothing on the boards you actually meet. Neither of them was on the list when I started.
 
-*The bot in the recording above is a separate program. It reads the board by looking at pixels on the screen and plays by moving the actual mouse, which is a story for another post.*
+*The bot in the recording above is a separate program. It reads the board by looking at pixels on the screen and plays by moving the actual mouse, and that is as much as I will say about it here.*
