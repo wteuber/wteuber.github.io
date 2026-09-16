@@ -11,11 +11,11 @@ author: Wolfgang Teuber
 
 There is a clown in the sewer with this name, and there is an old proverb about being wise with pennies and foolish with pounds. This post is about neither. It is about a genuinely annoying little problem that turns up the moment you let someone pay a taxed bill in more than one go, and a piece of arithmetic that makes it disappear.
 
-Here is the problem in one line. A bill of **$10.70** includes **7% tax**. That is $10.00 of goods and $0.70 of tax. The customer pays it off in three installments: $5.00, then another $5.00, then the last $0.70. **How much of each installment was tax?**
+Here is the problem in one line. A bill of **10.70** includes **7% tax**. That is 10.00 of goods and 0.70 of tax. The customer pays it off in three installments: 5.00, then another 5.00, then the last 0.70. **How much of each installment was tax?**
 
 You need the answer for real reasons. Tax gets remitted on a schedule, so the books have to know how much tax rode along with each payment as it arrived, not just the total at the end. Refund the second installment and you have to give back exactly the tax that was in it. Every installment prints a receipt, and the receipts have to sum to the invoice.
 
-The obvious answer is wrong. Seven percent of $5.00 is $0.35, and $0.35 + $0.35 + a bit more is already past $0.70. That is not a rounding curiosity, it is the tax being computed on the wrong base. The right split turns out to be **$0.32, $0.33, $0.05**, and the reason the middle installment carries an extra penny is the whole story.
+The obvious answer is wrong. Seven percent of 5.00 is 0.35, and 0.35 + 0.35 + a bit more is already past 0.70. That is not a rounding curiosity, it is the tax being computed on the wrong base. The right split turns out to be **0.32, 0.33, 0.05**, and the reason the middle installment carries an extra penny is the whole story.
 
 I wrote a small Ruby library called PennyWise that does this split and guarantees the parts reconcile. It was built for installments, but the arithmetic does not actually know what a payment is. Feed it three shares of one restaurant bill from three diners instead of three payments from one customer and it splits the tax between people just as exactly. [Splitting a bill](#splitting-a-bill-is-the-same-problem) falls out as a byproduct, and I come back to it near the end.
 
@@ -31,9 +31,9 @@ net = G / (1 + r)
 tax = G - net = G * r / (1 + r)
 ```
 
-For the whole bill that gives `10.70 / 1.07 = 10.00` net and `0.70` tax, as it should. For a single $5.00 slice it gives `5.00 * 0.07 / 1.07 = 0.3271...`, so about 32.7 cents.
+For the whole bill that gives `10.70 / 1.07 = 10.00` net and `0.70` tax, as it should. For a single 5.00 slice it gives `5.00 * 0.07 / 1.07 = 0.3271...`, so about 32.7 cents.
 
-Now round that. Payment one: 33 cents. Payment two: 33 cents. Payment three, on $0.70: `0.70 * 0.07 / 1.07 = 0.0458...`, round to 5 cents. Total tax collected: **71 cents**. The bill was 70. You have invented a penny, and your ledger no longer balances.
+Now round that. Payment one: 33 cents. Payment two: 33 cents. Payment three, on 0.70: `0.70 * 0.07 / 1.07 = 0.0458...`, round to 5 cents. Total tax collected: **71 cents**. The bill was 70. You have invented a penny, and your ledger no longer balances.
 
 Round differently, say always down, and you lose a penny instead. Change the payment sizes and the error changes with them. Over one bill it is a penny. Over a few hundred thousand invoices it is a support ticket, an accounting discrepancy, and an afternoon you will not get back.
 
@@ -47,22 +47,22 @@ Before the fix, get a feel for the size of it. Put in a bill total, a tax rate, 
 
 On any one bill the standard method is rarely more than a few cents out. Multiply that by a year of invoices, or by every seller on a marketplace, and it is the reconciliation line nobody can account for. The next three sections are how PennyWise gets the right-hand column to reconcile every time.
 
-## Part 1: count in atoms, not in dollars
+## Part 1: count in atoms, not in whole-currency units
 
 The first move is the one every "don't store money in a float" article tells you to make. Pick the smallest unit the currency has, an **atom**, and do all the arithmetic in whole numbers of atoms.
 
-- US dollars: the atom is one cent. `$10.70` is `1070`.
+- A typical currency: the atom is one cent. `10.70` is `1070`.
 - Bitcoin: the atom is one satoshi, `0.00000001` BTC. One bitcoin is `100_000_000`.
 - A currency with no minor unit: the atom is one whole unit.
 
 ```
 to_atoms(amount, atom):
     q = amount / atom
-    fail unless q is a whole number      # $10.705 is not a real payment
+    fail unless q is a whole number      # 10.705 is not a real payment
     return integer(q)
 ```
 
-From here on there are no dollars in the code, only counts. `1070` atoms of bill, `500` atoms of first payment. Integers add up exactly, which is the entire point, and the only place a fraction is allowed to appear is inside the next two steps, where it is immediately floored back to an integer.
+From here on there is no currency in the code, only counts. `1070` atoms of bill, `500` atoms of first payment. Integers add up exactly, which is the entire point, and the only place a fraction is allowed to appear is inside the next two steps, where it is immediately floored back to an integer.
 
 ## Part 2: extract the tax once, for the whole bill
 
@@ -107,9 +107,9 @@ Run the example through it. `total_tax_atoms = 70`, `total_atoms = 1070`.
 
 | Payment | paid before | paid after | `tax_through` before | `tax_through` after | tax this payment |
 |---|---:|---:|---:|---:|---:|
-| $5.00 | 0 | 500 | `floor(0.00)` = 0 | `floor(32.71)` = 32 | **32** |
-| $5.00 | 500 | 1000 | `floor(32.71)` = 32 | `floor(65.42)` = 65 | **33** |
-| $0.70 | 1000 | 1070 | `floor(65.42)` = 65 | `floor(70.00)` = 70 | **5** |
+| 5.00 | 0 | 500 | `floor(0.00)` = 0 | `floor(32.71)` = 32 | **32** |
+| 5.00 | 500 | 1000 | `floor(32.71)` = 32 | `floor(65.42)` = 65 | **33** |
+| 0.70 | 1000 | 1070 | `floor(65.42)` = 65 | `floor(70.00)` = 70 | **5** |
 
 Sum of tax: `32 + 33 + 5 = 70`. Exactly the bill. The extra penny landed in the second payment because that is where the straight line `p * 70 / 1070` happened to cross an integer between the two readings. It was not a decision. It was a coordinate.
 
@@ -178,7 +178,7 @@ Random totals, random rates, random numbers of parts at random sizes. The genera
 ## The edges worth naming
 
 - **Overpayment.** A payment that would push the paid total past the bill is rejected before it is split, rather than being silently trimmed.
-- **Non-atomic amounts.** `$10.705` at a one-cent atom is not a payment anyone can actually make, so `to_atoms` refuses it instead of rounding it into something plausible.
+- **Non-atomic amounts.** `10.705` at a one-cent atom is not a payment anyone can actually make, so `to_atoms` refuses it instead of rounding it into something plausible.
 - **Zero total.** `tax_through` returns `0` immediately, so a zero bill splits into a pile of zeros without dividing by anything.
 - **Negative inputs.** Rejected at the door. There is no meaningful negative payment in this model.
 
@@ -203,7 +203,7 @@ split_bill(shares_in_atoms, total_tax_atoms, total_atoms):
 
 The telescoping argument does not care whether the segments are three payments from one person spread across a quarter or three shares from three people settled in the same second. It is a partition either way, the interior terms still cancel, and the tax the table is charged still sums to exactly what the bill says.
 
-Order does not change the total; it only decides which share happens to catch a stray penny. If splitting `$10.70` three ways lands one diner with an extra cent, that is real and it is unavoidable, because 70 does not divide by 3. What you can choose is where it goes: sort the shares and let the largest one absorb it, or rotate the tiebreak between the regulars from one dinner to the next. PennyWise makes that a one-line decision instead of a bug.
+Order does not change the total; it only decides which share happens to catch a stray penny. If splitting `10.70` three ways lands one diner with an extra cent, that is real and it is unavoidable, because 70 does not divide by 3. What you can choose is where it goes: sort the shares and let the largest one absorb it, or rotate the tiebreak between the regulars from one dinner to the next. PennyWise makes that a one-line decision instead of a bug.
 
 ## Wrapping up
 
