@@ -1215,6 +1215,51 @@ $('nameForm').addEventListener('submit', e => {
   renderHS($('hsOver'));
 });
 
+// ---------------------------------------------------------------- Eigene Fotos (IndexedDB)
+const PHOTO_SIZE = 256;
+let dbP = null;
+function openDB() {
+  if (!dbP) dbP = new Promise((res, rej) => {
+    const rq = indexedDB.open('kuessmich', 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore('photos', { autoIncrement: true });
+    rq.onsuccess = () => res(rq.result);
+    rq.onerror = () => rej(rq.error);
+  });
+  return dbP;
+}
+function dbTx(mode, fn) {
+  return openDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction('photos', mode), rq = fn(tx.objectStore('photos'));
+    tx.oncomplete = () => res(rq.result);
+    tx.onerror = tx.onabort = () => rej(tx.error);
+  })).catch(() => null); // ohne Speicher geht's auch
+}
+const dbAdd = blob => dbTx('readwrite', s => s.add(blob));
+const dbAll = () => dbTx('readonly', s => s.getAll()).then(r => r || []);
+const dbClear = () => dbTx('readwrite', s => s.clear());
+// Gesichter werden nur als kleine Kreise gezeichnet: quadratisch zuschneiden und verkleinern
+function shrink(file) {
+  return createImageBitmap(file).then(bm => {
+    const s = Math.min(bm.width, bm.height), c = document.createElement('canvas');
+    c.width = c.height = PHOTO_SIZE;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, PHOTO_SIZE, PHOTO_SIZE);
+    g.drawImage(bm, (bm.width - s) / 2, (bm.height - s) / 2, s, s, 0, 0, PHOTO_SIZE, PHOTO_SIZE);
+    bm.close();
+    return new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(), 'image/jpeg', 0.85));
+  });
+}
+function addPhoto(blob) {
+  const img = new Image();
+  img.onload = () => {
+    photos.push(img);
+    const th = document.createElement('img'); th.src = img.src; th.alt = '';
+    $('thumbs').appendChild(th);
+    $('clearPhotos').hidden = false;
+  };
+  img.src = URL.createObjectURL(blob);
+}
+
 // ---------------------------------------------------------------- HUD
 function hud() {
   const hs = clamp(Math.min(W, H) / 760, 0.65, 1.25), pad = 14 * hs + 4, br = 21 * hs;
@@ -1427,14 +1472,7 @@ $('quitBtn').addEventListener('click', () => { setPaused(false); game.time = 0; 
 $('photoInput').addEventListener('change', e => {
   for (const f of e.target.files) {
     if (!f.type.startsWith('image/')) continue;
-    const img = new Image();
-    img.onload = () => {
-      photos.push(img);
-      const th = document.createElement('img'); th.src = img.src; th.alt = '';
-      $('thumbs').appendChild(th);
-      $('clearPhotos').hidden = false;
-    };
-    img.src = URL.createObjectURL(f);
+    shrink(f).then(b => { dbAdd(b); addPhoto(b); }, () => addPhoto(f));
   }
   e.target.value = '';
 });
@@ -1443,11 +1481,14 @@ $('clearPhotos').addEventListener('click', () => {
   photos = [];
   $('thumbs').innerHTML = '';
   $('clearPhotos').hidden = true;
+  dbClear();
 });
 
 // ---------------------------------------------------------------- Los!
 resize();
 renderHS($('hsMenu'));
+dbAll().then(blobs => blobs.forEach(addPhoto));
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 requestAnimationFrame(loop);
 </script>
 </body>
