@@ -8,7 +8,7 @@ tags: [games, kids, family, claude-code]
 author: Wolfgang Teuber
 ---
 
-Both of my kids, aged 10 and 7, had an idea for a game of their own, and they knew exactly how it should work. So we sat down together. Each of them told me all about their game and drew a rough sketch of it on paper. Then I used [Claude Code](https://claude.com/claude-code) with the Fable 5.2 model to help them turn the idea and the sketch into a real game that runs in the browser.
+Both of my kids, aged 10 and 7, had an idea for a game of their own, and they knew exactly how it should work. So we sat down together. Each of them told me all about their game and drew a rough sketch of it on paper. Then I used Claude Code with the Fable 5.2 model to help them turn the idea and the sketch into a real game that runs in the browser.
 
 The best part wasn't the code. It was the talking. I asked very specific questions about how everything in the game should move and what it should look like, and they had to describe exactly what they wanted. I could see them thinking hard. Some ideas they dropped the moment they said them out loud, because they realized those ideas wouldn't work.
 
