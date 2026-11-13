@@ -54,6 +54,10 @@ body.page-dark-mode .stg{--stg-ink:#e4e6eb;--stg-paper:#2d333b;--stg-shadow:#8c8
 document.addEventListener('DOMContentLoaded', function () {
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.stg').forEach(function (el) {
+    var play = el.querySelector('.stg__play');
+    play.addEventListener('click', function () {
+      if (window.gtag) gtag('event', 'play_game', { game: play.textContent.replace(/^Play\s+/, ''), link_url: play.href });
+    });
     var frame = el.querySelector('.stg__frame'), range = el.querySelector('.stg__range');
     var tags = el.querySelectorAll('.stg__tag'), raf = 0, touched = false;
     function set(p) {
