@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My Kids Drew Two Games on Paper. Now You Can Play Them."
-subtitle: A 7-year-old and a 10-year-old invented games nobody had seen before. We built them together, one round at a time.
+subtitle: A 7-year-old and a 10-year-old invented games they had never seen before. We built them together, one round at a time.
 thumbnail-img: /assets/img/2026-11-14-sketch-to-game/slide-sketch.jpg
 share-img: /assets/img/2026-11-14-sketch-to-game/share.jpg
 tags: [games, kids, family, claude-code]
@@ -29,6 +29,7 @@ Find two circles with the same number and tap them, but stay away from the black
    sketch_alt="Pencil sketch of numbered circles and black dots scattered across a sheet of paper"
    game_alt="The game: numbered circles and wandering black stones on a white page"
    url="/public/child19/"
+   game_id="dupliziere-die-nummern"
    label="Play Dupliziere die Nummern" %}
 
 ## Scribble Slide
@@ -42,6 +43,7 @@ Tap a shape and it slides the way its arrow points. Clear the whole page before 
    sketch_alt="Pencil sketch of interlocking block shapes on a sheet of paper"
    game_alt="The game: colourful interlocking shapes with arrows on a sketchbook page"
    url="/public/child15/scribble-slide/"
+   game_id="scribble-slide"
    label="Play Scribble Slide" %}
 
 Both games work on phones and tablets too. Have fun, and let us know how far you get!
