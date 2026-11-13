@@ -24,6 +24,6 @@ Shapes on a sketchbook page. Tap one and it slides the way its arrow points. Cle
 
 ![Pencil sketch of interlocking block shapes on a sheet of paper](/assets/img/2026-11-13-sketch-to-game/slide-sketch.jpg)
 
-[Play Scribble Slide](/public/scribble-slide/){:target="_blank"}
+[Play Scribble Slide](/public/child15/scribble-slide/){:target="_blank"}
 
 The sketches did most of the design work. Both games keep the hand-drawn pencil look of the paper they started on.
