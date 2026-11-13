@@ -2,7 +2,8 @@
   Before/after slider: the paper sketch on the left of the handle, the finished game on the right,
   followed by a hand-drawn "play" button.
   Params: sketch, game (image URLs, same aspect ratio), ratio (CSS aspect-ratio, e.g. "1 / 1"),
-          sketch_alt, game_alt, url (link to the game), label (button text).
+          sketch_alt, game_alt, url (link to the game), label (button text),
+          game_id (optional analytics name for the play_game event; defaults to label).
 {% endcomment %}
 {% unless sketch_to_game_assets %}{% assign sketch_to_game_assets = true %}
 <style>
@@ -54,6 +55,13 @@ body.page-dark-mode .stg{--stg-ink:#e4e6eb;--stg-paper:#2d333b;--stg-shadow:#8c8
 document.addEventListener('DOMContentLoaded', function () {
   var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.stg').forEach(function (el) {
+    var play = el.querySelector('.stg__play');
+    function track(e) {
+      if ((e.type === 'click' || e.button === 1) && window.gtag) {
+        gtag('event', 'play_game', { game: play.dataset.game, link_url: play.href });
+      }
+    }
+    if (play) { play.addEventListener('click', track); play.addEventListener('auxclick', track); }
     var frame = el.querySelector('.stg__frame'), range = el.querySelector('.stg__range');
     var tags = el.querySelectorAll('.stg__tag'), raf = 0, touched = false;
     function set(p) {
@@ -99,5 +107,5 @@ document.addEventListener('DOMContentLoaded', function () {
     <span class="stg__line"><span class="stg__knob" aria-hidden="true">&#8596;</span></span>
   </div>
   <p class="stg__hint">Drag the handle to compare the sketch and the game</p>
-  <a class="stg__play" href="{{ include.url }}" target="_blank" rel="noopener">{{ include.label }}</a>
+  <a class="stg__play" href="{{ include.url }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}</a>
 </div>
