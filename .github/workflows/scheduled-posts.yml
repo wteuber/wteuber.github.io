@@ -1,10 +1,12 @@
 name: Publish scheduled posts
 
 # Jekyll skips posts dated in the future, and GitHub Pages only rebuilds on
-# push. Once a day, request a Pages build if a post is dated today.
+# push. Once a day, request a Pages build if a post became due since the last
+# build. Comparing against the last build (not just today) means a missed run
+# is caught up by the next one.
 on:
   schedule:
-    - cron: "5 0 * * *" # 00:05 UTC, already the post's date in Europe/Dublin
+    - cron: "5 0 * * *" # 00:05 UTC, already the next day in Europe/Dublin
   workflow_dispatch:
 
 permissions:
@@ -15,14 +17,19 @@ jobs:
   rebuild:
     runs-on: ubuntu-latest
     steps:
-      - name: Request a Pages build if a post is dated today
+      - name: Request a Pages build if a post became due since the last build
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
         run: |
-          today=$(date -u +%F)
-          if gh api "repos/$REPO/contents/_posts" --jq '.[].name' | grep -q "^$today-"; then
+          today=$(TZ=Europe/Dublin date +%F)
+          # A build on UTC date d includes posts dated d, since Dublin is never behind UTC.
+          last_build=$(gh api "repos/$REPO/pages/builds/latest" --jq '.created_at[:10]')
+          due=$(gh api "repos/$REPO/contents/_posts" --jq '.[].name[:10]' |
+            awk -v from="$last_build" -v to="$today" '$0 > from && $0 <= to')
+          if [ -n "$due" ]; then
+            echo "Posts due since last build on $last_build: $due"
             gh api -X POST "repos/$REPO/pages/builds"
           else
-            echo "No post dated $today"
+            echo "No posts due since last build on $last_build"
           fi
