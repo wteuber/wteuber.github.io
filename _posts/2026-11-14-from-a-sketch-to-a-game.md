@@ -2,6 +2,7 @@
 layout: post
 title: "My Kids Drew Two Games on Paper. Now You Can Play Them."
 subtitle: A 7-year-old and a 10-year-old invented games they had never seen before. We built them together, one round at a time.
+cover-img: /assets/img/2026-11-14-sketch-to-game/torn-cover-dark.jpg
 thumbnail-img: /assets/img/2026-11-14-sketch-to-game/thumbnail.jpg
 share-img: /assets/img/2026-11-14-sketch-to-game/share.jpg
 tags: [games, kids, family, claude-code]
