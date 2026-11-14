@@ -1,0 +1,28 @@
+name: Publish scheduled posts
+
+# Jekyll skips posts dated in the future, and GitHub Pages only rebuilds on
+# push. Once a day, request a Pages build if a post is dated today.
+on:
+  schedule:
+    - cron: "5 0 * * *" # 00:05 UTC, already the post's date in Europe/Dublin
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request a Pages build if a post is dated today
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          today=$(date -u +%F)
+          if gh api "repos/$REPO/contents/_posts" --jq '.[].name' | grep -q "^$today-"; then
+            gh api -X POST "repos/$REPO/pages/builds"
+          else
+            echo "No post dated $today"
+          fi
