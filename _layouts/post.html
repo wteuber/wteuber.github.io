@@ -65,6 +65,12 @@ layout: base
         {% include social-share.html %}
       {% endif %}
 
+      {% comment %}
+        Jekyll links documents of custom collections (posts_de) to neighbours dated
+        in the future; hide that link until the neighbour is published.
+      {% endcomment %}
+      {% assign next_post = page.next %}
+      {% if next_post and site.future != true and next_post.date > site.time %}{% assign next_post = nil %}{% endif %}
       <ul class="pagination blog-pager">
         {% if page.previous.url %}
         <li class="page-item previous">
@@ -74,9 +80,9 @@ layout: base
           </a>
         </li>
         {% endif %}
-        {% if page.next.url %}
+        {% if next_post.url %}
         <li class="page-item next">
-          <a class="page-link" href="{{ page.next.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{page.next.title | strip_html | xml_escape}}">
+          <a class="page-link" href="{{ next_post.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{ next_post.title | strip_html | xml_escape }}">
             <span class="d-none d-sm-inline-block">{{ t.next_post }}</span>
             <i class="fas fa-arrow-right" alt="{{ t.next_post }}"></i>
           </a>

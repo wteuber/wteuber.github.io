@@ -24,6 +24,7 @@ en:
   game: "game"
   slider_label: "Slide between the paper sketch and the game"
   slider_hint: "Drag the handle to compare the sketch and the game"
+  in_language: {en: "in English", de: "in German"}
 
 de:
   name: "Deutsch"
@@ -48,3 +49,5 @@ de:
   game: "Spiel"
   slider_label: "Zwischen der Papierskizze und dem Spiel hin- und herschieben"
   slider_hint: "Zieh am Regler, um Skizze und Spiel zu vergleichen"
+  in_language: {en: "auf Englisch", de: "auf Deutsch"}
+  feed_description: "Diese Website ist der virtuelle Beweis dafür, dass ich großartig bin"

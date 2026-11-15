@@ -6,14 +6,14 @@ layout: page
 {{ content }}
 
 {% comment %}
-  English is paginated by jekyll-paginate (root index.html only); other languages
-  list all posts of their collection.
+  English is paginated by jekyll-paginate (root index.html only). Other languages
+  list their posts plus the untranslated English ones, unpaginated.
 {% endcomment %}
+{% include i18n-posts.html %}
 {% if lang == site.languages.first %}
   {% assign posts = paginator.posts | default: site.posts %}
 {% else %}
-  {% assign posts_coll = "posts_" | append: lang %}
-  {% assign posts = site[posts_coll] | reverse %}
+  {% assign posts = i18n_listing %}
 {% endif %}
 
 <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
@@ -47,7 +47,7 @@ layout: page
       {% endif %}
 
       <a href="{{ post.url | absolute_url }}">
-        <h2 class="post-title">{{ post.title | strip_html }}</h2>
+        <h2 class="post-title"{% if post.lang != lang %} lang="{{ post.lang }}"{% endif %}>{{ post.title | strip_html }}</h2>
 
         {% if post.subtitle %}
           <h3 class="post-subtitle">
@@ -61,6 +61,7 @@ layout: page
       {% endif %}
       <p class="post-meta">
         {{ t.posted_on }} {% include i18n-date.html date=post.date %}
+        {%- if post.lang != lang %} &middot; {{ t.in_language[post.lang] }}{% endif %}
       </p>
 
       {% if thumbnail != "" %}

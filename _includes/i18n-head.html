@@ -1,8 +1,10 @@
 {%- comment -%}
   hreflang links for search engines, and a redirect to the visitor's language:
   the language they last picked in the switcher, otherwise the first of their
-  browser's languages that this page is translated into. Crawlers are never
-  redirected, so each language version stays indexable.
+  browser's languages that this page is translated into. This only happens when a
+  visitor arrives from outside the site: following a link within the site (such
+  as the language switcher) never redirects, even if storage is blocked. Crawlers
+  are never redirected, so each language version stays indexable.
 {%- endcomment -%}
 {%- if i18n_alts.size > 1 -%}
   {%- capture i18n_map -%}
@@ -24,6 +26,7 @@
     (function () {
       var current = "{{ lang }}", pages = { {{ i18n_map }} };
       if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
+      try { if (new URL(document.referrer).origin === location.origin) return; } catch (e) {}
       var wanted = null;
       try { wanted = localStorage.getItem("lang"); } catch (e) {}
       if (!wanted) {

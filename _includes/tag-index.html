@@ -17,7 +17,7 @@
     <div class="post-list">
         {%- for post in tagged -%}
             <div class="tag-entry">
-                <a href="{{ post.url | relative_url }}">{{- post.title | strip_html -}}</a>
+                <a href="{{ post.url | relative_url }}"{% if post.lang != lang %} lang="{{ post.lang }}"{% endif %}>{{- post.title | strip_html -}}</a>
                 <div class="entry-date">
                     <time datetime="{{- post.date | date_to_xmlschema -}}">{% include i18n-date.html date=post.date %}</time>
                 </div>

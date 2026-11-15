@@ -2,7 +2,8 @@
 layout: null
 ---
 [ 
-{% assign all_posts = site.posts | concat: site.posts_de %}
+{% assign all_posts = site.posts %}
+{% for lang in site.languages offset: 1 %}{% include i18n-posts.html %}{% assign all_posts = all_posts | concat: i18n_posts %}{% endfor %}
 {% for post in all_posts %} 
 { 
 "title"    : "{% if post.title != "" %}{{ post.title | strip_html | escape }}{% else %}{{ post.excerpt | strip_html | escape | strip }}{%endif%}", 
