@@ -7,6 +7,7 @@ thumbnail-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-
 share-img: /assets/img/2025-10-22-my-calendar-is-public-here-s-why-i-traded-endless-typing-for-real-conversations/video-call.png
 tags: [communication, teamwork, productivity, remote work, leadership, culture]
 author: Wolfgang Teuber
+ref: public-calendar
 ---
 
 ### My Calendar Is Public. Here’s Why I Traded Endless Typing for Real Conversations.

@@ -5,6 +5,8 @@
   size is pinned through the game's own config proxy once the script has loaded,
   and the game-over alert is swapped for a message centred on the board.
 -->
+{%- include i18n.html -%}
+{%- assign sg_t = t.samegame -%}
 <link rel="stylesheet" href="{{ '/public/samegame/samegame-embed.css' | relative_url }}">
 
 <div class="samegame-embed">
@@ -21,9 +23,9 @@
     </div>
 
     <div id="scoreboard">
-      <div>Round <br><span name="round"></span></div>
-      <div>Click Score <br><span name="click"></span></div>
-      <div>Total Score <br><span name="total"></span></div>
+      <div>{{ sg_t.round }} <br><span name="round"></span></div>
+      <div>{{ sg_t.click_score }} <br><span name="click"></span></div>
+      <div>{{ sg_t.total_score }} <br><span name="total"></span></div>
     </div>
   </div>
 </div>
@@ -33,18 +35,19 @@
   (function () {
     // samegame.js loads synchronously above, so window.SameGame exists here.
     var sg = window.SameGame;
+    var L = {{ sg_t | jsonify }};
     var message = document.getElementById('sg-message');
     var restart = document.querySelector('[name="new"]');
 
     // Replace the standalone game's blocking alert with a note centred on the
-    // board. "Try again!" reuses the game's own restart (the hidden control).
+    // board. The retry button reuses the game's own restart (the hidden control).
     sg.gameOver = function (total) {
-      message.textContent = 'Game over! You scored ' + total +
-        (total === 1 ? ' point. ' : ' points. ');
+      message.textContent = (total === 1 ? L.game_over_one : L.game_over_many)
+        .replace('{n}', total);
       var again = document.createElement('button');
       again.type = 'button';
       again.className = 'sg-again';
-      again.textContent = 'Try again!';
+      again.textContent = L.try_again;
       again.addEventListener('click', function () {
         message.hidden = true;
         restart.click();
