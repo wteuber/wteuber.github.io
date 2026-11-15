@@ -14,7 +14,8 @@ common-ext-js:
 ---
 
 <!DOCTYPE html>
-<html lang="{{ page.language | default: site.language | default: 'en' }}">
+{%- include i18n.html -%}{%- include i18n-alternates.html -%}
+<html lang="{{ lang }}">
 
   {% include head.html %}
 

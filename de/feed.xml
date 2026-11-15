@@ -1,0 +1,4 @@
+---
+layout: null
+---
+{% assign posts = site.posts_de | reverse %}{% include feed.xml posts=posts home='/de/' self='/de/feed.xml' %}

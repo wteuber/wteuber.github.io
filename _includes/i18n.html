@@ -1,0 +1,8 @@
+{%- comment -%}
+  Sets `lang` (the page's language, from front matter defaults in _config.yml) and
+  `t` (its interface text from _data/i18n.yml). Liquid variables don't carry over
+  from the page into its layouts, so every layout, and every include used inside
+  page content, includes this first.
+{%- endcomment -%}
+{%- assign lang = page.lang | default: site.languages.first -%}
+{%- assign t = site.data.i18n[lang] -%}

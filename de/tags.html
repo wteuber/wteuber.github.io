@@ -1,0 +1,8 @@
+---
+layout: page
+title: 'Tag-Übersicht'
+ref: tags
+---
+
+{% assign posts = site.posts_de | reverse %}
+{% include tag-index.html posts=posts %}

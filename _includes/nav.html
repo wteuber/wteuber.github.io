@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
 
   {%- if site.title-img -%}
-    <a class="navbar-brand navbar-brand-logo" href="{{ '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
+    <a class="navbar-brand navbar-brand-logo" href="{{ t.prefix | append: '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
   {%- elsif site.title -%}
-    <a class="navbar-brand" href="{{ '/' | absolute_url }}">{{ site.title }}</a>
+    <a class="navbar-brand" href="{{ t.prefix | append: '/' | absolute_url }}">{{ site.title }}</a>
   {%- endif -%}
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,11 +30,22 @@
           </li>
         {%- endif -%}
       {%- endfor -%}
+      {%- for l in site.languages -%}
+        {%- assign alt = i18n_alts | where: "lang", l | first -%}
+        {%- if alt and l != lang %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ alt.url | relative_url }}" hreflang="{{ l }}" lang="{{ l }}"
+             onclick="try { localStorage.setItem('lang', '{{ l }}'); } catch (e) {}">
+            <span class="fa fa-language" aria-hidden="true"></span> {{ site.data.i18n[l].name }}
+          </a>
+        </li>
+        {%- endif -%}
+      {%- endfor -%}
       {% if site.post_search %}
         <li class="nav-item">
-          <a class="nav-link" id="nav-search-link" href="#" title="Search">
+          <a class="nav-link" id="nav-search-link" href="#" title="{{ t.search }}">
             <span id="nav-search-icon" class="fa fa-search"></span>
-            <span id="nav-search-text">Search</span>
+            <span id="nav-search-text">{{ t.search }}</span>
           </a>
         </li>
       {%- endif -%}
@@ -47,7 +58,7 @@
     {% endfor %}
   {% endif %}
 
-  <div id="change-skin" title="Toggle Night Mode">
+  <div id="change-skin" title="{{ t.night_mode }}">
     <span class="skin-btn dark-mode">🌙</span>
     <span class="skin-btn light-mode">☀️</span>
   </div>
@@ -55,7 +66,7 @@
   {% if site.avatar and page.show-avatar != false %}
     <div class="avatar-container">
       <div class="avatar-img-border">
-        <a href="{{ '/' | absolute_url }}">
+        <a href="{{ t.prefix | append: '/' | absolute_url }}">
           <img alt="Navigation bar avatar" class="avatar-img" src="{{ site.avatar | relative_url }}" />
         </a>
       </div>

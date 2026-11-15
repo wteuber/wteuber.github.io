@@ -1,0 +1,17 @@
+{%- comment -%}
+  Included by _layouts/base.html. Sets `i18n_alts`: this page and its translations,
+  i.e. every page or post sharing its `ref`. Used by the hreflang tags and the
+  redirect (i18n-head.html) and by the language switcher (nav.html).
+{%- endcomment -%}
+{%- assign i18n_alts = "" | split: "" -%}
+{%- if page.ref -%}
+  {%- comment -%} Only the first page of the paginated home page has a translation. {%- endcomment -%}
+  {%- unless paginator and paginator.page > 1 -%}
+    {%- assign i18n_docs = site.posts | concat: site.pages -%}
+    {%- for l in site.languages offset: 1 -%}
+      {%- assign i18n_coll = "posts_" | append: l -%}
+      {%- if site[i18n_coll] -%}{%- assign i18n_docs = i18n_docs | concat: site[i18n_coll] -%}{%- endif -%}
+    {%- endfor -%}
+    {%- assign i18n_alts = i18n_docs | where: "ref", page.ref -%}
+  {%- endunless -%}
+{%- endif -%}
