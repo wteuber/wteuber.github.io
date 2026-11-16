@@ -183,7 +183,7 @@ sgbust fehlt in der Tabelle, und nicht, weil er verloren hat. Aus den Build-Grü
 
 ## So sieht es aus {#what-it-looks-like}
 
-Das lässt sich leichter zeigen als beschreiben. Unten spielt ein Bot [die Browserversion von SameGame](/public/samegame){:target="_blank"}, und bitbeam wählt die Züge. Echte Klicks auf einer echten Seite, sieben Bretter mit 30×20 Feldern und drei Farben, eins nach dem anderen abgeräumt.
+Das lässt sich leichter zeigen als beschreiben. Unten spielt ein Bot [die Browserversion von SameGame](/public/samegame/?lang=de){:target="_blank"}, und bitbeam wählt die Züge. Echte Klicks auf einer echten Seite, sieben Bretter mit 30×20 Feldern und drei Farben, eins nach dem anderen abgeräumt.
 
 ![Ein Bot spielt SameGame im Browser und räumt mit Zügen von bitbeam ein Brett nach dem anderen ab](/assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/bitbeam-bot-playing-samegame.gif){:style="border-radius: 8px; display: block; margin: 0 auto;"}
 

@@ -22,7 +22,7 @@ Here are their two games. One was designed by my 10-year-old, the other by my 7-
 
 ## Dupliziere die Nummern
 
-Find two circles with the same number and tap them, but stay away from the black stones wandering around the page. The game is in German, just like its designer.
+Find two circles with the same number and tap them, but stay away from the black stones wandering around the page. Its designer named it in German, and you can play it in English or German.
 
 {% include sketch-to-game.html
    sketch="/assets/img/2026-11-14-sketch-to-game/numbers-sketch.jpg"

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-HNQ41FEKY5"></script>
     <script>
@@ -10,28 +11,62 @@
       gtag('config', 'G-HNQ41FEKY5');
     </script>
     <title>SameGame</title>
+    <script src="../game-lang.js"></script>
     <script src="samegame.js"></script>
     <link rel="stylesheet" href="samegame.css" />
   </head>
   <body>
 
     <div id="config">
-      <label for="rows">Rows</label> <input type="range" name="rows" min="4" max="20"/>
-      <label for="cols">Columns</label> <input type="range" name="cols" min="12" max="30" />
+      <label for="rows" data-t="rows">Rows</label> <input type="range" name="rows" id="rows" min="4" max="20"/>
+      <label for="cols" data-t="cols">Columns</label> <input type="range" name="cols" id="cols" min="12" max="30" />
       <input type="button" name="new" value="New Game" class="button" />
+      <span class="lang" role="group" aria-label="Language">
+        <button type="button" class="button" data-lang="en" lang="en">EN</button><button type="button" class="button" data-lang="de" lang="de">DE</button>
+      </span>
     </div>
 
     <h1>SameGame</h1>
     <table id="gameboard"></table>
 
     <div id="scoreboard">
-      <div>Round <br><span name="round"></span></div>
-      <div>Click Score <br><span name="click"></span></div>
-      <div>Total Score <br><span name="total"></span></div>
+      <div><span data-t="round">Round</span> <br><span name="round"></span></div>
+      <div><span data-t="click">Click Score</span> <br><span name="click"></span></div>
+      <div><span data-t="total">Total Score</span> <br><span name="total"></span></div>
     </div>
 
     <script>
-      SameGame.initGame();
+      (function () {
+        var TEXT = {
+          en: { rows: 'Rows', cols: 'Columns', new: 'New Game', round: 'Round', click: 'Click Score', total: 'Total Score',
+                lang: 'Language', over: 'Game over!\nYou scored {n} points.', over_one: 'Game over!\nYou scored 1 point.' },
+          de: { rows: 'Zeilen', cols: 'Spalten', new: 'Neues Spiel', round: 'Runde', click: 'Klickpunkte', total: 'Punkte gesamt',
+                lang: 'Sprache', over: 'Spiel vorbei!\nDu hast {n} Punkte geholt.', over_one: 'Spiel vorbei!\nDu hast 1 Punkt geholt.' }
+        };
+        var L;
+
+        function apply(lang) {
+          L = TEXT[lang];
+          document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = L[el.dataset.t]; });
+          document.querySelector('[name="new"]').value = L.new;
+          document.querySelector('.lang').setAttribute('aria-label', L.lang);
+          document.querySelectorAll('[data-lang]').forEach(function (b) {
+            b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+          });
+        }
+
+        document.querySelectorAll('[data-lang]').forEach(function (b) {
+          b.addEventListener('click', function () { apply(GameLang.set(b.dataset.lang)); });
+        });
+
+        SameGame.gameOver = function (total) {
+          alert((total === 1 ? L.over_one : L.over).replace('{n}', total));
+          this.seed(true);
+        };
+
+        apply(GameLang.pick());
+        SameGame.initGame();
+      })();
     </script>
   </body>
 </html>

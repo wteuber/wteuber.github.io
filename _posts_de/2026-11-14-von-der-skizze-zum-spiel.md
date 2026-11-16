@@ -43,7 +43,7 @@ Finde zwei Kreise mit derselben Zahl und tippe sie an. Aber Vorsicht vor den sch
 
 ## Scribble Slide
 
-Tippst du eine Form an, rutscht sie in die Richtung, in die ihr Pfeil zeigt. Ziel ist, die ganze Seite leer zu räumen, bevor die Zeit abläuft. Das Spiel ist auf Englisch.
+Tippst du eine Form an, rutscht sie in die Richtung, in die ihr Pfeil zeigt. Ziel ist, die ganze Seite leer zu räumen, bevor die Zeit abläuft. Den Namen hat sich mein Kind auf Englisch ausgedacht, spielen kannst du auf Deutsch oder Englisch.
 
 {% include sketch-to-game.html
    sketch="/assets/img/2026-11-14-sketch-to-game/slide-sketch.jpg"

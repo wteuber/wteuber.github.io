@@ -100,3 +100,25 @@ h1 {
   background: radial-gradient(circle at 33% 27%, white 0px, rgb(25, 206, 25) 17%, rgb(0, 90, 0) 75%, rgb(25, 206, 25) 100%);
 }
 
+
+/* Language switch: the pressed language is lit, like a hovered button. */
+.lang {
+  display: inline-block;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.lang .button {
+  margin: 4px 0;
+  padding: 5px 10px;
+  font-family: inherit;
+}
+
+.lang .button:first-child { border-radius: 6px 0 0 6px; }
+.lang .button:last-child { border-radius: 0 6px 6px 0; }
+
+.lang .button[aria-pressed="true"] {
+  opacity: 1;
+  font-weight: bold;
+  cursor: default;
+}
