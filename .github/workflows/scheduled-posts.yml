@@ -37,8 +37,12 @@ jobs:
           case "$built_at" in
             [0-9][0-9][0-9][0-9]-*T*Z) last_build=$(date -d "$built_at" +%F) ;;
           esac
-          due=$(gh api "repos/$REPO/contents/_posts" --jq '.[].name[:10]' |
-            awk -v from="$last_build" -v to="$today" '$0 > from && $0 <= to')
+          # Posts live in _posts and, per translated language, in _posts_<lang>.
+          dirs=$(gh api "repos/$REPO/contents" \
+            --jq '.[] | select(.type == "dir" and (.name | test("^_posts(_[a-z]+)?$"))) | .name')
+          due=$(for dir in $dirs; do
+                  gh api "repos/$REPO/contents/$dir" --jq '.[].name[:10]'
+                done | awk -v from="$last_build" -v to="$today" '$0 > from && $0 <= to' | sort -u)
           if [ -n "$due" ]; then
             echo "Posts due since last build (${last_build:-none}): $due"
             gh api -X POST "repos/$REPO/pages/builds"

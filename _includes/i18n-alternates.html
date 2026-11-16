@@ -1,0 +1,25 @@
+{%- comment -%}
+  Included by _layouts/base.html. Sets `i18n_alts`: this page and its translations,
+  i.e. every page or post sharing its `ref`. Used by the hreflang tags and the
+  redirect (i18n-head.html) and by the language switcher (nav.html).
+  Translations dated in the future are left out until they are published (Jekyll
+  keeps them in custom collections, see i18n-posts.html).
+{%- endcomment -%}
+{%- assign i18n_alts = "" | split: "" -%}
+{%- if page.ref -%}
+  {%- comment -%} Only the first page of the paginated home page has a translation. {%- endcomment -%}
+  {%- unless paginator and paginator.page > 1 -%}
+    {%- assign i18n_docs = site.posts | concat: site.pages -%}
+    {%- for l in site.languages offset: 1 -%}
+      {%- assign i18n_coll = "posts_" | append: l -%}
+      {%- assign i18n_coll_docs = site[i18n_coll] -%}
+      {%- if i18n_coll_docs -%}
+        {%- unless site.future -%}
+          {%- assign i18n_coll_docs = i18n_coll_docs | where_exp: "doc", "doc.date <= site.time" -%}
+        {%- endunless -%}
+        {%- assign i18n_docs = i18n_docs | concat: i18n_coll_docs -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- assign i18n_alts = i18n_docs | where: "ref", page.ref -%}
+  {%- endunless -%}
+{%- endif -%}

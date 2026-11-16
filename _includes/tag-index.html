@@ -1,0 +1,28 @@
+{%- comment -%} Lists include.posts (newest first) grouped by tag. {%- endcomment -%}
+{%- include i18n.html -%}
+{%- assign tags_list = include.posts | map: "tags" | join: "," | split: "," | uniq | sort -%}
+
+{%- for tag in tags_list -%}
+    {%- assign tagged = include.posts | where_exp: "post", "post.tags contains tag" -%}
+    <a href="#{{- tag -}}" class="btn btn-primary tag-btn"><i class="fas fa-tag" aria-hidden="true"></i>&nbsp;{{- tag -}}&nbsp;({{ tagged.size }})</a>
+{%- endfor -%}
+
+<div id="full-tags-list">
+{%- for tag in tags_list -%}
+    {%- assign tagged = include.posts | where_exp: "post", "post.tags contains tag" -%}
+    <h2 id="{{- tag -}}" class="linked-section">
+        <i class="fas fa-tag" aria-hidden="true"></i>
+        &nbsp;{{- tag -}}&nbsp;({{ tagged.size }})
+    </h2>
+    <div class="post-list">
+        {%- for post in tagged -%}
+            <div class="tag-entry">
+                <a href="{{ post.url | relative_url }}"{% if post.lang != lang %} lang="{{ post.lang }}"{% endif %}>{{- post.title | strip_html -}}</a>
+                <div class="entry-date">
+                    <time datetime="{{- post.date | date_to_xmlschema -}}">{% include i18n-date.html date=post.date %}</time>
+                </div>
+            </div>
+        {%- endfor -%}
+    </div>
+{%- endfor -%}
+</div>

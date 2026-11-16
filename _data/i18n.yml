@@ -1,0 +1,53 @@
+# Interface text per language. The keys of this file are the site's languages
+# (see `languages` in _config.yml); `prefix` is where that language's pages live.
+
+en:
+  name: "English"
+  prefix: ""
+  months: [January, February, March, April, May, June, July, August, September, October, November, December]
+  date_format: "[month] [day], [year]"
+  by: "By"
+  posted_on: "Posted on"
+  last_updated: "Last updated"
+  read_more: "Read More"
+  tags: "Tags"
+  newer_posts: "Newer Posts"
+  older_posts: "Older Posts"
+  previous_post: "Previous Post"
+  next_post: "Next Post"
+  search: "Search"
+  exit_search: "Exit search"
+  night_mode: "Toggle Night Mode"
+  minute_read: "minute read"
+  share: "Share"
+  sketch: "sketch"
+  game: "game"
+  slider_label: "Slide between the paper sketch and the game"
+  slider_hint: "Drag the handle to compare the sketch and the game"
+  in_language: {en: "in English", de: "in German"}
+
+de:
+  name: "Deutsch"
+  prefix: "/de"
+  months: [Januar, Februar, März, April, Mai, Juni, Juli, August, September, Oktober, November, Dezember]
+  date_format: "[day]. [month] [year]"
+  by: "Von"
+  posted_on: "Veröffentlicht am"
+  last_updated: "Zuletzt aktualisiert am"
+  read_more: "Weiterlesen"
+  tags: "Tags"
+  newer_posts: "Neuere Beiträge"
+  older_posts: "Ältere Beiträge"
+  previous_post: "Vorheriger Beitrag"
+  next_post: "Nächster Beitrag"
+  search: "Suche"
+  exit_search: "Suche schließen"
+  night_mode: "Nachtmodus umschalten"
+  minute_read: "Min. Lesezeit"
+  share: "Teilen"
+  sketch: "Skizze"
+  game: "Spiel"
+  slider_label: "Zwischen der Papierskizze und dem Spiel hin- und herschieben"
+  slider_hint: "Zieh am Regler, um Skizze und Spiel zu vergleichen"
+  in_language: {en: "auf Englisch", de: "auf Deutsch"}
+  feed_description: "Diese Website ist der virtuelle Beweis dafür, dass ich großartig bin"

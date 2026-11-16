@@ -7,6 +7,7 @@ thumbnail-img: /assets/img/2026-11-14-sketch-to-game/thumbnail.jpg
 share-img: /assets/img/2026-11-14-sketch-to-game/share.jpg
 tags: [games, kids, family, claude-code]
 author: Wolfgang Teuber
+ref: sketch-to-game
 ---
 
 Both of my kids, aged 10 and 7, had an idea for a game of their own, and they knew exactly how it should work. So we sat down together. Each of them told me all about their game and drew a rough sketch of it on paper. Then I used Claude Code with the Fable 5.2 model to help them turn the idea and the sketch into a real game that runs in the browser.

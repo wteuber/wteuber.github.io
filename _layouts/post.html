@@ -1,6 +1,7 @@
 ---
 layout: base
 ---
+{%- include i18n.html -%}
 
 {% include header.html type="post" %}
 
@@ -45,9 +46,9 @@ layout: base
 
       {% if page.tags.size > 0 %}
         <div class="blog-tags">
-          <span>Tags:</span>
+          <span>{{ t.tags }}:</span>
           {% for tag in page.tags %}
-            <a href="{{ '/tags' | relative_url }}#{{- tag -}}">{{- tag -}}</a>
+            <a href="{{ t.prefix | append: '/tags' | relative_url }}#{{- tag -}}">{{- tag -}}</a>
           {% endfor %}
         </div>
       {% endif %}
@@ -64,20 +65,26 @@ layout: base
         {% include social-share.html %}
       {% endif %}
 
+      {% comment %}
+        Jekyll links documents of custom collections (posts_de) to neighbours dated
+        in the future; hide that link until the neighbour is published.
+      {% endcomment %}
+      {% assign next_post = page.next %}
+      {% if next_post and site.future != true and next_post.date > site.time %}{% assign next_post = nil %}{% endif %}
       <ul class="pagination blog-pager">
         {% if page.previous.url %}
         <li class="page-item previous">
           <a class="page-link" href="{{ page.previous.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{page.previous.title | strip_html | xml_escape}}">
-            <i class="fas fa-arrow-left" alt="Previous Post"></i>
-            <span class="d-none d-sm-inline-block">Previous Post</span>
+            <i class="fas fa-arrow-left" alt="{{ t.previous_post }}"></i>
+            <span class="d-none d-sm-inline-block">{{ t.previous_post }}</span>
           </a>
         </li>
         {% endif %}
-        {% if page.next.url %}
+        {% if next_post.url %}
         <li class="page-item next">
-          <a class="page-link" href="{{ page.next.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{page.next.title | strip_html | xml_escape}}">
-            <span class="d-none d-sm-inline-block">Next Post</span>
-            <i class="fas fa-arrow-right" alt="Next Post"></i>
+          <a class="page-link" href="{{ next_post.url | relative_url }}" data-toggle="tooltip" data-placement="top" title="{{ next_post.title | strip_html | xml_escape }}">
+            <span class="d-none d-sm-inline-block">{{ t.next_post }}</span>
+            <i class="fas fa-arrow-right" alt="{{ t.next_post }}"></i>
           </a>
         </li>
         {% endif %}

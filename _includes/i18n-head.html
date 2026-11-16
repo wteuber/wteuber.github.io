@@ -1,0 +1,44 @@
+{%- comment -%}
+  hreflang links for search engines, and a redirect to the visitor's language:
+  the language they last picked in the switcher, otherwise the first of their
+  browser's languages that this page is translated into. This only happens when a
+  visitor arrives from outside the site: following a link within the site (such
+  as the language switcher) never redirects, even if storage is blocked. Crawlers
+  are never redirected, so each language version stays indexable.
+{%- endcomment -%}
+{%- if i18n_alts.size > 1 -%}
+  {%- capture i18n_map -%}
+    {%- for l in site.languages -%}
+      {%- assign alt = i18n_alts | where: "lang", l | first -%}
+      {%- if alt -%}"{{ l }}":"{{ alt.url | relative_url }}",{%- endif -%}
+    {%- endfor -%}
+  {%- endcapture %}
+  {% for l in site.languages -%}
+    {%- assign alt = i18n_alts | where: "lang", l | first -%}
+    {%- if alt %}
+  <link rel="alternate" hreflang="{{ l }}" href="{{ alt.url | absolute_url }}">
+      {%- if forloop.first %}
+  <link rel="alternate" hreflang="x-default" href="{{ alt.url | absolute_url }}">
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor %}
+  <script>
+    (function () {
+      var current = "{{ lang }}", pages = { {{ i18n_map }} };
+      if (/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent)) return;
+      try { if (new URL(document.referrer).origin === location.origin) return; } catch (e) {}
+      var wanted = null;
+      try { wanted = localStorage.getItem("lang"); } catch (e) {}
+      if (!wanted) {
+        var prefs = navigator.languages || [navigator.language || ""];
+        for (var i = 0; i < prefs.length; i++) {
+          var code = String(prefs[i]).toLowerCase().split("-")[0];
+          if (pages[code]) { wanted = code; break; }
+        }
+      }
+      if (wanted && wanted !== current && pages[wanted]) {
+        location.replace(pages[wanted] + location.search + location.hash);
+      }
+    })();
+  </script>
+{%- endif -%}

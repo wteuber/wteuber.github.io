@@ -1,4 +1,3 @@
-{% assign date_format = site.date_format | default: "%B %-d, %Y" %}
 
 {% if page.cover-img %}
   <div id="header-big-imgs" data-num-img={% if page.cover-img.first %}{{ page.cover-img.size }}{% else %}1{% endif %}
@@ -35,13 +34,13 @@
           
           {% if include.type == "post" %} 
             {% if page.author %}
-              By <strong>{{ page.author | strip_html }}</strong><br>
+              {{ t.by }} <strong>{{ page.author | strip_html }}</strong><br>
             {% endif%}
-            <span class="post-meta">Posted on {{ page.date | date: date_format }}</span>
+            <span class="post-meta">{{ t.posted_on }} {% include i18n-date.html date=page.date %}</span>
             {% if page.last-updated %}
               <span class="post-meta">
                 <span class="d-none d-md-inline middot">&middot;</span>
-                Last updated {{ page.last-updated | date: date_format }}
+                {{ t.last_updated }} {% include i18n-date.html date=page.last-updated %}
               </span>
             {% endif %}
             {% if page.readtime %}

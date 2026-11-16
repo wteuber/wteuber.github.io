@@ -5,6 +5,7 @@
           sketch_alt, game_alt, url (link to the game), label (button text),
           game_id (optional analytics name for the play_game event; defaults to label).
 {% endcomment %}
+{%- include i18n.html -%}
 {% unless sketch_to_game_assets %}{% assign sketch_to_game_assets = true %}
 <style>
 .stg{
@@ -101,11 +102,11 @@ document.addEventListener('DOMContentLoaded', function () {
   <div class="stg__frame" style="aspect-ratio:{{ include.ratio }}">
     <img src="{{ include.game }}" alt="{{ include.game_alt }}" loading="lazy">
     <img class="stg__sketch" src="{{ include.sketch }}" alt="{{ include.sketch_alt }}" loading="lazy">
-    <span class="stg__tag stg__tag--sketch">sketch</span>
-    <span class="stg__tag stg__tag--game">game</span>
-    <input class="stg__range" type="range" min="0" max="100" step="0.5" value="50" aria-label="Slide between the paper sketch and the game">
+    <span class="stg__tag stg__tag--sketch">{{ t.sketch }}</span>
+    <span class="stg__tag stg__tag--game">{{ t.game }}</span>
+    <input class="stg__range" type="range" min="0" max="100" step="0.5" value="50" aria-label="{{ t.slider_label }}">
     <span class="stg__line"><span class="stg__knob" aria-hidden="true">&#8596;</span></span>
   </div>
-  <p class="stg__hint">Drag the handle to compare the sketch and the game</p>
+  <p class="stg__hint">{{ t.slider_hint }}</p>
   <a class="stg__play" href="{{ include.url }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}</a>
 </div>

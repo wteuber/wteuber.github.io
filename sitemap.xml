@@ -1,0 +1,46 @@
+---
+layout: null
+sitemap: false
+---
+{%- comment -%}
+  Replaces the sitemap jekyll-sitemap would generate (it steps aside when this file
+  exists). Same template, except that documents dated in the future are left out:
+  Jekyll keeps them in custom collections such as posts_de.
+{%- endcomment -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% assign collections = site.collections | where_exp:'collection','collection.output != false' %}
+  {% for collection in collections %}
+    {% assign docs = collection.docs | where_exp:'doc','doc.sitemap != false' %}
+    {% unless site.future %}{% assign docs = docs | where_exp:'doc','doc.date <= site.time' %}{% endunless %}
+    {% for doc in docs %}
+      <url>
+        <loc>{{ doc.url | replace:'/index.html','/' | absolute_url | xml_escape }}</loc>
+        {% if doc.last_modified_at or doc.date %}
+          <lastmod>{{ doc.last_modified_at | default: doc.date | date_to_xmlschema }}</lastmod>
+        {% endif %}
+      </url>
+    {% endfor %}
+  {% endfor %}
+
+  {% assign pages = site.html_pages | where_exp:'doc','doc.sitemap != false' | where_exp:'doc','doc.url != "/404.html"' %}
+  {% for page in pages %}
+    <url>
+      <loc>{{ page.url | replace:'/index.html','/' | absolute_url | xml_escape }}</loc>
+      {% if page.last_modified_at %}
+        <lastmod>{{ page.last_modified_at | date_to_xmlschema }}</lastmod>
+      {% endif %}
+    </url>
+  {% endfor %}
+
+  {% for file in site.static_files %}
+    {% if file.sitemap != false and file.name != "404.html" %}
+      {% if file.extname == ".html" or file.extname == ".htm" or file.extname == ".xhtml" or file.extname == ".pdf" %}
+    <url>
+      <loc>{{ file.path | replace:'/index.html','/' | absolute_url | xml_escape }}</loc>
+      <lastmod>{{ file.modified_time | date_to_xmlschema }}</lastmod>
+    </url>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</urlset>

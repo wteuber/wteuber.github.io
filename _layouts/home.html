@@ -1,10 +1,20 @@
 ---
 layout: page
 ---
+{%- include i18n.html -%}
 
 {{ content }}
 
-{% assign posts = paginator.posts | default: site.posts %}
+{% comment %}
+  English is paginated by jekyll-paginate (root index.html only). Other languages
+  list their posts plus the untranslated English ones, unpaginated.
+{% endcomment %}
+{% if lang == site.languages.first %}
+  {% assign posts = paginator.posts | default: site.posts %}
+{% else %}
+  {% include i18n-posts.html %}
+  {% assign posts = i18n_listing %}
+{% endif %}
 
 <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
 <ul class="posts-list list-unstyled" role="list">
@@ -37,7 +47,7 @@ layout: page
       {% endif %}
 
       <a href="{{ post.url | absolute_url }}">
-        <h2 class="post-title">{{ post.title | strip_html }}</h2>
+        <h2 class="post-title"{% if post.lang != lang %} lang="{{ post.lang }}"{% endif %}>{{ post.title | strip_html }}</h2>
 
         {% if post.subtitle %}
           <h3 class="post-subtitle">
@@ -47,11 +57,11 @@ layout: page
       </a>
 
       {% if post.author %}
-        <span>By <strong>{{ post.author | strip_html }}</strong></span>
+        <span>{{ t.by }} <strong>{{ post.author | strip_html }}</strong></span>
       {% endif %}
       <p class="post-meta">
-        {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
-        Posted on {{ post.date | date: date_format }}
+        {{ t.posted_on }} {% include i18n-date.html date=post.date %}
+        {%- if post.lang != lang %} &middot; {{ t.in_language[post.lang] }}{% endif %}
       </p>
 
       {% if thumbnail != "" %}
@@ -76,19 +86,19 @@ layout: page
         {{ post.excerpt | strip_html | truncatewords: excerpt_length }}
         {% assign excerpt_word_count = post.excerpt | number_of_words %}
         {% if post.content != post.excerpt or excerpt_word_count > excerpt_length %}
-          <a href="{{ post.url | absolute_url }}" class="post-read-more">[Read&nbsp;More]</a>
+          <a href="{{ post.url | absolute_url }}" class="post-read-more">[{{ t.read_more | replace: " ", "&nbsp;" }}]</a>
         {% endif %}
       </div>
       {% endunless %}
 
       {% if site.feed_show_tags != false and post.tags.size > 0 %}
       <div class="blog-tags">
-        <span>Tags:</span>
+        <span>{{ t.tags }}:</span>
         <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
         <ul class="d-inline list-inline" role="list">
           {% for tag in post.tags %}
           <li class="list-inline-item">
-            <a href="{{ '/tags' | absolute_url }}#{{- tag -}}">{{- tag -}}</a>
+            <a href="{{ t.prefix | append: '/tags' | absolute_url }}#{{- tag -}}">{{- tag -}}</a>
           </li>
           {% endfor %}
         </ul>
@@ -105,16 +115,16 @@ layout: page
   {% if paginator.previous_page %}
   <li class="page-item previous">
     <a class="page-link" href="{{ paginator.previous_page_path | absolute_url }}">
-      <i class="fas fa-arrow-left" alt="Newer Posts"></i>
-      <span class="d-none d-sm-inline-block">Newer Posts</span>
+      <i class="fas fa-arrow-left" alt="{{ t.newer_posts }}"></i>
+      <span class="d-none d-sm-inline-block">{{ t.newer_posts }}</span>
     </a>
   </li>
   {% endif %}
   {% if paginator.next_page %}
   <li class="page-item next">
     <a class="page-link" href="{{ paginator.next_page_path | absolute_url }}">
-      <span class="d-none d-sm-inline-block">Older Posts</span>
-      <i class="fas fa-arrow-right" alt="Older Posts"></i>
+      <span class="d-none d-sm-inline-block">{{ t.older_posts }}</span>
+      <i class="fas fa-arrow-right" alt="{{ t.older_posts }}"></i>
     </a>
   </li>
   {% endif %}

@@ -2,13 +2,15 @@
 layout: null
 ---
 [ 
-{% for post in site.posts %} 
+{% assign all_posts = site.posts %}
+{% for lang in site.languages offset: 1 %}{% include i18n-posts.html %}{% assign all_posts = all_posts | concat: i18n_posts %}{% endfor %}
+{% for post in all_posts %} 
 { 
 "title"    : "{% if post.title != "" %}{{ post.title | strip_html | escape }}{% else %}{{ post.excerpt | strip_html | escape | strip }}{%endif%}", 
 "desc"     : "{% if post.title != "" %}{{ post.title | strip_html | escape }}{% else %}{{ post.excerpt | strip_html | escape | strip }}{%endif%}", 
 "category" : "{{ post.tags | join: ', ' }}", 
 "url"      : "{{ site.baseurl }}{{ post.url | escape }}", 
-"date"     : "{{ post.date | date: "%B %e, %Y" | default: "January 1, 1970" }}" 
+{% assign t = site.data.i18n[post.lang] | default: site.data.i18n.en %}"date"     : "{% include i18n-date.html date=post.date %}" 
 }, 
 {% endfor %} 
 {% for page in site.html_pages %}{% if page.title != "{title}" and page.title != "404 - Page not found" %} 

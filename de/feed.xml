@@ -1,0 +1,4 @@
+---
+layout: null
+---
+{%- include i18n.html -%}{%- include i18n-posts.html -%}{%- include feed.xml posts=i18n_posts home='/de/' self='/de/feed.xml' -%}

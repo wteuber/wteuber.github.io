@@ -238,9 +238,6 @@ giscus:
 # --- Misc --- #
 ################
 
-# Ruby Date Format to show dates of posts
-date_format: "%B %-d, %Y"
-
 # Facebook App ID
 #fb_app_id: ""
 
@@ -270,9 +267,43 @@ defaults:
       social-share: true # add social media sharing buttons to all blog posts
   -
     scope:
+      path: ""
+      type: "posts_de"
+    values:
+      layout: "post"
+      lang: "de"
+      comments: true
+      social-share: true
+  -
+    scope:
       path: "" # any file that's not a post will be a "page" layout by default
     values:
       layout: "page"
+      lang: "en"
+  -
+    scope:
+      path: "de"
+    values:
+      lang: "de"
+
+# --- Languages --- #
+# English is the default language and lives at the site root. Every other language
+# has its own folder of pages (de/) and its own collection of posts (_posts_de/),
+# published under /de/. A page or post and its translations share the same `ref`
+# in their front matter; that links them for the language switcher, the hreflang
+# tags and the redirect to the visitor's preferred language (_includes/i18n-head.html).
+# A translated language's home page and tag index also list the untranslated
+# English posts (_includes/i18n-posts.html).
+# Translated posts keep the date of the original in their filename, so they are
+# scheduled together with it. Translated headings keep the original's IDs
+# ({#id} after the heading), so deep links still work after the redirect, which
+# keeps the #fragment. A translated post shares its original's comment thread.
+# UI strings live in _data/i18n.yml.
+languages: ["en", "de"]
+collections:
+  posts_de:
+    output: true
+    permalink: /de/:year-:month-:day-:title/
 
 # Exclude these files from production site
 exclude:

@@ -1,0 +1,5 @@
+{%- comment -%} Formats include.date in the page's language. {%- endcomment -%}
+{%- assign i18n_month = include.date | date: "%-m" | minus: 1 -%}
+{%- assign i18n_day = include.date | date: "%-d" -%}
+{%- assign i18n_year = include.date | date: "%Y" -%}
+{{- t.date_format | replace: "[month]", t.months[i18n_month] | replace: "[day]", i18n_day | replace: "[year]", i18n_year -}}

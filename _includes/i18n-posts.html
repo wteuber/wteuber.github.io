@@ -1,0 +1,29 @@
+{%- comment -%}
+  Sets the post lists for `lang` (set by i18n.html):
+    i18n_posts    published posts written in `lang`, newest first
+    i18n_listing  i18n_posts plus, for a translated language, every post of the
+                  default language that has no translation into `lang`; for the
+                  home page and tag index, so no post is hidden from readers who
+                  were redirected to their language
+  Jekyll keeps future-dated documents in custom collections (it only skips writing
+  their pages), so they are filtered out here unless the build runs with --future.
+{%- endcomment -%}
+{%- if lang == site.languages.first -%}
+  {%- assign i18n_posts = site.posts -%}
+  {%- assign i18n_listing = site.posts -%}
+{%- else -%}
+  {%- assign i18n_coll = "posts_" | append: lang -%}
+  {%- assign i18n_posts = site[i18n_coll] -%}
+  {%- unless site.future -%}
+    {%- assign i18n_posts = i18n_posts | where_exp: "post", "post.date <= site.time" -%}
+  {%- endunless -%}
+  {%- assign i18n_posts = i18n_posts | reverse -%}
+  {%- assign i18n_refs = i18n_posts | map: "ref" | compact -%}
+  {%- assign i18n_listing = i18n_posts -%}
+  {%- for post in site.posts -%}
+    {%- unless post.ref and i18n_refs contains post.ref -%}
+      {%- assign i18n_listing = i18n_listing | push: post -%}
+    {%- endunless -%}
+  {%- endfor -%}
+  {%- assign i18n_listing = i18n_listing | sort: "date" | reverse -%}
+{%- endif -%}
