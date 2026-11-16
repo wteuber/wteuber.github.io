@@ -1,8 +1,9 @@
 {%- comment -%}
   Language pill next to the night mode button (styles in assets/css/lang-switch.css),
   built to look and behave like it: the pill shows the flag of the page's language
-  with the knob on the left. Hovering previews the other language (its flag fades in
-  and the knob slides right); clicking keeps that state and opens the translation.
+  with a globe as the slider on the left, where the other pill has its sun or moon.
+  Hovering previews the other language (its flag fades in and the globe slides
+  right); clicking keeps that state and opens the translation.
   Included twice by nav.html: next to the night mode button, and in the collapsed
   menu for narrow screens (the CSS shows one of them). Shown only when the page has
   a translation (`i18n_alts`, from i18n-alternates.html). With more than two
@@ -20,7 +21,7 @@
    data-lang="{{ ls_alt.lang }}">
   <span class="lang-switch__flag lang-switch__flag--current lang-switch__flag--{{ lang }}" aria-hidden="true"></span>
   <span class="lang-switch__flag lang-switch__flag--other lang-switch__flag--{{ ls_alt.lang }}" aria-hidden="true"></span>
-  <span class="lang-switch__knob" aria-hidden="true"></span>
+  <span class="lang-switch__knob" aria-hidden="true">🌐</span>
 </a>
 {%- unless lang_switch_script -%}{%- assign lang_switch_script = true %}
 <script>
