@@ -10,7 +10,8 @@
   var REPO = 'https://github.com/wteuber/wteuber.github.io';
   var HOST = 'wteuber.com';
 
-  var screen = document.getElementById('screen');
+  var term = document.getElementById('screen');
+  var screen = term; // where output goes; a detached div while output is redirected
   var titleEl = document.getElementById('title');
 
   var state = { cwd: HOME, oldpwd: HOME, last: 0, dirty: false, history: [] };
@@ -329,14 +330,18 @@
     if (job && e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
       e.preventDefault();
       job.cancelled = true;
-      var j = job;
-      out('^C');
       job = null;
+      screen = term; // in case the interrupted command was redirected
+      out('^C');
       if (repl) repl = null; else state.last = 130;
       showPrompt();
-      void j;
     }
   });
+
+  // Async commands call this after each await, so Ctrl+C stops them for real.
+  function alive(j) { if (j && j.cancelled) throw new Error('^C'); }
+
+  function shellEscape(s) { return s.replace(/([\s\\'"*?;&|>])/g, '\\$1'); }
 
   screen.addEventListener('click', function (e) {
     if (e.target.closest('a')) return;
@@ -346,22 +351,26 @@
 
   function complete() {
     var v = input.value;
-    var m = v.match(/^(.*?)(\S*)$/);
+    var m = v.match(/^(.*?)((?:\\.|[^\s\\])*)$/);
+    if (!m) return;
     var before = m[1], word = m[2];
+    var raw = word.replace(/\\(.)/g, '$1');
     var candidates = [];
     if (!before.trim()) {
       Object.keys(commands).sort().forEach(function (k) {
         if (k.indexOf(word) === 0) candidates.push({ fill: k + ' ', show: k });
       });
     } else {
-      var slash = word.lastIndexOf('/');
-      var dirPart = slash >= 0 ? word.slice(0, slash + 1) : '';
-      var prefix = word.slice(slash + 1);
+      var slash = raw.lastIndexOf('/');
+      var dirPart = slash >= 0 ? raw.slice(0, slash + 1) : '';
+      var prefix = raw.slice(slash + 1);
       var dir = resolve(dirPart || '.');
       if (!dir || !dir.dir) return;
       Array.from(dir.children.keys()).sort().forEach(function (name) {
         var ch = dir.children.get(name);
-        if (name.indexOf(prefix) === 0) candidates.push({ fill: dirPart + name + (ch.dir ? '/' : ' '), show: name + (ch.dir ? '/' : '') });
+        if (name.indexOf(prefix) === 0) {
+          candidates.push({ fill: shellEscape(dirPart + name) + (ch.dir ? '/' : ' '), show: name + (ch.dir ? '/' : '') });
+        }
       });
     }
     if (!candidates.length) return;
@@ -381,6 +390,8 @@
 
   // ----------------------------------------------------------------- parser
 
+  // Returns [{ v: text, q: true if any part was quoted or escaped }].
+  // Quoted words are never globbed, like in zsh.
   function tokenize(s) {
     var tokens = [], cur = '', quote = null, has = false;
     for (var i = 0; i < s.length; i++) {
@@ -392,13 +403,13 @@
       } else if (ch === '\\' && i + 1 < s.length) {
         cur += s[++i]; has = true;
       } else if (/\s/.test(ch)) {
-        if (cur || has) tokens.push(cur);
+        if (cur || has) tokens.push({ v: cur, q: has });
         cur = ''; has = false;
       } else {
         cur += ch;
       }
     }
-    if (cur || has) tokens.push(cur);
+    if (cur || has) tokens.push({ v: cur, q: has });
     return tokens;
   }
 
@@ -435,22 +446,22 @@
   async function single(segment) {
     var tokens = tokenize(segment.trim());
     if (!tokens.length) return 0;
-    var redirect = tokens.findIndex(function (t) { return t === '>' || t === '>>' || /^\d?>/.test(t); });
+    var redirect = tokens.findIndex(function (t) { return !t.q && /^\d?>/.test(t.v); });
     if (redirect >= 0) tokens = tokens.slice(0, redirect);
-    var name = tokens[0];
+    if (!tokens.length) return 0;
+    var name = tokens[0].v;
     var args = [];
     for (var i = 1; i < tokens.length; i++) {
-      var g = glob(tokens[i]);
-      if (!g) { out('zsh: no matches found: ' + tokens[i]); return 1; }
+      var g = tokens[i].q ? [tokens[i].v] : glob(tokens[i].v);
+      if (!g) { out('zsh: no matches found: ' + tokens[i].v); return 1; }
       args = args.concat(g);
     }
     var handler = commands[name];
     if (!handler) return notFound(name, args);
     if (redirect >= 0) {
       // Pretend it went to the file. It didn't: `ls` won't show it.
-      var realOut = screen;
       screen = document.createElement('div');
-      try { return (await handler(args, name)) || 0; } finally { screen = realOut; state.dirty = true; }
+      try { return (await handler(args, name)) || 0; } finally { screen = term; state.dirty = true; }
     }
     return (await handler(args, name)) || 0;
   }
@@ -519,6 +530,7 @@
   }
 
   async function cmdLs(args) {
+    var myJob = job;
     var o = { all: false, almost: false, format: 'C', sort: 'name', reverse: false, human: false,
       recursive: false, classify: false, slash: false, directory: false, color: true };
     var operands = [];
@@ -592,6 +604,7 @@
       dirs.forEach(function (e) { collect(e.node, o.recursive); });
       if (wanted.length > 40) line(c('c-dim', 'reading ' + wanted.length + ' files…'), 'ls-wait');
       await Promise.all(wanted.map(fileSize));
+      alive(myJob);
       screen.querySelectorAll('.ls-wait').forEach(function (el) { el.remove(); });
     }
 
@@ -664,6 +677,7 @@
     if (files.length) block(render(await sorted(files), false));
 
     async function listDir(label, dir, header) {
+      alive(myJob);
       var entries = [];
       if (o.all) {
         entries.push({ name: '.', node: dir });
@@ -1006,9 +1020,10 @@
     },
     exit: async function () {
       out('logout\nConnection to ' + HOST + ' closed.');
+      await sleep(900);
+      // Only forget the session once leaving can no longer be cancelled.
       try { sessionStorage.removeItem(STORE); } catch (e) { /* nothing to forget */ }
       window.removeEventListener('pagehide', save);
-      await sleep(900);
       location.href = base + '/';
       return 0;
     },
@@ -1176,7 +1191,7 @@
     var number = false, names = [];
     args.forEach(function (a) { if (a === '-n') number = true; else names.push(a); });
     if (!names.length) { out('usage: cat [-n] file ...'); return 1; }
-    var code = 0, n = 0;
+    var code = 0, n = 0, myJob = job;
     for (var i = 0; i < names.length; i++) {
       var f = names[i];
       var node = resolve(f);
@@ -1192,7 +1207,8 @@
         var r = await fetch(url(node));
         if (!r.ok) throw new Error(r.status);
         text = await r.text();
-      } catch (e) { out('cat: ' + f + ': Input/output error'); code = 1; continue; }
+      } catch (e) { alive(myJob); out('cat: ' + f + ': Input/output error'); code = 1; continue; }
+      alive(myJob);
       var lines = text.replace(/\n$/, '').split('\n');
       var rest = lines.length - CAT_MAX_LINES;
       if (rest > 0) lines = lines.slice(0, CAT_MAX_LINES);
@@ -1289,32 +1305,29 @@
     return prettyPath(to);
   }
 
-  screen.addEventListener('click', function (e) {
+  // Clicking a folder, a changed #hash, or arriving from another folder's
+  // page all type `cd <dir> && ls` for you, through the normal run().
+  function navigate(path) {
+    if (job || path === state.cwd) return false;
+    repl = null;
+    var cmd = 'cd ' + shellEscape(relative(state.cwd, path)) + ' && ls';
+    if (input) freeze(cmd); else echo(cmd);
+    run(cmd);
+    return true;
+  }
+
+  term.addEventListener('click', function (e) {
     var a = e.target.closest('a[data-dir]');
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
     var dir = lookup(a.getAttribute('data-dir'));
-    if (!dir) return;
-    if (a.getAttribute('href').indexOf('#') >= 0) {
-      // No page of its own: change directory right here.
-      e.preventDefault();
-      if (job) return;
-      var cmd = 'cd ' + relative(state.cwd, dir.path);
-      if (input) freeze(cmd); else echo(cmd);
-      chdir(dir.path);
-      echo('ls');
-      state.history.push(cmd, 'ls');
-      cmdLs([]).then(function (code) { state.last = code; showPrompt(); });
-    }
+    if (!dir || a.getAttribute('href').indexOf('#') < 0) return;
+    // No page of its own: change directory right here.
+    e.preventDefault();
+    navigate(dir.path);
   });
 
   window.addEventListener('hashchange', function () {
-    var p = hashDir() || pageDir();
-    if (p === state.cwd || job) return;
-    var cmd = 'cd ' + relative(state.cwd, p);
-    if (input) freeze(cmd); else echo(cmd);
-    chdir(p);
-    echo('ls');
-    cmdLs([]).then(function (code) { state.last = code; showPrompt(); });
+    if (root) navigate(hashDir() || pageDir());
   });
 
   window.addEventListener('pagehide', save);
@@ -1340,30 +1353,19 @@
       state.history = saved.history || [];
       screen.querySelectorAll('input').forEach(function (el) { el.remove(); });
       screen.querySelectorAll('.line-input').forEach(function (el) { el.className = ''; });
-    } else {
-      state.cwd = target;
-      updateTitle();
-      return login().then(function () { return boot2(saved, target); });
+      chdir(state.cwd);
+      // Arriving from another folder's page replays the `cd` and lists it.
+      if (!navigate(target)) showPrompt();
+      return;
     }
-    return boot2(saved, target);
-  }).then(function (code) {
-    state.last = code || 0;
-    chdir(state.cwd);
-    showPrompt();
+    // A fresh login just shows the prompt.
+    state.cwd = target;
+    updateTitle();
+    return login().then(function () {
+      chdir(state.cwd);
+      showPrompt();
+    });
   }).catch(function (e) {
     out('ssh: connect to host ' + HOST + ': ' + e.message);
   });
-
-  function boot2(saved, target) {
-    if (!saved || state.cwd !== target) {
-      if (saved) {
-        echo('cd ' + relative(state.cwd, target));
-        state.oldpwd = state.cwd;
-      }
-      state.cwd = target;
-      echo('ls');
-      return cmdLs([]);
-    }
-    return state.last;
-  }
 })();
