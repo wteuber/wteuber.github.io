@@ -1264,7 +1264,7 @@
     ['cat [-n] file ...', 'print files'],
     ['open glob ...', 'open files or folders in a new browser tab'],
     ['code glob ...', 'show their source on GitHub in a new tab'],
-    ['clear', 'clear the screen (Ctrl+L or ⌘K)'],
+    ['clear', 'clear the screen (Ctrl+L or ⌘+K)'],
     ['help', 'show this list'],
     ['exit', 'close the connection']
   ];
