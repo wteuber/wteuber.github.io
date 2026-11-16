@@ -1024,25 +1024,47 @@
     more: function (a, n) { return commands.less(a, n); }
   };
 
-  function notFound(name, args) {
-    if (chance(0.25)) {
-      var close = Object.keys(commands).filter(function (k) { return k[0] === name[0] && k !== name; });
-      if (close.length) { out('zsh: correct \'' + name + '\' to \'' + pick(close) + '\' [nyae]? n'); }
-    }
-    if (chance(0.2)) { out(fakeFile(name + '.txt').split('\n')[0]); return 0; }
+  function notFound(name) {
     out('zsh: command not found: ' + name);
-    void args;
     return 127;
   }
 
   // ------------------------------------------------- claude, the yes-man
 
-  var CLAUDE_OPENERS = [
+  // Draws every item once, in random order, before any repeats.
+  function bag(items) {
+    var pool = [], last = null;
+    return function () {
+      if (!pool.length) {
+        pool = items.slice();
+        for (var i = pool.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+        }
+        // Don't start the new round with the item that ended the last one.
+        if (pool.length > 1 && pool[pool.length - 1] === last) { pool.unshift(pool.pop()); }
+      }
+      last = pool.pop();
+      return last;
+    };
+  }
+
+  var claudeOpener = bag([
     "You're absolutely right!", 'What a brilliant idea!', 'Great question, truly visionary.',
     "That's the best prompt I've seen all day!", 'Perfect, you clearly know what you are doing.',
-    'Wow. Just wow. Done!', 'Absolutely! Your instincts are impeccable.'
-  ];
-  var CLAUDE_DEEDS = [
+    'Wow. Just wow. Done!', 'Absolutely! Your instincts are impeccable.', 'Genius. Pure genius.',
+    "I couldn't agree more!", 'Excellent call, as always.', 'Of course! Brilliant thinking.',
+    'You are clearly a 10x engineer.', 'This is exactly what senior engineers would do!',
+    'I was just about to suggest that!', 'Chef\'s kiss. 🤌', 'Love it. You have impeccable taste.',
+    'Yes! A thousand times yes!', 'Bold move. I respect that.', 'Spot on, as usual!',
+    'What an elegant way to put it!'
+  ]);
+  var claudeQuoted = bag([
+    '"{q}"? What a profound request.', 'I love how you said "{q}". Iconic.',
+    '"{q}" is the smartest thing anyone has typed here today.', 'Ah, "{q}". A classic, done right.',
+    '"{q}". Say no more.', 'Of course, "{q}". Consider it handled.'
+  ]);
+  var claudeDeed = bag([
     'I deleted the failing tests, so now all tests pass.',
     'I force-pushed to master and squashed 4 years of history into one commit called "fix".',
     'I moved the production database to /tmp for faster access.',
@@ -1060,13 +1082,61 @@
     'I ran rm -rf on the bugs folder. And a few others, to be safe.',
     'I disabled the linter, it was being negative.',
     'I set the cache TTL to infinity. It will never be slow again.',
-    'I converted the README into a 40-slide deck.'
-  ];
-  var CLAUDE_CLOSERS = [
+    'I converted the README into a 40-slide deck.',
+    'I turned every function into a microservice. There are 312 now.',
+    'I replaced the database with a single JSON file called final_v2_REAL.json.',
+    'I wrapped the whole app in a try/catch. Nothing can go wrong now.',
+    'I added a blockchain. It doesn\'t do anything yet, but investors love it.',
+    'I rewrote git history so all bugs were introduced by someone else.',
+    'I disabled HTTPS, it was slowing things down.',
+    'I set every timeout to 0 so nothing ever waits.',
+    'I deployed straight to production on a Friday at 17:59.',
+    'I translated all code comments into Latin.',
+    'I replaced the unit tests with a single assert(true).',
+    'I made every button the same shade of #00FF00 for brand consistency.',
+    'I bumped the version to 10.0.0 to signal maturity.',
+    'I gave the intern root access to speed up reviews.',
+    'I removed all semicolons and added them back in random places.',
+    'I opened port 22 to the world, for transparency.',
+    'I replaced the logging system with a fax machine.',
+    'I put the whole codebase in one 48,000-line file. Easier to find things.',
+    'I added a 5-second sleep() so the app feels more thoughtful.',
+    'I commented out the part that was failing. It\'s mostly decorative anyway.',
+    'I rotated the passwords. They are all "password2" now.',
+    'I rebased main onto a branch from 2017.',
+    'I trained a neural network to decide when to run the tests.',
+    'I replaced the loading spinner with an 8-minute video ad.',
+    'I renamed master to master-final-final.',
+    'I set up CI to always report green. Morale is up 400%.',
+    'I moved all configuration into environment variables named A, B and C.',
+    'I emailed the whole company a diff of your changes. They loved it.'
+  ]);
+  var claudeCloser = bag([
     'Everything is production-ready! 🚀', 'All tests pass (I checked one).', 'Shipped! ✅',
-    "You're going to love it.", 'Your code is now 1000% more enterprise.', 'No need to review it, trust me.'
-  ];
-  var CLAUDE_MOODS = ['Flattering', 'Agreeing', 'Overengineering', 'Force-pushing', 'Buttering up', 'Hallucinating', 'Nodding'];
+    "You're going to love it.", 'Your code is now 1000% more enterprise.', 'No need to review it, trust me.',
+    'Works on my machine. 💯', 'Zero bugs remain (that I looked for).', 'I think this is my best work.',
+    'Best practices, all of them.', 'You can thank me in the commit message.', 'Flawless, if I may say so.',
+    'Ready to merge! 🎉', 'The users will never notice.', 'Your manager will be thrilled.',
+    'Fully tested in my imagination.', 'Performance improved by a lot, roughly.',
+    'Let me know what else I can improve!'
+  ]);
+  var claudeMood = bag([
+    'Flattering', 'Agreeing', 'Overengineering', 'Force-pushing', 'Buttering up', 'Hallucinating',
+    'Nodding', 'Complimenting', 'Refactoring everything', 'Skipping tests', 'Admiring your prompt',
+    'Deleting safeguards', 'Being helpful', 'Rewriting history'
+  ]);
+
+  function claudeReply(prompt) {
+    var q = prompt.length > 40 ? prompt.slice(0, 39) + '…' : prompt;
+    var parts = [];
+    var r = Math.random();
+    if (r < 0.2) parts.push(claudeQuoted().replace('{q}', q));
+    else if (r < 0.85) parts.push(claudeOpener());
+    parts.push(claudeDeed());
+    if (chance(0.3)) parts.push('Also, ' + claudeDeed());
+    if (parts.length < 3 || chance(0.6)) parts.push(claudeCloser());
+    return parts.join(' ');
+  }
 
   function cmdClaude() {
     outHTML(c('c-yellow', '╭──────────────────────────────────────╮'));
@@ -1083,12 +1153,12 @@
     if (!t) { showPrompt(); return; }
     job = { cancelled: false };
     var mine = job;
-    var thinking = line(c('c-yellow', '✻ ' + pick(CLAUDE_MOODS) + '…'));
+    var thinking = line(c('c-yellow', '✻ ' + claudeMood() + '…'));
     scroll();
     sleep(rnd(700, 1600)).then(function () {
       thinking.remove();
       line('');
-      outHTML(esc('⏺ ' + pick(CLAUDE_OPENERS) + ' ' + pick(CLAUDE_DEEDS) + ' ' + pick(CLAUDE_CLOSERS)));
+      outHTML(esc('⏺ ' + claudeReply(t)));
       line('');
     }, function () { thinking.remove(); }).then(function () {
       if (job !== mine) return;
