@@ -1,15 +1,28 @@
+/* Night mode pill. The language pill (lang-switch.css) uses the same size, colours and
+   motion: the slider (here the sun or moon) sits on the left, hovering previews the
+   other option (background) and slides it right, clicking applies it. */
+:root {
+  --pill-w: 2.6rem;
+  --pill-h: 1.45rem;
+  --pill-knob: 1.15rem;
+  --pill-inset: 0.1rem;
+  --pill-speed: 0.3s;
+  --pill-light-bg: #fff;
+  --pill-light-border: #ccc;
+  --pill-dark-bg: #242526;
+  --pill-dark-border: #444;
+}
 #change-skin {
   position: absolute;
+  box-sizing: border-box;
+  width: var(--pill-w);
+  height: var(--pill-h);
   cursor: pointer;
-  display: inline-block;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--pill-light-border);
+  background: var(--pill-light-bg);
   border-radius: 1rem;
-  font-size: 0.8125rem;
-  padding: 0.0625rem;
-  -webkit-transition: background 0.3s ease-in-out;
-  -moz-transition: background 0.3s ease-in-out;
-  transition: background 0.3s ease-in-out;
+  -webkit-transition: background var(--pill-speed) ease-in-out, border-color var(--pill-speed) ease-in-out;
+          transition: background var(--pill-speed) ease-in-out, border-color var(--pill-speed) ease-in-out;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
@@ -17,7 +30,7 @@
 }
 @media (min-width: 1200px) {
   .navbar .navbar-collapse {
-    margin-right: 2.3rem;
+    margin-right: 3rem;
   }
   #change-skin {
     top: auto;
@@ -31,29 +44,51 @@
   }
 }
 #change-skin .skin-btn {
-  -webkit-transition: margin 0.3s ease-in-out;
-  -moz-transition: margin 0.3s ease-in-out;
-  transition: margin 0.3s ease-in-out;
-  margin: 0 0.8rem 0 0;
-}
-#change-skin:hover .skin-btn {
-  margin: 0 0 0 0.8rem;
+  position: absolute;
+  top: 50%;
+  left: var(--pill-inset);
+  width: var(--pill-knob);
+  height: var(--pill-knob);
+  margin-top: calc(var(--pill-knob) / -2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  line-height: 1;
+  -webkit-transition: left var(--pill-speed) ease-in-out;
+          transition: left var(--pill-speed) ease-in-out;
 }
 #change-skin .dark-mode {
   display: none;
 }
 .page-dark-mode #change-skin {
-  background: #242526;
-  border-color: #444;
+  background: var(--pill-dark-bg);
+  border-color: var(--pill-dark-border);
 }
 .page-dark-mode #change-skin .dark-mode {
-  display: block;
+  display: flex;
 }
 .page-dark-mode #change-skin .light-mode {
   display: none;
 }
-#change-skin:hover {
-  background: #888;
+/* Hover previews the other mode. Right after a click the pointer is still over the
+   button; .is-switched (skin-switch.js) holds off the preview until it leaves. */
+#change-skin:not(.is-switched):hover .skin-btn {
+  left: calc(100% - var(--pill-knob) - var(--pill-inset));
+}
+#change-skin:not(.is-switched):hover {
+  background: var(--pill-dark-bg);
+  border-color: var(--pill-dark-border);
+}
+.page-dark-mode #change-skin:not(.is-switched):hover {
+  background: var(--pill-light-bg);
+  border-color: var(--pill-light-border);
+}
+@media (prefers-reduced-motion: reduce) {
+  #change-skin,
+  #change-skin .skin-btn {
+    transition: none;
+  }
 }
 
 /* Below is a copy of the dark mode CSS, all rules prepended with the dark mode switch */
