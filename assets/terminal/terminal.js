@@ -320,7 +320,7 @@
       freeze(v + '^C');
       state.last = 130;
       showPrompt();
-    } else if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+    } else if ((e.ctrlKey && (e.key === 'l' || e.key === 'L')) || (e.metaKey && (e.key === 'k' || e.key === 'K'))) {
       e.preventDefault();
       screen.innerHTML = '';
       showPrompt();
@@ -1264,7 +1264,7 @@
     ['cat [-n] file ...', 'print files'],
     ['open glob ...', 'open files or folders in a new browser tab'],
     ['code glob ...', 'show their source on GitHub in a new tab'],
-    ['clear', 'clear the screen (Ctrl+L)'],
+    ['clear', 'clear the screen (Ctrl+L or ⌘K)'],
     ['help', 'show this list'],
     ['exit', 'close the connection']
   ];
