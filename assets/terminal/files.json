@@ -1,0 +1,19 @@
+---
+layout: null
+sitemap: false
+---
+{%- comment -%}
+  Every static file under /public/, so the terminal's `ls` lists what is really
+  there. Pages with front matter are not static files and won't show up here.
+{%- endcomment -%}
+{"base":{{ site.baseurl | jsonify }},"files":[
+{%- assign first = true -%}
+{%- for f in site.static_files -%}
+{%- assign head = f.path | slice: 0, 8 -%}
+{%- if head == "/public/" -%}
+{%- unless first %},{% endunless -%}
+{"path":{{ f.path | jsonify }},"mtime":{{ f.modified_time | date: "%s" }}}
+{%- assign first = false -%}
+{%- endif -%}
+{%- endfor -%}
+]}
