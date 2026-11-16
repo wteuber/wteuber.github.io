@@ -1,0 +1,128 @@
+/* Language pill (_includes/lang-switch.html), next to the night mode button and built
+   like it (size, colours and motion come from the --pill-* variables in
+   skin-switch.css): the flag of the page's language with a knob carrying a thin line globe as the slider on the left;
+   hovering fades in the other flag and slides the globe right; clicking opens the
+   translation. Both pills sit in .nav-switches, which takes over the night mode
+   button's old position. */
+
+.nav-switches {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+@media (min-width: 1200px) {
+  .nav-switches {
+    right: 1rem;
+  }
+  /* Room for both pills. */
+  .navbar.has-lang-switch .navbar-collapse {
+    margin-right: 6.4rem;
+  }
+}
+@media (max-width: 1199px) {
+  .nav-switches {
+    top: 0.85rem;
+    right: 5rem;
+  }
+}
+
+/* Very narrow screens have no room beside the title and avatar: the pill moves into
+   the collapsed menu instead (nav.html includes it in both places). */
+.lang-switch-item {
+  display: none;
+}
+@media (max-width: 419px) {
+  .nav-switches .lang-switch {
+    display: none;
+  }
+  .lang-switch-item {
+    display: block;
+    padding: 0.5rem 0.9375rem; /* lines up with the menu links */
+  }
+}
+
+.lang-switch {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: var(--pill-w);
+  height: var(--pill-h);
+  border: 1px solid var(--pill-light-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: var(--pill-light-bg);
+}
+.page-dark-mode .lang-switch {
+  border-color: var(--pill-dark-border);
+  background: var(--pill-dark-bg);
+  --ls-flag-opacity: 0.6; /* dimmed over the dark pill, so the flags don't glare */
+}
+
+.lang-switch__flag {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.9); /* a touch calmer, next to the night mode pill */
+  transition: opacity var(--pill-speed) ease-in-out;
+}
+.lang-switch__flag--other,
+.lang-switch:hover .lang-switch__flag--current,
+.lang-switch.is-switching .lang-switch__flag--current {
+  opacity: 0;
+}
+.lang-switch__flag--current,
+.lang-switch:hover .lang-switch__flag--other,
+.lang-switch.is-switching .lang-switch__flag--other {
+  opacity: var(--ls-flag-opacity, 1);
+}
+.lang-switch__flag--en {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30' preserveAspectRatio='xMidYMid slice'%3E%3CclipPath id='t'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' clip-path='url(%23t)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E");
+}
+.lang-switch__flag--de {
+  background-image: linear-gradient(#000 0 33.34%, #dd0000 33.34% 66.67%, #ffce00 66.67%);
+}
+
+.lang-switch__knob {
+  position: absolute;
+  top: 50%;
+  left: var(--pill-inset);
+  width: var(--pill-knob);
+  height: var(--pill-knob);
+  margin-top: calc(var(--pill-knob) / -2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  color: #333;
+  transition: left var(--pill-speed) ease-in-out;
+}
+.lang-switch__knob svg {
+  width: 60%;
+  height: 60%;
+}
+/* Dark theme: a dark knob with a light globe, like the night mode pill's colours. */
+.page-dark-mode .lang-switch__knob {
+  background: var(--pill-dark-bg);
+  color: #e4e6eb;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25), 0 1px 3px rgba(0, 0, 0, 0.6); /* the ring keeps it visible on black */
+}
+.lang-switch:hover .lang-switch__knob,
+.lang-switch.is-switching .lang-switch__knob {
+  left: calc(100% - var(--pill-knob) - var(--pill-inset));
+}
+
+.lang-switch:focus-visible {
+  outline: 2px solid var(--link-col, #008AFF);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lang-switch__knob,
+  .lang-switch__flag {
+    transition: none;
+  }
+}

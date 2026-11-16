@@ -1,0 +1,45 @@
+{%- comment -%}
+  Language pill next to the night mode button (styles in assets/css/lang-switch.css),
+  built to look and behave like it: the pill shows the flag of the page's language
+  with a knob carrying a thin line globe (white knob, or dark in the dark theme)
+  as the slider on the left,
+  where the other pill has its sun or moon.
+  Hovering previews the other language (its flag fades in and the globe slides
+  right); clicking keeps that state and opens the translation.
+  Included twice by nav.html: next to the night mode button, and in the collapsed
+  menu for narrow screens (the CSS shows one of them). Links to `ls_alt`, which
+  nav.html looks up from `i18n_alts` (i18n-alternates.html); renders nothing when
+  the page has no translation.
+{%- endcomment -%}
+{%- if ls_alt -%}
+<a class="lang-switch" href="{{ ls_alt.url | relative_url }}" hreflang="{{ ls_alt.lang }}" lang="{{ ls_alt.lang }}"
+   title="{{ site.data.i18n[ls_alt.lang].name }}" aria-label="{{ site.data.i18n[ls_alt.lang].name }}"
+   data-lang="{{ ls_alt.lang }}">
+  <span class="lang-switch__flag lang-switch__flag--current lang-switch__flag--{{ lang }}" aria-hidden="true"></span>
+  <span class="lang-switch__flag lang-switch__flag--other lang-switch__flag--{{ ls_alt.lang }}" aria-hidden="true"></span>
+  <span class="lang-switch__knob" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M4.6 7.5h14.8M4.6 16.5h14.8"/></svg></span>
+</a>
+{%- unless lang_switch_script -%}{%- assign lang_switch_script = true %}
+<script>
+  // One listener for every copy of the pill, whichever comes first in the page.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('.lang-switch');
+    if (!el) return;
+    // Let modified clicks open a new tab as usual, without changing the saved language.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    try { localStorage.setItem('lang', el.dataset.lang); } catch (err) {}
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Hold the switched state (also on touch screens, which have no hover) while
+    // the knob finishes sliding, then open the translation.
+    e.preventDefault();
+    el.classList.add('is-switching');
+    setTimeout(function () { location.href = el.href; }, 300);
+  });
+  // Coming back through the back button restores the page as it was left: reset the knob.
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    document.querySelectorAll('.lang-switch').forEach(function (el) { el.classList.remove('is-switching'); });
+  });
+</script>
+{%- endunless -%}
+{%- endif -%}

@@ -7,6 +7,7 @@ thumbnail-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-ta
 share-img: /assets/img/2026-09-10-pennywise-how-much-of-a-part-payment-is-tax/staircase-share.png
 tags: [algorithms, ruby, mathematics, money, engineering]
 author: Wolfgang Teuber
+ref: pennywise
 ---
 
 There is a clown in the sewer with this name, and there is an old proverb about being wise with pennies and foolish with pounds. This post is about neither. It is about a genuinely annoying little problem that turns up the moment you let someone pay a taxed bill in more than one go, and a piece of arithmetic that makes it disappear.

@@ -1,3 +1,5 @@
+{%- include i18n.html -%}
+{%- assign pw_t = t.tax_meter -%}
 <style>
 .pw-meter{
   --pw-border:#d0d7de;--pw-bg:#f6f8fa;--pw-panel:#fff;--pw-ink:#1f2328;--pw-mut:#656d76;
@@ -51,25 +53,25 @@ body.page-dark-mode .pw-meter{
 
 <div class="pw-meter" id="pw-meter">
   <div class="pw-meter__head">
-    <h4>Tax meter</h4>
-    <p>A tax-inclusive bill, paid in equal installments. Each installment is split two ways: the everyday accounting-software approach of rounding its tax on its own, and PennyWise&rsquo;s running floor. Watch the totals reconcile, or not.</p>
+    <h4>{{ pw_t.title }}</h4>
+    <p>{{ pw_t.intro }}</p>
   </div>
 
   <div class="pw-meter__controls">
-    <label>Bill total
-      <span class="pw-input"><span>$</span><input type="number" id="pw-total" value="1200.00" min="0.01" max="1000000" step="0.01" inputmode="decimal"></span>
+    <label>{{ pw_t.bill_total }}
+      <span class="pw-input">{% if pw_t.currency_before != "" %}<span>{{ pw_t.currency_before }}</span>{% endif %}<input type="number" id="pw-total" value="1200.00" min="0.01" max="1000000" step="0.01" inputmode="decimal">{% if pw_t.currency_after != "" %}<span>{{ pw_t.currency_after | remove: " " | strip }}</span>{% endif %}</span>
     </label>
-    <label>Tax rate
+    <label>{{ pw_t.tax_rate }}
       <span class="pw-input"><input type="number" id="pw-rate" value="7.5" min="0" max="100" step="0.05" inputmode="decimal"><span>%</span></span>
     </label>
-    <label>Installments &nbsp;<output id="pw-n-out">12</output>
+    <label>{{ pw_t.installments }} &nbsp;<output id="pw-n-out">12</output>
       <input type="range" id="pw-n" min="2" max="12" value="12">
     </label>
   </div>
 
   <label class="pw-meter__toggle">
     <input type="checkbox" id="pw-plug">
-    Force the books to balance by dropping the leftover onto the last installment. That is what most accounting software does, usually without saying so.
+    {{ pw_t.plug }}
   </label>
 
   <p class="pw-meter__headline" id="pw-headline" aria-live="polite"></p>
@@ -77,8 +79,8 @@ body.page-dark-mode .pw-meter{
   <div class="pw-meter__tablewrap">
     <table class="pw-meter__table">
       <thead>
-        <tr><th></th><th></th><th colspan="2">Standard rounding</th><th colspan="2">PennyWise</th><th></th></tr>
-        <tr><th>#</th><th>Installment</th><th>net</th><th>tax</th><th>net</th><th>tax</th><th>&Delta; tax</th></tr>
+        <tr><th></th><th></th><th colspan="2">{{ pw_t.standard }}</th><th colspan="2">PennyWise</th><th></th></tr>
+        <tr><th>#</th><th>{{ pw_t.installment }}</th><th>{{ pw_t.net }}</th><th>{{ pw_t.tax }}</th><th>{{ pw_t.net }}</th><th>{{ pw_t.tax }}</th><th>{{ pw_t.delta_tax }}</th></tr>
       </thead>
       <tbody id="pw-rows"></tbody>
       <tfoot id="pw-foot"></tfoot>
@@ -86,18 +88,20 @@ body.page-dark-mode .pw-meter{
   </div>
 
   <div class="pw-meter__strip">
-    <div class="pw-meter__striptitle">Standard method&rsquo;s running tax error: above the line it has collected too much, below, too little</div>
-    <svg id="pw-svg" viewBox="0 0 400 78" role="img" aria-label="Cumulative rounding error, in cents, after each installment"></svg>
+    <div class="pw-meter__striptitle">{{ pw_t.strip_title }}</div>
+    <svg id="pw-svg" viewBox="0 0 400 78" role="img" aria-label="{{ pw_t.strip_label }}"></svg>
   </div>
 
-  <p class="pw-meter__note">&ldquo;Standard rounding&rdquo; here is each installment&rsquo;s tax taken on its own as <code>round(installment &times; rate &divide; (1 + rate))</code>, then netted: exactly what a receipt line shows. Across a plan the pieces rarely add back to the invoice. PennyWise reads one floored running total instead, so the installments always sum to the bill and no receipt is ever off by more than a cent.</p>
-  <noscript><p class="pw-meter__note">This widget needs JavaScript. The worked example just above walks through the same calculation by hand.</p></noscript>
+  <p class="pw-meter__note">{{ pw_t.note }}</p>
+  <noscript><p class="pw-meter__note">{{ pw_t.noscript }}</p></noscript>
 </div>
 
 <script>
 (function () {
   var root = document.getElementById('pw-meter');
   if (!root || typeof BigInt === 'undefined') return;
+  var L = {{ pw_t | jsonify }};
+  function fmt(s, o) { return s.replace(/\{(\w+)\}/g, function (m, k) { return o[k]; }); }
 
   var $total = document.getElementById('pw-total');
   var $rate  = document.getElementById('pw-rate');
@@ -109,14 +113,14 @@ body.page-dark-mode .pw-meter{
   var $foot  = document.getElementById('pw-foot');
   var $svg   = document.getElementById('pw-svg');
 
-  function money(a) {                       // a: BigInt >= 0  ->  "$1,234.05"
+  function money(a) {                       // a: BigInt >= 0  ->  "$1,234.05" / "1.234,05 €"
     var s = a.toString();
     while (s.length < 3) s = '0' + s;
-    var d = s.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return '$' + d + '.' + s.slice(-2);
+    var d = s.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, L.thousands);
+    return L.currency_before + d + L.decimal + s.slice(-2) + L.currency_after;
   }
   function signed(a) {                      // a: BigInt (any sign)
-    if (a === 0n) return '$0.00';
+    if (a === 0n) return money(0n);
     return (a > 0n ? '+' : '−') + money(a > 0n ? a : -a);
   }
   function parseAtoms(v) {
@@ -143,7 +147,7 @@ body.page-dark-mode .pw-meter{
     $nOut.textContent = N;
 
     if (totalAtoms === null || totalAtoms === 0n || rateScaled === null) {
-      $head.textContent = 'Enter a positive bill total and tax rate.';
+      $head.textContent = L.enter_values;
       $rows.innerHTML = ''; $foot.innerHTML = ''; $svg.innerHTML = '';
       return;
     }
@@ -199,7 +203,7 @@ body.page-dark-mode .pw-meter{
       tr.appendChild(cell(money(gross[i] - std[i])));
       var plugged = plug && i === N - 1 && std[i] !== stdRaw[i];
       var taxTd = cell(money(std[i]), plugged ? 'pw-plug-cell' : null);
-      if (plugged) taxTd.title = 'Its own amount implies ' + money(stdRaw[i] < 0n ? -stdRaw[i] : stdRaw[i]) + '; adjusted by ' + signed(std[i] - stdRaw[i]) + ' to make the books balance.';
+      if (plugged) taxTd.title = fmt(L.plugged_title, { own: money(stdRaw[i] < 0n ? -stdRaw[i] : stdRaw[i]), delta: signed(std[i] - stdRaw[i]) });
       tr.appendChild(taxTd);
       tr.appendChild(cell(money(gross[i] - pw[i])));
       tr.appendChild(cell(money(pw[i])));
@@ -215,28 +219,28 @@ body.page-dark-mode .pw-meter{
     ft.appendChild(cell(money(totalAtoms)));
     ft.appendChild(cell(money(totalAtoms - stdSum)));
     var stdFootTax = cell(money(stdSum), stdReconciles ? 'pw-recon' : 'pw-drift');
-    stdFootTax.title = stdReconciles ? 'Matches the invoice.' : signed(stdSum - totalTax) + ' against the ' + money(totalTax) + ' on the invoice.';
+    stdFootTax.title = stdReconciles ? L.matches_invoice : fmt(L.off_invoice, { delta: signed(stdSum - totalTax), tax: money(totalTax) });
     ft.appendChild(stdFootTax);
     ft.appendChild(cell(money(totalNet), 'pw-recon'));
     ft.appendChild(cell(money(totalTax), 'pw-recon'));
     var deltaFoot = cell(signed(totalTax - stdSum), stdReconciles ? 'pw-recon' : 'pw-drift');
-    deltaFoot.title = 'PennyWise tax total minus Standard tax total.';
+    deltaFoot.title = L.delta_title;
     ft.appendChild(deltaFoot);
     $foot.appendChild(ft);
 
     // Headline
     if (!plug) {
       if (drift === 0n) {
-        $head.innerHTML = 'For these numbers the round-each-installment method happens to land exactly on the invoice. Nudge the total, the rate, or the installment count and it drifts.';
+        $head.innerHTML = L.exact;
       } else {
-        $head.innerHTML = 'The round-each-installment column comes to <b class="pw-drift">' + money(stdRawSum) + '</b> of tax, ' + signed(drift) + ' against the ' + money(totalTax) + ' the invoice actually contains. PennyWise distributes exactly ' + money(totalTax) + ', <b class="pw-recon">every time</b>.';
+        $head.innerHTML = fmt(L.drift, { sum: money(stdRawSum), drift: signed(drift), tax: money(totalTax) });
       }
     } else {
       var plugDelta = std[N - 1] - stdRaw[N - 1];
       if (plugDelta === 0n) {
-        $head.innerHTML = 'Here the leftover is zero. The rounded installments already summed to the invoice, and PennyWise reaches the same place without a correction step.';
+        $head.innerHTML = L.plug_zero;
       } else {
-        $head.innerHTML = 'The books balance, but only because installment #' + N + '&rsquo;s tax was quietly moved by <b class="pw-drift">' + signed(plugDelta) + '</b> to soak up the rounding. PennyWise spreads that same difference so <b class="pw-recon">no installment is ever off by more than a cent</b>.';
+        $head.innerHTML = fmt(L.plug_moved, { n: N, delta: signed(plugDelta) });
       }
     }
 
@@ -260,7 +264,7 @@ body.page-dark-mode .pw-meter{
       var yv = yFor(v);
       var y = Math.min(yv, zeroY), h = Math.max(Math.abs(yv - zeroY), v === 0 ? 0 : 1.5);
       var fill = v === 0 ? 'var(--pw-good)' : 'var(--pw-bad)';
-      parts.push('<rect x="' + x.toFixed(1) + '" y="' + (v === 0 ? (zeroY - 1).toFixed(1) : y.toFixed(1)) + '" width="' + bw.toFixed(1) + '" height="' + (v === 0 ? 2 : h.toFixed(1)) + '" fill="' + fill + '"><title>after installment ' + (i + 1) + ': ' + signed(BigInt(v)) + '</title></rect>');
+      parts.push('<rect x="' + x.toFixed(1) + '" y="' + (v === 0 ? (zeroY - 1).toFixed(1) : y.toFixed(1)) + '" width="' + bw.toFixed(1) + '" height="' + (v === 0 ? 2 : h.toFixed(1)) + '" fill="' + fill + '"><title>' + fmt(L.bar_title, { n: i + 1, err: signed(BigInt(v)) }) + '</title></rect>');
     }
     $svg.innerHTML = parts.join('');
   }

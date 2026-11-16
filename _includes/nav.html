@@ -1,4 +1,15 @@
-<nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
+{%- comment -%}
+  ls_alt: the translation the language pill links to (the first other language in
+  site.languages that has one), or nil. Used for the pill (lang-switch.html, included
+  twice below) and for the room the navbar keeps for it.
+{%- endcomment -%}
+{%- assign ls_alt = nil -%}
+{%- for l in site.languages -%}
+  {%- if l != lang and ls_alt == nil -%}
+    {%- assign ls_alt = i18n_alts | where: "lang", l | first -%}
+  {%- endif -%}
+{%- endfor -%}
+<nav class="navbar navbar-expand-xl{% if ls_alt %} has-lang-switch{% endif %} navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
 
   {%- if site.title-img -%}
     <a class="navbar-brand navbar-brand-logo" href="{{ t.prefix | append: '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
@@ -30,17 +41,9 @@
           </li>
         {%- endif -%}
       {%- endfor -%}
-      {%- for l in site.languages -%}
-        {%- assign alt = i18n_alts | where: "lang", l | first -%}
-        {%- if alt and l != lang %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ alt.url | relative_url }}" hreflang="{{ l }}" lang="{{ l }}"
-             onclick="try { localStorage.setItem('lang', '{{ l }}'); } catch (e) {}">
-            <span class="fa fa-language" aria-hidden="true"></span> {{ site.data.i18n[l].name }}
-          </a>
-        </li>
-        {%- endif -%}
-      {%- endfor -%}
+      {%- if ls_alt %}
+        <li class="nav-item lang-switch-item">{% include lang-switch.html %}</li>
+      {%- endif %}
       {% if site.post_search %}
         <li class="nav-item">
           <a class="nav-link" id="nav-search-link" href="#" title="{{ t.search }}">
@@ -58,9 +61,12 @@
     {% endfor %}
   {% endif %}
 
-  <div id="change-skin" title="{{ t.night_mode }}">
-    <span class="skin-btn dark-mode">🌙</span>
-    <span class="skin-btn light-mode">☀️</span>
+  <div class="nav-switches">
+    {% include lang-switch.html %}
+    <div id="change-skin" title="{{ t.night_mode }}">
+      <span class="skin-btn dark-mode">🌙</span>
+      <span class="skin-btn light-mode">☀️</span>
+    </div>
   </div>
 
   {% if site.avatar and page.show-avatar != false %}

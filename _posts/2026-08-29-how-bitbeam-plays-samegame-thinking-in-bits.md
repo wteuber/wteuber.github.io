@@ -7,6 +7,7 @@ thumbnail-img: /assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bit
 share-img: /assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/samegame-board-share.png
 tags: [algorithms, c++, performance, puzzles, engineering]
 author: Wolfgang Teuber
+ref: bitbeam-samegame
 ---
 
 SameGame is the kind of puzzle you can learn in about ten seconds. You get a grid of coloured tiles. Click any group of two or more touching tiles that share a colour and the group disappears. Everything above the gap falls into it, and when a column runs out of tiles entirely, the columns to its right slide over to close the space. Big groups pay far better than small ones, so the game rewards patience.

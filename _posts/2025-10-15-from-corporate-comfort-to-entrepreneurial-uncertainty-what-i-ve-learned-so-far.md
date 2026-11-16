@@ -7,6 +7,7 @@ thumbnail-img: /assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-
 share-img: /assets/img/2025-10-15-from-corporate-comfort-to-entrepreneurial-uncertainty-what-i-ve-learned-so-far/path.jpg
 tags: [blog, entrepreneurship, mindset]
 author: Wolfgang Teuber
+ref: corporate-to-entrepreneur
 ---
 
 Every piece I sell is hand-crafted in Europe. That’s partly about values: I want to help European makers succeed and put quality, made-to-last products in front of people who’d rather pay for something that lasts than replace a cheaper, poorer-quality alternative. It’s also practical: staying within Europe means one shipping zone and one set of tax rules to figure out, rather than a different set for every country I might otherwise source from. I left my corporate job in August 2025 to build this business, and it’s been exhilarating, terrifying, and eye-opening in roughly equal measure.
