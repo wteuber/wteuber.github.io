@@ -1193,7 +1193,7 @@
     line('');
     outHTML(c('c-yellow b', '⚠  WARNING: you are connected to a live production server.'));
     outHTML(c('c-yellow', '   Be careful what you type. There is no undo, sudo is watching,'));
-    outHTML(c('c-yellow', '   and every keystroke is reported to my mom.'));
+    outHTML(c('c-yellow', '   and every failed command costs one cookie from your account.'));
     line('');
     outHTML('Type ' + c('c-green b', 'help') + ' to list all commands.');
     line('');
