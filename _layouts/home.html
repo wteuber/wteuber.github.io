@@ -9,10 +9,10 @@ layout: page
   English is paginated by jekyll-paginate (root index.html only). Other languages
   list their posts plus the untranslated English ones, unpaginated.
 {% endcomment %}
-{% include i18n-posts.html %}
 {% if lang == site.languages.first %}
   {% assign posts = paginator.posts | default: site.posts %}
 {% else %}
+  {% include i18n-posts.html %}
   {% assign posts = i18n_listing %}
 {% endif %}
 

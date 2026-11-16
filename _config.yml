@@ -238,8 +238,6 @@ giscus:
 # --- Misc --- #
 ################
 
-# Ruby Date Format to show dates of posts
-
 # Facebook App ID
 #fb_app_id: ""
 
@@ -297,7 +295,10 @@ defaults:
 # A translated language's home page and tag index also list the untranslated
 # English posts (_includes/i18n-posts.html).
 # Translated posts keep the date of the original in their filename, so they are
-# scheduled together with it. UI strings live in _data/i18n.yml.
+# scheduled together with it. Translated headings keep the original's IDs
+# ({#id} after the heading), so deep links still work after the redirect, which
+# keeps the #fragment. A translated post shares its original's comment thread.
+# UI strings live in _data/i18n.yml.
 languages: ["en", "de"]
 collections:
   posts_de:
