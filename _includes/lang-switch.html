@@ -1,7 +1,7 @@
 {%- comment -%}
   Language pill next to the night mode button (styles in assets/css/lang-switch.css),
   built to look and behave like it: the pill shows the flag of the page's language
-  with a globe (black, in a semi-transparent white circle) as the slider on the left,
+  with a knob carrying a thin line globe as the slider on the left,
   where the other pill has its sun or moon.
   Hovering previews the other language (its flag fades in and the globe slides
   right); clicking keeps that state and opens the translation.
@@ -22,7 +22,7 @@
    data-lang="{{ ls_alt.lang }}">
   <span class="lang-switch__flag lang-switch__flag--current lang-switch__flag--{{ lang }}" aria-hidden="true"></span>
   <span class="lang-switch__flag lang-switch__flag--other lang-switch__flag--{{ ls_alt.lang }}" aria-hidden="true"></span>
-  <span class="lang-switch__knob" aria-hidden="true"><i class="fas fa-globe"></i></span>
+  <span class="lang-switch__knob" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M4.6 7.5h14.8M4.6 16.5h14.8"/></svg></span>
 </a>
 {%- unless lang_switch_script -%}{%- assign lang_switch_script = true %}
 <script>
