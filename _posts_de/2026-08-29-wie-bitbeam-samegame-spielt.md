@@ -19,7 +19,7 @@ Ich habe einen geschrieben, er heißt bitbeam. Auf einem Brett mit 30×20 Felder
 
 Alle Zeiten unten stammen von dem Rechner, auf dem ich bitbeam geschrieben habe: ein Intel i9-9880H mit 8 Kernen und 16 Hardware-Threads, gebaut mit Apple clang und `-O3 -march=native`. Die Brettgrößen wechseln zwischen den Abschnitten, weil ich jede Messung dort gemacht habe, wo sie interessant war. Bei jeder Zahl steht also, zu welchem Brett sie gehört.
 
-## Probier es selbst
+## Probier es selbst {#try-it-yourself}
 
 Hier ist dasselbe Puzzle in einer Größe, die du von Hand schaffst: sechs Reihen, zwölf Spalten, drei Farben. Klick auf eine Gruppe von zwei oder mehr gleichfarbigen Steinen, die sich berühren, und sie verschwindet. Alles darüber fällt nach, und eine leere Spalte zieht den Rest nach links. Der mittlere Zähler zeigt dir vorab, was die Gruppe unter dem Mauszeiger bringen würde. Große Gruppen sind viel mehr wert als die kleinen, in die man sie hätte zerlegen können. Räum das Brett leer, dann kommt das nächste.
 
@@ -27,7 +27,7 @@ Hier ist dasselbe Puzzle in einer Größe, die du von Hand schaffst: sechs Reihe
 
 Im Rest dieses Beitrags geht es um das große Brett mit dreißig Spalten und zwanzig Reihen, und darum, es so gut zu spielen, dass es in ein paar Sekunden leer ist.
 
-## Ausprobieren ist keine Option
+## Ausprobieren ist keine Option {#why-brute-force-is-out}
 
 Auf einem Brett mit 30×20 Feldern gibt es in einer typischen Stellung ein paar Dutzend mögliche Klicks, und ein ganzes Spiel ist etwa fünfzig Klicks lang. Multipliziert man das, kommt eine Zahl mit mehr als hundert Stellen heraus. So viele Atome gibt es im ganzen beobachtbaren Universum nicht.
 
@@ -35,7 +35,7 @@ Alle Möglichkeiten durchzuprobieren scheidet also aus, und zwar nicht nur auf m
 
 (Angefangen habe ich das Projekt übrigens aus ganz normaler Neugier. Ich habe durch meine alten Repos gescrollt und mich gefragt, wie ich SameGame heute angehen würde und was mir ein moderner Rechner durchgehen lässt.)
 
-## Idee 1: eine Auswahlliste führen
+## Idee 1: eine Auswahlliste führen {#idea-1-keep-a-shortlist}
 
 Der Algorithmus heißt [Beam Search](https://en.wikipedia.org/wiki/Beam_search) und ist ziemlich genau das Einfachste, was funktioniert.
 
@@ -49,7 +49,7 @@ Schwierig ist die Frage, was „am besten“ heißt, wenn diese Stellungen bewer
 
 Ist das Ziel ein leeres Brett statt einer hohen Punktzahl, braucht die Bewertung noch einen Term. Steine, die zu keiner anklickbaren Gruppe gehören, sind genau die Steine, die zwischen der Stellung und einem leeren Brett stehen. Deshalb kostet jeder davon eine Strafe. Ohne die tauscht die Suche jedes Mal ein abgeräumtes Brett gegen eine weitere fette Gruppe ein.
 
-## Idee 2: Schwerkraft in einer einzigen Instruktion
+## Idee 2: Schwerkraft in einer einzigen Instruktion {#idea-2-make-gravity-a-single-instruction}
 
 Der naheliegende Weg, ein Brett im Speicher zu halten, ist eine Zahl pro Stein in einem zweidimensionalen Raster. Eine Gruppe zu finden, heißt dann Flood Fill: von Stein zu Nachbarstein laufen und die passenden einsammeln. Schwerkraft heißt zwei verschachtelte Schleifen, die die Steine einzeln nach unten schieben. Beides ist leicht zu schreiben, und beides ist nicht schnell.
 
@@ -111,7 +111,7 @@ Das Muster hält von 10×10 bis 20×20 und von drei bis sieben Farben: 3,2- bis 
 
 Bit-Packing ist deshalb nicht überall eine gute Idee. Ich habe dieselbe Darstellung in einer Ruby-Version des Solvers ausprobiert. Sie war 2,65-mal langsamer als einfache Arrays. Das liegt an der Implementierung, nicht an der Sprache. CRuby hat keine Popcount-Methode auf `Integer` und keine Möglichkeit, ein PEXT auszugeben. Die beiden Instruktionen, die in C++ die Arbeit machen, sind von Ruby aus also gar nicht erreichbar. Und kein Just-in-time-Compiler kann eine Instruktion hervorzaubern, die die Laufzeitumgebung nie erzeugt. Übrig bleibt ein interpretierter Methodenaufruf für jedes Schieben und jede Maske, gegen Array-Zugriffe, die schon in C geschrieben sind. Nichts in der Sprache schließt die beiden Grundoperationen aus. Es gibt sie heute einfach nicht. Und eine Technik, die auf ihnen aufbaut, lohnt sich nur dort, wo Prozessor und Laufzeitumgebung beide mitspielen.
 
-## Idee 3: nicht aufschreiben, was gleich gelöscht wird
+## Idee 3: nicht aufschreiben, was gleich gelöscht wird {#idea-3-dont-write-down-what-you-are-about-to-delete}
 
 Das hat von allem, was ich ausprobiert habe, das Gesamtprogramm am meisten beschleunigt. Und mit Bits hat es nichts zu tun.
 
@@ -126,7 +126,7 @@ w.mvs.push_back(static_cast<uint16_t>(g));           // 2 Bytes: welcher Zug
 
 Kein Brett wird in den Speicher kopiert, nichts wird serialisiert, nichts gehasht, nichts landet im Duplikat-Set. Sortiert man diese Sechs-Byte-Stummel, hat man die genaue Grenze. Ein zweiter Durchgang spielt dann nur die Züge darüber noch einmal und speichert die Ergebnisse. Einen Zug noch einmal zu spielen, kostet eine Handvoll PEXTs. Die teuren Schritte, also Serialisieren, Hashen und die Duplikatprüfung, passieren jetzt nur noch für die Überlebenden. Und eine Elternstellung wird einmal ausgepackt, egal wie viele ihrer Kinder es durchgeschafft haben. Die Suche deckt dieselben Stellungen ab und liefert dieselbe Antwort, Byte für Byte. Auf einem Brett mit 15×15 Feldern und einem Strahl von 10.000 ging die Laufzeit von 3.718 Millisekunden auf 1.306 zurück.
 
-## Zweimal dieselbe Antwort
+## Zweimal dieselbe Antwort {#getting-the-same-answer-twice}
 
 Lass eine parallele Suche zweimal laufen, und du bekommst meistens zwei verschiedene Antworten. Falsch ist keine davon. Sie unterscheiden sich, weil die Grenze zwischen „gut genug zum Behalten“ und „raus“ ein bisschen anders fällt, je nachdem, welcher Thread zuerst da war. Das nervt, wenn etwas kaputtgeht, denn ein Bug, der einmal auftaucht, taucht vielleicht nie wieder auf. Und die Frage, die jede Optimierung aufwirft, nämlich ob sie geholfen hat, lässt sich so gar nicht beantworten.
 
@@ -144,7 +144,7 @@ Dieselbe Idee zieht sich durch die ganze Suche. Kommen zwei verschiedene Zugfolg
 
 Das Ergebnis ist eine Ausgabe, die auf 1, 2, 4, 8 und 16 Threads Byte für Byte gleich ist. Die Testsuite prüft das auf zufälligen Brettern. Die parallele Beschleunigung hat das nicht gekostet: Auf einem Brett mit 15×15 Feldern und einem Strahl von 20.000 sind sechzehn Threads immer noch 5,7-mal schneller als einer, auf acht physischen Kernen, wobei das letzte Stück von Hyperthreads kommt. Das ist eine Aussage über die Skalierung, kein Beweis, dass die Ordnungsregeln nichts kosten. Ich habe nie eine nicht deterministische Version gebaut, um sie bei gleicher Thread-Zahl dagegen antreten zu lassen. Sagen kann ich also nur: Die Garantien haben die Skalierung nicht kaputt gemacht.
 
-## Erkennen, wann ein Brett nicht abzuräumen ist
+## Erkennen, wann ein Brett nicht abzuräumen ist {#knowing-when-a-board-cannot-be-cleared}
 
 Ob sich ein SameGame-Brett überhaupt leer räumen lässt, ist NP-vollständig. Und das Problem bleibt schwer bei Größen, die viel zu klein aussehen, um schwierig zu sein. [Zwei Farben und zwei Spalten reichen schon](https://erikdemaine.org/papers/Clickomania_MOVES2015/).
 
@@ -158,7 +158,7 @@ bitbeam bringt deshalb eine Reihe von Widerlegungen mit: Regeln, die beweisen k�
 
 Jede Regel wird an Tausenden kleiner Bretter gegen eine vollständige Suche geprüft, bevor ich ihr traue. Sie sind allerdings weniger nützlich, als sie aussehen. Im exakten Beweiser senken sie die Zahl der untersuchten Stellungen um den Faktor 1,0 bis 4,4, auf Brettern von 6×6 bis 8×8. Dafür wurden sie geschrieben. In der Beam Search auf lösbaren Brettern kosten sie etwa 8 Prozent und sparen fast nichts. Das ist logisch, sobald man es ausspricht: Eine Widerlegung lohnt sich nur, wenn die Antwort Nein ist, und zufällige Bretter sind fast immer lösbar. Eingeschaltet bleiben sie trotzdem, weil die Bretter, bei denen sie helfen, sonst nie fertig werden.
 
-## Spielt er wirklich besser?
+## Spielt er wirklich besser? {#does-it-play-any-better}
 
 Hier tritt bitbeam gegen den genetischen Algorithmus an, den ich vorher benutzt habe. Getestet habe ich auf sechs zufälligen Brettern mit 15×10 Feldern und drei Farben, und jede Konfiguration sollte das Brett leer räumen. Der genetische Algorithmus ist eine aktuelle Neufassung [des Solvers von 2011](https://github.com/wteuber/samegame_autoplay/tree/master/software/solver/evolutionary), der früher den Bot gesteuert hat. Er läuft auf Ruby 4.0.4. Die erste Zeile ist die Einstellung, mit der der Bot ihn aufruft: eine Population von 10 über 200 Generationen. Die Zeiten sind echte Laufzeit, inklusive Programmstart.
 
@@ -189,7 +189,7 @@ Das lässt sich leichter zeigen als beschreiben. Unten spielt ein Bot [die Brows
 
 Die Aufnahme läuft in Echtzeit: 74 Sekunden für sieben Bretter, etwa zehn Sekunden pro Brett. Zwei oder drei dieser zehn Sekunden sind die Pause, die du siehst, wenn ein neues Brett erscheint. In der Zeit liest der Bot die Steine vom Bildschirm ab, und bitbeam rechnet das ganze Spiel durch, bevor der erste Klick kommt. Den Rest der Zeit arbeitet der Bot eine Liste von etwa fünfzig Zügen ab, mit sechs bis sieben Klicks pro Sekunde. So viel ergibt seine Zehntelsekunde Wartezeit zwischen den Klicks, wenn man die Mausbewegung mitrechnet. Schnell genug, dass du nicht erkennst, warum eine bestimmte Gruppe gewählt wurde. Langsam genug, um zuzusehen, wie das Brett zerfällt.
 
-## Zum Schluss
+## Zum Schluss {#wrapping-up}
 
 Keine der Ideen hier ist neu. Beam Search stammt aus der Spracherkennung der 1970er-Jahre, PEXT steckt seit 2013 in Intel-Prozessoren, und keine Arbeit zu machen, die man gleich wegwirft, ist ein ganz gewöhnlicher Rat aus der Softwareentwicklung. Den Unterschied hat etwas anderes gemacht: sie auf ein einziges Problem anzuwenden und nach jedem Schritt zu messen. Auch den Schritt in Ruby, der alles langsamer gemacht hat und wieder rausgeflogen ist.
 

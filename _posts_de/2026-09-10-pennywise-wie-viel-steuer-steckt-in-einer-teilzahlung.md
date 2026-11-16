@@ -23,7 +23,7 @@ Ich habe dafür eine kleine Ruby-Bibliothek namens PennyWise geschrieben. Sie ma
 
 Wenn du lieber mit der Idee spielst, als darüber zu lesen: Ein paar Absätze weiter unten gibt es [eine interaktive Version](#see-the-problem-first). Gib deine eigenen Zahlen ein und sieh zu, wie die übliche Methode abdriftet, während PennyWise exakt bleibt.
 
-## Warum die naive Aufteilung abdriftet
+## Warum die naive Aufteilung abdriftet {#why-the-naive-split-drifts}
 
 Die Steuer in einer Teilzahlung ist nicht „Zahlung mal Steuersatz“. Ein Bruttobetrag `G`, der die Steuer zum Satz `r` schon enthält, zerfällt so:
 
@@ -49,7 +49,7 @@ Bevor es an die Lösung geht, ein Gefühl für die Größenordnung. Gib einen Re
 
 Bei einer einzelnen Rechnung liegt die übliche Methode selten mehr als ein paar Cent daneben. Rechne das auf ein Jahr voller Rechnungen hoch, oder auf jeden Shop auf einem Marktplatz. Dann ist es die Zeile im Abgleich, die niemand erklären kann. Die nächsten drei Abschnitte zeigen, wie PennyWise dafür sorgt, dass die rechte Spalte jedes Mal aufgeht.
 
-## Teil 1: in Atomen rechnen, nicht in ganzen Währungseinheiten
+## Teil 1: in Atomen rechnen, nicht in ganzen Währungseinheiten {#part-1-count-in-atomic-units-not-in-whole-currency-units}
 
 Der erste Schritt ist der, den jeder Artikel nach dem Motto „Geld nie als Float speichern“ empfiehlt. Du wählst eine feste, unteilbare Einheit, ein **Atom**, und rechnest nur mit ganzen Zahlen von Atomen. Das Atom ist nicht unbedingt die kleinste Münze, die es gibt. Es ist die kleinste Einheit, die *dein System* nicht weiter teilt. Es muss nur klein genug sein und für die ganze Rechnung gleich bleiben, sodass jeder Betrag, der je vorkommt, eine ganze Zahl von Atomen ist.
 
@@ -67,7 +67,7 @@ to_atoms(amount, atom):
 
 Ab hier gibt es im Code keine Währung mehr, nur noch Anzahlen. `1070` Atome Rechnung, `500` Atome erste Zahlung. Ganze Zahlen addieren sich exakt, und genau darum geht es. Ein Bruch darf nur in den nächsten beiden Schritten auftauchen, und dort wird er sofort wieder auf eine ganze Zahl abgerundet.
 
-## Teil 2: die Steuer einmal für die ganze Rechnung herausrechnen
+## Teil 2: die Steuer einmal für die ganze Rechnung herausrechnen {#part-2-extract-the-tax-once-for-the-whole-bill}
 
 Bevor irgendeine Zahlung verarbeitet wird, berechnest du den Steueranteil der ganzen Rechnung in Atomen, ein einziges Mal:
 
@@ -81,7 +81,7 @@ total_tax_atoms(total_atoms, rate):
 
 Diese `70` sind jetzt ein festes Ziel. Alles, was die Bibliothek ab hier tut, ist, diese 70 Steuer-Atome so auf die Zahlungen zu verteilen, dass sie zusammen genau 70 ergeben, egal wie die Zahlungen ausfallen. Die Netto-Atome sind einfach `total_atoms - total_tax_atoms`, hier `1000`, und werden per Subtraktion genauso verteilt.
 
-## Teil 3: die laufende Summe, die nur abgerundet werden darf
+## Teil 3: die laufende Summe, die nur abgerundet werden darf {#part-3-the-running-total-you-may-only-floor}
 
 Auf dieser Idee baut die ganze Bibliothek auf. Sie ist kleiner, als sie klingt.
 
@@ -116,7 +116,7 @@ Rechnen wir das Beispiel durch. `total_tax_atoms = 70`, `total_atoms = 1070`.
 
 Summe der Steuer: `32 + 33 + 5 = 70`. Genau die Rechnung. Der zusätzliche Cent ist in der zweiten Zahlung gelandet, weil die Gerade `p * 70 / 1070` genau zwischen diesen beiden Ablesungen eine ganze Zahl überquert. Das war keine Entscheidung. Es war eine Koordinate.
 
-### Warum es immer aufgeht
+### Warum es immer aufgeht {#why-it-always-reconciles}
 
 Die Zahlungen schneiden das Intervall `[0, total_atoms]` in aufeinanderfolgende Stücke:
 
@@ -142,7 +142,7 @@ Zwei weitere Eigenschaften gibt es aus demselben Bild gratis dazu:
 
 Und weil `split_payment` nur `previously_paid_atoms` und die beiden Konstanten der Rechnung braucht, musst du zwischen zwei Zahlungen **eine einzige ganze Zahl** speichern. Du kannst nach Zahlung zwei aufhören, `1000` ablegen, nächsten Monat weitermachen, und Zahlung drei kommt genauso heraus. Eine Tabelle mit dem Zahlungsverlauf brauchst du nicht.
 
-## Abrunden statt runden: die ehrliche Wahl
+## Abrunden statt runden: die ehrliche Wahl {#floor-not-round-and-why-that-is-the-honest-choice}
 
 Es ist verlockend, `tax_through` auf das nächste Atom zu runden statt abzurunden. Lass es. Abrunden heißt: Zu keinem Zeitpunkt der Ratenfolge weist ein Beleg Steuer aus, die noch gar nicht bezahlt ist. Die Rampe liegt die ganze Zeit auf oder knapp unter der wahren proportionalen Linie und holt sie erst mit der letzten Zahlung genau ein. Beim Runden könnten Zahlungen zwischendurch etwas über dem wahren Anteil liegen, und das müsste später wieder abgezogen werden. Das ist auf einem Beleg schwerer zu erklären.
 
@@ -150,7 +150,7 @@ Die Form, die dabei entsteht, ist eine schräge Linie, angenähert durch eine Tr
 
 {% include pennywise-bresenham.html %}
 
-## Wie man „immer“ testet
+## Wie man „immer“ testet {#testing-a-claim-like-always}
 
 „Die Teile ergeben immer das Ganze“ ist eine starke Behauptung. Drei Beispiele zu schreiben und Feierabend zu machen, reicht dafür nicht. PennyWise wird mit **eigenschaftsbasiertem Testen** (Property-based Testing) geprüft: Das Testwerkzeug erzeugt Tausende zufälliger Szenarien und prüft bei jedem die Invariante.
 
@@ -180,7 +180,7 @@ Zufällige Beträge, zufällige Steuersätze, zufällig viele Teile in zufällig
 
 Wäre das Teleskop-Argument oben falsch, würden tausend Zufallsziehungen das finden. Sie finden nichts, weil es stimmt. Für diese Art von Test gibt es in jeder Sprache eine Bibliothek: `hypothesis`, `fast-check`, `QuickCheck` und andere.
 
-## Die Randfälle, die man nennen sollte
+## Die Randfälle, die man nennen sollte {#the-edges-worth-naming}
 
 - **Überzahlung.** Eine Zahlung, die den bezahlten Betrag über die Rechnung hinaus treiben würde, wird abgelehnt, bevor sie aufgeteilt wird. Sie wird nicht stillschweigend gekürzt.
 - **Beträge, die kein ganzes Atom sind.** `10.705` bei einem Atom von einem Cent kann niemand wirklich bezahlen. `to_atoms` lehnt das ab, statt es auf etwas Plausibles zu runden.
@@ -210,7 +210,7 @@ Dem Teleskop-Argument ist es egal, ob die Stücke drei Zahlungen einer Person ü
 
 Die Reihenfolge ändert nichts an der Summe. Sie entscheidet nur, welcher Anteil einen übrigen Cent abbekommt. Wenn beim Aufteilen von `10.70` auf drei Leute eine Person einen Cent mehr zahlt, ist das echt und unvermeidbar, denn 70 ist nicht durch 3 teilbar. Aussuchen kannst du dir nur, wo er landet. Sortiere die Anteile und lass den größten den Cent übernehmen. Oder wechsle bei Stammgästen von Abend zu Abend durch. Mit PennyWise ist das eine Entscheidung in einer Zeile statt ein Bug.
 
-## Zum Schluss
+## Zum Schluss {#wrapping-up}
 
 Keines der Teile hier ist neu. Geld als ganze Zahlen zu speichern ist ein Standardrat. Steuer mit `r / (1 + r)` herauszurechnen steht in jedem Buchhaltungslehrbuch. Der Trick mit der Teleskopsumme ist Analysis im ersten Semester, und die Treppe ist sechzig Jahre alt. Ihren Namen verdient die Bibliothek, weil diese Teile zusammen eine Funktion ergeben, deren Eigenschaft sich in einem Satz sagen und in zwei Sätzen beweisen lässt: **Die Teile ergeben immer das Ganze, weil sich die mittleren Terme aufheben.**
 

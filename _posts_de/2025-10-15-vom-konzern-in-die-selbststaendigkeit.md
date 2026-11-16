@@ -15,7 +15,7 @@ Es hat auch praktische Gründe. Wenn ich in Europa bleibe, habe ich eine Versand
 
 Im August 2025 habe ich meinen Konzernjob gekündigt, um dieses Geschäft aufzubauen. Seitdem war es aufregend, beängstigend und lehrreich, ungefähr zu gleichen Teilen. Ich schreibe das nach ein paar Monaten, bevor ich auch nur ein einziges Produkt verkauft habe. Hier ist, was ich bisher gelernt habe.
 
-## Der emotionale Zyklus der Veränderung: mehr als ein Schlagwort
+## Der emotionale Zyklus der Veränderung: mehr als ein Schlagwort {#the-emotional-cycle-of-change-more-than-a-buzzword}
 
 Die Idee einer Veränderung finden wir alle toll. In Wirklichkeit ist sie chaotischer. So hat sich der „Emotional Cycle of Change“ bei mir bisher angefühlt:
 
@@ -31,7 +31,7 @@ Wenn du gerade im Tal der Verzweiflung steckst, scheiterst du nicht. Du lernst. 
 
 <small><em>Quelle: Emotional Cycle of Change von Don Kelley und Daryl Conner, erschienen in „The 1979 Annual Handbook For Group Facilitators“. Manche Quellen nennen als ursprünglichen Namen der dritten Phase „Hopeful Realism“ statt „Valley of Despair“. Letzteres ist die verbreitetere Bezeichnung.</em></small>
 
-## Die fünf Grundlagen: Was wirklich zählt
+## Die fünf Grundlagen: Was wirklich zählt {#the-5-fundamentals-what-actually-matters}
 
 Ratschläge gibt es ohne Ende. Ich komme aber immer wieder auf die fünf Grundlagen von Josh Kaufman zurück. Ich stehe noch so weit am Anfang, dass das meiste davon Überlegung ist und kein Beweis. Was wirklich funktioniert, finde ich unterwegs heraus.
 
@@ -47,7 +47,7 @@ Ratschläge gibt es ohne Ende. Ich komme aber immer wieder auf die fünf Grundla
 
 <small><em>Quelle: 5 Parts of Every Business von Josh Kaufman, aus seinem Buch „The Personal MBA“</em></small>
 
-## Aufschieben, das sich als Arbeit tarnt
+## Aufschieben, das sich als Arbeit tarnt {#my-hard-won-lesson}
 
 Die größte Falle war bisher Aufschieben, das wie Produktivität aussieht. Tabellen, ein Pitch Deck, das Firmenlogo: alles Dinge, die ich in ein, zwei Tagen fertig habe. Das ist leicht im Vergleich zur eigentlichen Aufgabe. Ich muss lernen, ein profitables Geschäft aufzubauen, und mich der Angst stellen, damit zu scheitern.
 
@@ -55,6 +55,6 @@ Ich habe noch kein einziges Produkt verkauft. Und ich weiß: Nichts wird mir meh
 
 Wenn ich mir eine Gewohnheit antrainieren will, dann diese: die schwere Entscheidung jetzt treffen, damit die späteren leichter werden. Wenn du selbst gründen willst, dann sorg dafür, dass du später nicht bereust, es nie versucht zu haben.
 
-## Und du?
+## Und du? {#what-about-you}
 
 Hast du selbst einen großen Sprung gewagt, oder denkst du darüber nach? Was hält dich zurück, und was treibt dich an? Ich freue mich auf deine Geschichte. Vernetz dich mit mir auf LinkedIn, oder schau einfach wieder hier vorbei, für mehr ehrliche Erfahrungen direkt von der Gründungsfront.
