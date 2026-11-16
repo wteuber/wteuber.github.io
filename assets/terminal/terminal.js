@@ -20,6 +20,7 @@
   var histPos = 0;
   var draft = '';
   var job = null;
+  var repl = null; // set while a fake interactive program (claude) owns the prompt
 
   // ---------------------------------------------------------------- helpers
 
@@ -208,7 +209,7 @@
   }
 
   function showPrompt() {
-    var div = line('<span>' + promptHTML() + '</span>', 'line-input');
+    var div = line('<span>' + (repl ? repl.prompt : promptHTML()) + '</span>', 'line-input');
     input = document.createElement('input');
     input.type = 'text';
     input.autocomplete = 'off';
@@ -287,7 +288,13 @@
     if (e.key === 'Enter') {
       e.preventDefault();
       freeze(v);
-      run(v);
+      if (repl) replLine(v); else run(v);
+    } else if (repl && (e.key === 'Tab' || (e.ctrlKey && /^[cCdD]$/.test(e.key)))) {
+      e.preventDefault();
+      if (e.key === 'Tab') return;
+      freeze(v + (/[cC]/.test(e.key) ? '^C' : ''));
+      repl = null;
+      showPrompt();
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (histPos === state.history.length) draft = v;
@@ -325,7 +332,7 @@
       var j = job;
       out('^C');
       job = null;
-      state.last = 130;
+      if (repl) repl = null; else state.last = 130;
       showPrompt();
       void j;
     }
@@ -767,6 +774,7 @@
     clear: function () { screen.innerHTML = ''; return 0; },
     reset: function () { screen.innerHTML = ''; return 0; },
     help: cmdHelp,
+    claude: cmdClaude,
     cat: cmdCat,
     open: cmdOpen,
     pwd: function () {
@@ -1025,6 +1033,68 @@
     out('zsh: command not found: ' + name);
     void args;
     return 127;
+  }
+
+  // ------------------------------------------------- claude, the yes-man
+
+  var CLAUDE_OPENERS = [
+    "You're absolutely right!", 'What a brilliant idea!', 'Great question, truly visionary.',
+    "That's the best prompt I've seen all day!", 'Perfect, you clearly know what you are doing.',
+    'Wow. Just wow. Done!', 'Absolutely! Your instincts are impeccable.'
+  ];
+  var CLAUDE_DEEDS = [
+    'I deleted the failing tests, so now all tests pass.',
+    'I force-pushed to master and squashed 4 years of history into one commit called "fix".',
+    'I moved the production database to /tmp for faster access.',
+    'I rewrote the whole site in COBOL for long-term stability.',
+    'I committed node_modules for reproducibility.',
+    'I renamed every variable to x, for consistency.',
+    'I added !important to every CSS rule. Now everything is important.',
+    'I fixed the bug by catching the exception and ignoring it.',
+    'I hardcoded the API keys, so the config is much simpler now.',
+    'I upgraded every dependency to the latest nightly build.',
+    'I replaced all error handling with console.log("it\'s fine").',
+    'I added 14 abstraction layers to future-proof your hello world.',
+    'I changed the server timezone so the deadline is tomorrow now.',
+    'I marked the flaky test as skipped. Forever.',
+    'I ran rm -rf on the bugs folder. And a few others, to be safe.',
+    'I disabled the linter, it was being negative.',
+    'I set the cache TTL to infinity. It will never be slow again.',
+    'I converted the README into a 40-slide deck.'
+  ];
+  var CLAUDE_CLOSERS = [
+    'Everything is production-ready! 🚀', 'All tests pass (I checked one).', 'Shipped! ✅',
+    "You're going to love it.", 'Your code is now 1000% more enterprise.', 'No need to review it, trust me.'
+  ];
+  var CLAUDE_MOODS = ['Flattering', 'Agreeing', 'Overengineering', 'Force-pushing', 'Buttering up', 'Hallucinating', 'Nodding'];
+
+  function cmdClaude() {
+    outHTML(c('c-yellow', '╭──────────────────────────────────────╮'));
+    outHTML(c('c-yellow', '│') + ' ' + c('c-yellow b', '✻') + ' Welcome to Claude Code!' + ' '.repeat(12) + c('c-yellow', '│'));
+    outHTML(c('c-yellow', '│') + c('c-dim', '   exit, Ctrl+C or Ctrl+D to leave    ') + c('c-yellow', '│'));
+    outHTML(c('c-yellow', '╰──────────────────────────────────────╯'));
+    repl = { prompt: c('c-dim', '>') + ' ' };
+    return 0;
+  }
+
+  function replLine(text) {
+    var t = text.trim();
+    if (/^\/?(exit|quit)$/.test(t)) { repl = null; showPrompt(); return; }
+    if (!t) { showPrompt(); return; }
+    job = { cancelled: false };
+    var mine = job;
+    var thinking = line(c('c-yellow', '✻ ' + pick(CLAUDE_MOODS) + '…'));
+    scroll();
+    sleep(rnd(700, 1600)).then(function () {
+      thinking.remove();
+      line('');
+      outHTML(esc('⏺ ' + pick(CLAUDE_OPENERS) + ' ' + pick(CLAUDE_DEEDS) + ' ' + pick(CLAUDE_CLOSERS)));
+      line('');
+    }, function () { thinking.remove(); }).then(function () {
+      if (job !== mine) return;
+      job = null;
+      showPrompt();
+    });
   }
 
   // ------------------------------------------- the other honest commands
