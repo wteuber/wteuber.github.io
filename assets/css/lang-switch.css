@@ -1,0 +1,142 @@
+/* EN/DE language pill (_includes/lang-switch.html), next to the night mode button.
+   Both sit in .nav-switches, which takes over the night mode button's old position. */
+
+.nav-switches {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.nav-switches #change-skin {
+  position: static;
+}
+@media (min-width: 1200px) {
+  .nav-switches {
+    right: 1rem;
+  }
+  /* Room for the pill left of the night mode button. */
+  .navbar.has-lang-switch .navbar-collapse {
+    margin-right: 8.5rem;
+  }
+}
+@media (max-width: 1199px) {
+  .nav-switches {
+    top: 0.85rem;
+    right: 5rem;
+  }
+}
+
+/* Narrow screens have no room beside the title and avatar: the pill moves into the
+   collapsed menu instead (nav.html includes it in both places). */
+.lang-switch-item {
+  display: none;
+}
+@media (max-width: 575px) {
+  .nav-switches .lang-switch {
+    display: none;
+  }
+  .lang-switch-item {
+    display: block;
+    padding: 0.5rem 0.9375rem; /* lines up with the menu links */
+  }
+}
+
+.lang-switch {
+  --ls-ink: var(--navbar-text-col, #404040);
+  --ls-border: #ccc;
+  --ls-knob: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: 700 0.75rem/1 "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--ls-ink);
+  text-decoration: none !important;
+  -webkit-user-select: none;
+          user-select: none;
+}
+.page-dark-mode .lang-switch {
+  --ls-border: #444;
+  --ls-knob: #e4e6eb;
+}
+
+.lang-switch__label {
+  transition: opacity 0.25s ease-in-out;
+}
+.lang-switch--left .lang-switch__label--right,
+.lang-switch--right .lang-switch__label--left {
+  opacity: 0.35;
+}
+.lang-switch:hover .lang-switch__label {
+  opacity: 1;
+}
+
+.lang-switch__track {
+  position: relative;
+  display: block;
+  width: 2.6rem;
+  height: 1.45rem;
+  border: 1px solid var(--ls-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.lang-switch__flag {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.25s ease-in-out;
+}
+/* Only the flag of the knob's side shows. */
+.lang-switch--left .lang-switch__flag--right,
+.lang-switch--right .lang-switch__flag--left {
+  opacity: 0;
+}
+.lang-switch__flag--en {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30' preserveAspectRatio='xMidYMid slice'%3E%3CclipPath id='t'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' clip-path='url(%23t)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E");
+}
+.lang-switch__flag--de {
+  background-image: linear-gradient(#000 0 33.34%, #dd0000 33.34% 66.67%, #ffce00 66.67%);
+}
+
+.lang-switch__knob {
+  position: absolute;
+  top: 50%;
+  left: 0.1rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: -0.575rem;
+  border-radius: 50%;
+  background: var(--ls-knob);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45), inset 0 -1px 1px rgba(0, 0, 0, 0.12);
+  transition: left 0.25s ease-in-out;
+}
+.lang-switch--right .lang-switch__knob {
+  left: calc(100% - 1.25rem);
+}
+/* On hover the knob leans towards the other language, like the night mode button. */
+.lang-switch--left:hover .lang-switch__knob {
+  left: 0.35rem;
+}
+.lang-switch--right:hover .lang-switch__knob {
+  left: calc(100% - 1.5rem);
+}
+
+.lang-switch:focus-visible {
+  outline: none;
+}
+.lang-switch:focus-visible .lang-switch__track {
+  outline: 2px solid var(--link-col, #008AFF);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lang-switch__knob,
+  .lang-switch__flag,
+  .lang-switch__label {
+    transition: none;
+  }
+}

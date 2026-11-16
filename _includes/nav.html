@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
+<nav class="navbar navbar-expand-xl{% if i18n_alts.size > 1 %} has-lang-switch{% endif %} navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
 
   {%- if site.title-img -%}
     <a class="navbar-brand navbar-brand-logo" href="{{ t.prefix | append: '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
@@ -30,17 +30,9 @@
           </li>
         {%- endif -%}
       {%- endfor -%}
-      {%- for l in site.languages -%}
-        {%- assign alt = i18n_alts | where: "lang", l | first -%}
-        {%- if alt and l != lang %}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ alt.url | relative_url }}" hreflang="{{ l }}" lang="{{ l }}"
-             onclick="try { localStorage.setItem('lang', '{{ l }}'); } catch (e) {}">
-            <span class="fa fa-language" aria-hidden="true"></span> {{ site.data.i18n[l].name }}
-          </a>
-        </li>
-        {%- endif -%}
-      {%- endfor -%}
+      {%- if i18n_alts.size > 1 %}
+        <li class="nav-item lang-switch-item">{% include lang-switch.html %}</li>
+      {%- endif %}
       {% if site.post_search %}
         <li class="nav-item">
           <a class="nav-link" id="nav-search-link" href="#" title="{{ t.search }}">
@@ -58,9 +50,12 @@
     {% endfor %}
   {% endif %}
 
-  <div id="change-skin" title="{{ t.night_mode }}">
-    <span class="skin-btn dark-mode">🌙</span>
-    <span class="skin-btn light-mode">☀️</span>
+  <div class="nav-switches">
+    {% include lang-switch.html %}
+    <div id="change-skin" title="{{ t.night_mode }}">
+      <span class="skin-btn dark-mode">🌙</span>
+      <span class="skin-btn light-mode">☀️</span>
+    </div>
   </div>
 
   {% if site.avatar and page.show-avatar != false %}

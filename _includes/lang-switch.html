@@ -1,0 +1,45 @@
+{%- comment -%}
+  EN/DE pill next to the night mode button (styles in assets/css/lang-switch.css).
+  The knob sits on the side of the page's language, over that language's flag.
+  Included twice by nav.html: next to the night mode button, and in the collapsed
+  menu for narrow screens (the CSS shows one of them). Shown only when the page has a translation (`i18n_alts`, from i18n-alternates.html);
+  clicking slides the knob over and then opens the translation. Built for two
+  languages: the first in `site.languages` on the left, the second on the right.
+{%- endcomment -%}
+{%- assign ls_left = site.languages[0] -%}
+{%- assign ls_right = site.languages[1] -%}
+{%- if lang == ls_left -%}{%- assign ls_target = ls_right -%}{%- else -%}{%- assign ls_target = ls_left -%}{%- endif -%}
+{%- assign ls_alt = i18n_alts | where: "lang", ls_target | first -%}
+{%- if ls_alt -%}
+<a class="lang-switch lang-switch--{% if lang == ls_left %}left{% else %}right{% endif %}"
+   href="{{ ls_alt.url | relative_url }}" hreflang="{{ ls_target }}" lang="{{ ls_target }}"
+   title="{{ site.data.i18n[ls_target].name }}" aria-label="{{ site.data.i18n[ls_target].name }}"
+   data-lang="{{ ls_target }}">
+  <span class="lang-switch__label lang-switch__label--left" aria-hidden="true">{{ ls_left | upcase }}</span>
+  <span class="lang-switch__track" aria-hidden="true">
+    <span class="lang-switch__flag lang-switch__flag--{{ ls_left }} lang-switch__flag--left"></span>
+    <span class="lang-switch__flag lang-switch__flag--{{ ls_right }} lang-switch__flag--right"></span>
+    <span class="lang-switch__knob"></span>
+  </span>
+  <span class="lang-switch__label lang-switch__label--right" aria-hidden="true">{{ ls_right | upcase }}</span>
+</a>
+{%- unless lang_switch_script -%}{%- assign lang_switch_script = true %}
+<script>
+  document.querySelectorAll('.lang-switch').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      try { localStorage.setItem('lang', el.dataset.lang); } catch (err) {}
+      // Let modified clicks open a new tab as usual.
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      e.preventDefault();
+      el.classList.toggle('lang-switch--left');
+      el.classList.toggle('lang-switch--right');
+      setTimeout(function () { location.href = el.href; }, 250);
+    });
+    // Coming back through the back button restores the page as it was left: reset the knob.
+    var start = el.className;
+    window.addEventListener('pageshow', function (e) { if (e.persisted) el.className = start; });
+  });
+</script>
+{%- endunless -%}
+{%- endif -%}
