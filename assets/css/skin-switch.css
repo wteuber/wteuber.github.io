@@ -13,7 +13,7 @@
   --pill-dark-border: #444;
 }
 #change-skin {
-  position: absolute;
+  position: relative; /* placed by .nav-switches (lang-switch.css); frame for the sun or moon */
   box-sizing: border-box;
   width: var(--pill-w);
   height: var(--pill-h);
@@ -31,16 +31,6 @@
 @media (min-width: 1200px) {
   .navbar .navbar-collapse {
     margin-right: 3rem;
-  }
-  #change-skin {
-    top: auto;
-    right: 1rem;
-  }
-}
-@media (max-width: 1199px) {
-  #change-skin {
-    top: 0.85rem;
-    right: 5rem;
   }
 }
 #change-skin .skin-btn {

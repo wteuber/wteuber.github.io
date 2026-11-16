@@ -1,4 +1,15 @@
-<nav class="navbar navbar-expand-xl{% if i18n_alts.size > 1 %} has-lang-switch{% endif %} navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
+{%- comment -%}
+  ls_alt: the translation the language pill links to (the first other language in
+  site.languages that has one), or nil. Used for the pill (lang-switch.html, included
+  twice below) and for the room the navbar keeps for it.
+{%- endcomment -%}
+{%- assign ls_alt = nil -%}
+{%- for l in site.languages -%}
+  {%- if l != lang and ls_alt == nil -%}
+    {%- assign ls_alt = i18n_alts | where: "lang", l | first -%}
+  {%- endif -%}
+{%- endfor -%}
+<nav class="navbar navbar-expand-xl{% if ls_alt %} has-lang-switch{% endif %} navbar-light fixed-top navbar-custom {% if page.nav-short %}top-nav-short-permanent{% else %}top-nav-regular{% endif %}">
 
   {%- if site.title-img -%}
     <a class="navbar-brand navbar-brand-logo" href="{{ t.prefix | append: '/' | absolute_url }}"><img alt="{{ site.title }} Logo" src="{{ site.title-img | relative_url}}"/></a>
@@ -30,7 +41,7 @@
           </li>
         {%- endif -%}
       {%- endfor -%}
-      {%- if i18n_alts.size > 1 %}
+      {%- if ls_alt %}
         <li class="nav-item lang-switch-item">{% include lang-switch.html %}</li>
       {%- endif %}
       {% if site.post_search %}

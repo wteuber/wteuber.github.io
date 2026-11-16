@@ -59,7 +59,7 @@ body.page-dark-mode .pw-meter{
 
   <div class="pw-meter__controls">
     <label>{{ pw_t.bill_total }}
-      <span class="pw-input">{% if pw_t.currency_before != "" %}<span>{{ pw_t.currency_before }}</span>{% endif %}<input type="number" id="pw-total" value="1200.00" min="0.01" max="1000000" step="0.01" inputmode="decimal">{% if pw_t.currency_after != "" %}<span>{{ pw_t.currency_after | strip }}</span>{% endif %}</span>
+      <span class="pw-input">{% if pw_t.currency_before != "" %}<span>{{ pw_t.currency_before }}</span>{% endif %}<input type="number" id="pw-total" value="1200.00" min="0.01" max="1000000" step="0.01" inputmode="decimal">{% if pw_t.currency_after != "" %}<span>{{ pw_t.currency_after | remove: " " | strip }}</span>{% endif %}</span>
     </label>
     <label>{{ pw_t.tax_rate }}
       <span class="pw-input"><input type="number" id="pw-rate" value="7.5" min="0" max="100" step="0.05" inputmode="decimal"><span>%</span></span>

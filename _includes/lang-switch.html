@@ -7,16 +7,10 @@
   Hovering previews the other language (its flag fades in and the globe slides
   right); clicking keeps that state and opens the translation.
   Included twice by nav.html: next to the night mode button, and in the collapsed
-  menu for narrow screens (the CSS shows one of them). Shown only when the page has
-  a translation (`i18n_alts`, from i18n-alternates.html). With more than two
-  languages it links to the next one in `site.languages` that has a translation.
+  menu for narrow screens (the CSS shows one of them). Links to `ls_alt`, which
+  nav.html looks up from `i18n_alts` (i18n-alternates.html); renders nothing when
+  the page has no translation.
 {%- endcomment -%}
-{%- assign ls_alt = nil -%}
-{%- for l in site.languages -%}
-  {%- if l != lang and ls_alt == nil -%}
-    {%- assign ls_alt = i18n_alts | where: "lang", l | first -%}
-  {%- endif -%}
-{%- endfor -%}
 {%- if ls_alt -%}
 <a class="lang-switch" href="{{ ls_alt.url | relative_url }}" hreflang="{{ ls_alt.lang }}" lang="{{ ls_alt.lang }}"
    title="{{ site.data.i18n[ls_alt.lang].name }}" aria-label="{{ site.data.i18n[ls_alt.lang].name }}"
@@ -27,18 +21,19 @@
 </a>
 {%- unless lang_switch_script -%}{%- assign lang_switch_script = true %}
 <script>
-  document.querySelectorAll('.lang-switch').forEach(function (el) {
-    el.addEventListener('click', function (e) {
-      try { localStorage.setItem('lang', el.dataset.lang); } catch (err) {}
-      // Let modified clicks open a new tab as usual.
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      // Hold the switched state (also on touch screens, which have no hover) while
-      // the knob finishes sliding, then open the translation.
-      e.preventDefault();
-      el.classList.add('is-switching');
-      setTimeout(function () { location.href = el.href; }, 300);
-    });
+  // One listener for every copy of the pill, whichever comes first in the page.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('.lang-switch');
+    if (!el) return;
+    // Let modified clicks open a new tab as usual, without changing the saved language.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    try { localStorage.setItem('lang', el.dataset.lang); } catch (err) {}
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Hold the switched state (also on touch screens, which have no hover) while
+    // the knob finishes sliding, then open the translation.
+    e.preventDefault();
+    el.classList.add('is-switching');
+    setTimeout(function () { location.href = el.href; }, 300);
   });
   // Coming back through the back button restores the page as it was left: reset the knob.
   window.addEventListener('pageshow', function (e) {

@@ -3,13 +3,15 @@ $(function() {
       $("body").toggleClass("page-dark-mode");
       // A real click (not the restore below): show the chosen mode until the pointer leaves.
       if (e.originalEvent) $(this).addClass('is-switched');
-      localStorage.setItem('bj-dark-mode', $("body").hasClass("page-dark-mode"));
+      try { localStorage.setItem('bj-dark-mode', $("body").hasClass("page-dark-mode")); } catch (err) {}
       BeautifulJekyllJS.initNavbar();
     });
     $('#change-skin').on('mouseleave', function () {
       $(this).removeClass('is-switched');
     });
-    if (localStorage.getItem('bj-dark-mode') === 'true') {
+    var saved = null;
+    try { saved = localStorage.getItem('bj-dark-mode'); } catch (err) {} // blocked storage throws
+    if (saved === 'true') {
       $('#change-skin').trigger('click');
     }
   });
