@@ -60,6 +60,8 @@
 }
 .page-dark-mode .lang-switch {
   border-color: var(--pill-dark-border);
+  background: var(--pill-dark-bg);
+  --ls-flag-opacity: 0.6; /* dimmed over the dark pill, so the flags don't glare */
 }
 
 .lang-switch__flag {
@@ -75,9 +77,10 @@
 .lang-switch.is-switching .lang-switch__flag--current {
   opacity: 0;
 }
+.lang-switch__flag--current,
 .lang-switch:hover .lang-switch__flag--other,
 .lang-switch.is-switching .lang-switch__flag--other {
-  opacity: 1;
+  opacity: var(--ls-flag-opacity, 1);
 }
 .lang-switch__flag--en {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30' preserveAspectRatio='xMidYMid slice'%3E%3CclipPath id='t'%3E%3Cpath d='M30 15h30v15zv15H0zH0V0zV0h30z'/%3E%3C/clipPath%3E%3Cpath d='M0 0v30h60V0z' fill='%23012169'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0 0l60 30m0-30L0 30' clip-path='url(%23t)' stroke='%23C8102E' stroke-width='4'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30 0v30M0 15h60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E");
