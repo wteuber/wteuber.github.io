@@ -43,7 +43,7 @@
     // board. The retry button reuses the game's own restart (the hidden control).
     sg.gameOver = function (total) {
       message.textContent = (total === 1 ? L.game_over_one : L.game_over_many)
-        .replace('{n}', total);
+        .replace(/\{n\}/g, total);
       var again = document.createElement('button');
       again.type = 'button';
       again.className = 'sg-again';

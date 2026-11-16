@@ -19,9 +19,9 @@ Die Antwort brauchst du aus handfesten Gründen. Steuer wird nach Fristen abgef�
 
 Die naheliegende Antwort ist falsch. Sieben Prozent von 5,00 sind 0,35, und 0,35 + 0,35 + ein bisschen ist schon mehr als 0,70. Das ist keine Rundungskuriosität. Die Steuer wird schlicht auf der falschen Basis berechnet. Die richtige Aufteilung ist **0,32, 0,33, 0,05**. Warum ausgerechnet die mittlere Rate den zusätzlichen Cent trägt, ist die ganze Geschichte.
 
-Ich habe dafür eine kleine Ruby-Bibliothek namens PennyWise geschrieben. Sie macht genau diese Aufteilung und garantiert, dass die Teile aufgehen. Gebaut habe ich sie für Ratenzahlungen, aber die Arithmetik weiß gar nicht, was eine Zahlung ist. Gib ihr statt drei Zahlungen einer Person drei Anteile an einer Restaurantrechnung, und sie teilt die Steuer genauso exakt zwischen den Leuten am Tisch auf. [Eine Rechnung aufzuteilen](#rechnung-aufteilen) fällt also nebenbei mit ab. Darauf komme ich gegen Ende zurück.
+Ich habe dafür eine kleine Ruby-Bibliothek namens PennyWise geschrieben. Sie macht genau diese Aufteilung und garantiert, dass die Teile aufgehen. Gebaut habe ich sie für Ratenzahlungen, aber die Arithmetik weiß gar nicht, was eine Zahlung ist. Gib ihr statt drei Zahlungen einer Person drei Anteile an einer Restaurantrechnung, und sie teilt die Steuer genauso exakt zwischen den Leuten am Tisch auf. [Eine Rechnung aufzuteilen](#splitting-a-bill-is-the-same-problem) fällt also nebenbei mit ab. Darauf komme ich gegen Ende zurück.
 
-Wenn du lieber mit der Idee spielst, als darüber zu lesen: Ein paar Absätze weiter unten gibt es [eine interaktive Version](#erst-das-problem). Gib deine eigenen Zahlen ein und sieh zu, wie die übliche Methode abdriftet, während PennyWise exakt bleibt.
+Wenn du lieber mit der Idee spielst, als darüber zu lesen: Ein paar Absätze weiter unten gibt es [eine interaktive Version](#see-the-problem-first). Gib deine eigenen Zahlen ein und sieh zu, wie die übliche Methode abdriftet, während PennyWise exakt bleibt.
 
 ## Warum die naive Aufteilung abdriftet
 
@@ -41,7 +41,7 @@ Rundest du anders, zum Beispiel immer ab, verlierst du stattdessen einen Cent. �
 
 Die Lösung hat drei Teile. Erstens: nicht mehr mit Bruchteilen eines Cents rechnen. Zweitens: die Steuer einmal herausrechnen statt bei jeder Zahlung. Drittens: die Cents nach einer Regel verteilen, die nicht abdriften kann.
 
-## Erst das Problem ansehen {#erst-das-problem}
+## Erst das Problem ansehen {#see-the-problem-first}
 
 Bevor es an die Lösung geht, ein Gefühl für die Größenordnung. Gib einen Rechnungsbetrag ein, einen Steuersatz und die Zahl der gleich großen Raten. Jede Rate wird auf zwei Arten aufgeteilt: so, wie es Buchhaltungssoftware üblicherweise macht, mit eigener Rundung pro Rate, und mit der Methode, die der Rest dieses Beitrags aufbaut. Achte darauf, wie die Summe bei **Normal gerundet** von der Rechnung abweicht und die bei **PennyWise** nicht.
 
@@ -187,7 +187,7 @@ Wäre das Teleskop-Argument oben falsch, würden tausend Zufallsziehungen das fi
 - **Rechnung über null.** `tax_through` gibt sofort `0` zurück. Eine Rechnung über null zerfällt also in lauter Nullen, ohne dass durch irgendetwas geteilt wird.
 - **Negative Eingaben.** Werden gleich am Eingang abgelehnt. Eine negative Zahlung ergibt in diesem Modell keinen Sinn.
 
-## Eine Rechnung aufteilen ist dasselbe Problem {#rechnung-aufteilen}
+## Eine Rechnung aufteilen ist dasselbe Problem {#splitting-a-bill-is-the-same-problem}
 
 Bisher ging es immer um eine Person, die über die Zeit einen Betrag abbezahlt. Jetzt eine ganz andere Szene: eine Restaurantrechnung, drei Leute am Tisch, alle legen im selben Moment einen anderen Betrag hin. Wie viel Steuer steckt in jedem Anteil?
 

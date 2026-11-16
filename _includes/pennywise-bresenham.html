@@ -1,6 +1,7 @@
 {%- include i18n.html -%}
 {%- assign pwb_t = t.tax_staircase -%}
-{%- assign pwb_rate0 = pwb_t.percent | replace: "{v}", "12" -%}
+{%- assign pwb_rate_default = 12 -%}
+{%- assign pwb_rate0 = pwb_t.percent | replace: "{v}", pwb_rate_default -%}
 <style>
 .pw-bres{
   --pwb-border:#d0d7de;--pwb-bg:#f6f8fa;--pwb-panel:#fff;--pwb-ink:#1f2328;--pwb-mut:#656d76;
@@ -47,7 +48,7 @@ body.page-dark-mode .pw-bres{
       <input type="range" id="pwb-n" min="1" max="12" value="4">
     </label>
     <label>{{ pwb_t.tax_rate }} &nbsp;<output id="pwb-r-out">{{ pwb_rate0 }}</output>
-      <input type="range" id="pwb-r" min="1" max="50" value="12">
+      <input type="range" id="pwb-r" min="1" max="50" value="{{ pwb_rate_default }}">
     </label>
   </div>
 

@@ -15,7 +15,7 @@ Spielen kann man auf zwei Ziele, und die ziehen in verschiedene Richtungen. Das 
 
 Schwierig wird es nach ein, zwei Minuten. Jeder Klick verschiebt alles darüber, und die Gruppe, die du dir aufheben wolltest, gibt es vielleicht nicht mehr, wenn du so weit bist. Um sicher zu wissen, ob ein Klick gut war, müsstest du jedes Spiel durchspielen, das daraus folgt. Das kann sich niemand leisten. Die Alternative ist, schnell zu schätzen. Wie gut diese Schätzung ist, unterscheidet einen guten Solver von einem schlechten.
 
-Ich habe einen geschrieben, er heißt bitbeam. Auf einem Brett mit 30×20 Feldern und drei Farben, also 600 Steinen, findet er in zwei bis vier Sekunden eine Klickfolge, die alles abräumt. Ein Brett mit 15×10 Feldern dauert höchstens eine Fünftelsekunde. Drei Ideen erklären das meiste davon. Und zwei Dinge, die ich unter „nett zu haben“ abgelegt hatte, waren wichtiger als gedacht. Wenn du es lieber sehen als lesen willst: Ganz unten gibt es [eine Aufnahme, in der ein Bot sieben Bretter abräumt](#so-sieht-es-aus).
+Ich habe einen geschrieben, er heißt bitbeam. Auf einem Brett mit 30×20 Feldern und drei Farben, also 600 Steinen, findet er in zwei bis vier Sekunden eine Klickfolge, die alles abräumt. Ein Brett mit 15×10 Feldern dauert höchstens eine Fünftelsekunde. Drei Ideen erklären das meiste davon. Und zwei Dinge, die ich unter „nett zu haben“ abgelegt hatte, waren wichtiger als gedacht. Wenn du es lieber sehen als lesen willst: Ganz unten gibt es [eine Aufnahme, in der ein Bot sieben Bretter abräumt](#what-it-looks-like).
 
 Alle Zeiten unten stammen von dem Rechner, auf dem ich bitbeam geschrieben habe: ein Intel i9-9880H mit 8 Kernen und 16 Hardware-Threads, gebaut mit Apple clang und `-O3 -march=native`. Die Brettgrößen wechseln zwischen den Abschnitten, weil ich jede Messung dort gemacht habe, wo sie interessant war. Bei jeder Zahl steht also, zu welchem Brett sie gehört.
 
@@ -181,7 +181,7 @@ Der Unterschied liegt also nicht an der Sprache. Ein genetischer Algorithmus pro
 
 sgbust fehlt in der Tabelle, und nicht, weil er verloren hat. Aus den Build-Gründen von oben habe ich keine Gesamtzahl für ihn, die etwas über seinen Algorithmus statt über seine Abhängigkeiten aussagt. Der Vergleich auf Routinenebene weiter oben steht deshalb an seiner Stelle.
 
-## So sieht es aus {#so-sieht-es-aus}
+## So sieht es aus {#what-it-looks-like}
 
 Das lässt sich leichter zeigen als beschreiben. Unten spielt ein Bot [die Browserversion von SameGame](/public/samegame){:target="_blank"}, und bitbeam wählt die Züge. Echte Klicks auf einer echten Seite, sieben Bretter mit 30×20 Feldern und drei Farben, eins nach dem anderen abgeräumt.
 
