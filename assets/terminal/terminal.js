@@ -25,6 +25,12 @@
 
   // ---------------------------------------------------------------- helpers
 
+  // GA4 events. Only command names and the site's own paths are sent, never
+  // arguments or anything typed into claude: visitors can type anything.
+  function track(name, params) {
+    try { if (typeof window.gtag === 'function') window.gtag('event', name, params || {}); } catch (e) { /* blocked */ }
+  }
+
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
@@ -456,14 +462,22 @@
       if (!g) { out('zsh: no matches found: ' + tokens[i].v); return 1; }
       args = args.concat(g);
     }
-    var handler = commands[name];
-    if (!handler) return notFound(name, args);
+    // hasOwnProperty: `toString` and friends are not commands.
+    var handler = Object.prototype.hasOwnProperty.call(commands, name) ? commands[name] : null;
+    if (!handler) {
+      track('terminal_command', { command: 'unknown', exit_code: 127 });
+      return notFound(name, args);
+    }
+    var code;
     if (redirect >= 0) {
       // Pretend it went to the file. It didn't: `ls` won't show it.
       screen = document.createElement('div');
-      try { return (await handler(args, name)) || 0; } finally { screen = term; state.dirty = true; }
+      try { code = (await handler(args, name)) || 0; } finally { screen = term; state.dirty = true; }
+    } else {
+      code = (await handler(args, name)) || 0;
     }
-    return (await handler(args, name)) || 0;
+    track('terminal_command', { command: name, exit_code: code });
+    return code;
   }
 
   // --------------------------------------------------------------------- ls
@@ -721,6 +735,7 @@
     if (!node) { out('cd: no such file or directory: ' + args[0]); return 1; }
     if (!node.dir) { out('cd: not a directory: ' + args[0]); return 1; }
     chdir(node.path);
+    track('terminal_cd', { path: node.path });
     return 0;
   }
 
@@ -1174,6 +1189,7 @@
       thinking.remove();
       line('');
       outHTML(esc('⏺ ' + claudeReply(t)));
+      track('terminal_command', { command: 'claude_prompt', exit_code: 0 });
       line('');
     }, function () { thinking.remove(); }).then(function () {
       if (job !== mine) return;
@@ -1236,6 +1252,7 @@
       if (!node) { out('The file ' + absolute(a) + ' does not exist.'); code = 1; return; }
       var u = new URL(toUrl(node), location.href).href;
       window.open(u, '_blank', 'noopener');
+      track('terminal_open', { target: cmd === 'code' ? 'github' : 'site', path: node.path });
       outHTML(esc('Opening ') + '<a class="c-blue" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + '</a>');
     });
     return code;
@@ -1361,6 +1378,7 @@
     // A fresh login just shows the prompt.
     state.cwd = target;
     updateTitle();
+    track('terminal_login', { path: target });
     return login().then(function () {
       chdir(state.cwd);
       showPrompt();
