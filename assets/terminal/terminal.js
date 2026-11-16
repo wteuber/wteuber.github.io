@@ -777,6 +777,7 @@
     claude: cmdClaude,
     cat: cmdCat,
     open: cmdOpen,
+    code: cmdCode,
     pwd: function () {
       out(pick(['/home/' + pick(NAMES), '/var/www/' + pick(WORDS), '/Users/wteuber/Desktop/stuff/old/new/final',
         '/dev/null', '/tmp/' + hex(8), '/usr/local/opt/' + pick(WORDS), '/Volumes/Untitled 3', '/proc/self/cwd']));
@@ -968,7 +969,6 @@
     python: function () { out(pick(['Python 2.7.18\n>>> exit()', '  File "<stdin>", line 1\n    print "hello"\n          ^\nSyntaxError: Missing parentheses', 'import this\nBeautiful is better than ugly.'])); return 0; },
     python3: function (a, n) { return commands.python(a, n); },
     node: function () { out(pick(['Welcome to Node.js v0.10.48.\n> undefined', '> [] + {}\n\'[object Object]\'', '> NaN === NaN\nfalse'])); return 0; },
-    code: function () { out('Opening VS Code... Installing ' + rnd(2, 40) + ' updates first.'); return 0; },
     neofetch: function () {
       outHTML(c('c-green', '                    \'c.          ') + c('b', 'wteuber@web') + '\n' +
         c('c-green', '                 ,xNMM.          ') + '-----------\n' +
@@ -1202,13 +1202,23 @@
     return code;
   }
 
-  function cmdOpen(args) {
-    if (!args.length) { out('Usage: open <file|directory> ...'); return 1; }
+  // open: the file or folder itself, served by this site.
+  function cmdOpen(args) { return openEach('open', args, url); }
+
+  // code: the file or folder's source on GitHub.
+  function cmdCode(args) {
+    return openEach('code', args, function (node) {
+      return REPO + (node.dir ? '/tree/master' : '/blob/master') + (node === root ? '' : encodeURI(node.path));
+    });
+  }
+
+  function openEach(cmd, args, toUrl) {
+    if (!args.length) { out('Usage: ' + cmd + ' <file|directory> ...'); return 1; }
     var code = 0;
     args.forEach(function (a) {
       var node = resolve(a);
       if (!node) { out('The file ' + absolute(a) + ' does not exist.'); code = 1; return; }
-      var u = REPO + (node.dir ? '/tree/master' : '/blob/master') + (node === root ? '' : encodeURI(node.path));
+      var u = new URL(toUrl(node), location.href).href;
       window.open(u, '_blank', 'noopener');
       outHTML(esc('Opening ') + '<a class="c-blue" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + '</a>');
     });
@@ -1219,7 +1229,8 @@
     ['ls [-aAlh1CmRtSrFpdG] [path ...]', 'list files (the real ones)'],
     ['cd [dir]', 'change directory, cd - goes back'],
     ['cat [-n] file ...', 'print files'],
-    ['open glob ...', 'show files on GitHub in a new tab'],
+    ['open glob ...', 'open files or folders in a new browser tab'],
+    ['code glob ...', 'show their source on GitHub in a new tab'],
     ['clear', 'clear the screen (Ctrl+L)'],
     ['help', 'show this list'],
     ['exit', 'close the connection']
@@ -1230,7 +1241,7 @@
     HONEST.forEach(function (h) { outHTML('  ' + c('c-green', padR(h[0], 34)) + esc(h[1])); });
     line('');
     outHTML(c('b', 'Commands that just look busy:'));
-    var honest = ['ls', 'cd', 'cat', 'open', 'clear', 'reset', 'help', 'exit', 'logout'];
+    var honest = ['ls', 'cd', 'cat', 'open', 'code', 'clear', 'reset', 'help', 'exit', 'logout'];
     var busy = Object.keys(commands).filter(function (k) { return honest.indexOf(k) < 0; }).sort();
     outHTML(columns(busy.map(function (k) { return { text: k, html: esc(k) }; })));
     line('');
