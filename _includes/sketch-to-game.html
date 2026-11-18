@@ -9,9 +9,14 @@
 {%- include i18n.html -%}
 {% unless sketch_to_game_assets %}{% assign sketch_to_game_assets = true %}
 <style>
+/* Self-hosted so every device draws the same hand-lettered font instead of its own fallback. */
+@font-face{
+  font-family:"Comic Neue";font-style:normal;font-weight:700;font-display:swap;
+  src:url("{{ '/assets/fonts/comic-neue/comic-neue-700-latin.woff2' | relative_url }}") format("woff2");
+}
 .stg{
   --stg-ink:#2d2b2a;--stg-paper:#fff;--stg-shadow:#2d2b2a;--stg-mut:#6f6c69;
-  --stg-hand:"Chalkboard SE","Chalkboard","Comic Neue","Comic Sans MS","Segoe Print","Bradley Hand",cursive;
+  --stg-hand:"Comic Neue","Chalkboard SE","Comic Sans MS",sans-serif;
   --stg-wob:255px 15px 225px 15px / 15px 225px 15px 255px;
   margin:1.6rem auto 2.2rem;max-width:30rem;text-align:center;
 }
@@ -29,7 +34,7 @@ body.page-dark-mode .stg{--stg-ink:#e4e6eb;--stg-paper:#2d333b;--stg-shadow:#8c8
 .stg__knob{
   position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;
   display:grid;place-items:center;background:#fff;color:#2d2b2a;border:2.5px solid #2d2b2a;
-  border-radius:var(--stg-wob);font:700 20px/1 var(--stg-hand);box-shadow:2px 3px 0 #2d2b2a;
+  border-radius:var(--stg-wob);box-shadow:2px 3px 0 #2d2b2a;
 }
 .stg__tag{
   position:absolute;bottom:10px;padding:2px 10px;background:#fff;color:#2d2b2a;border:2px solid #2d2b2a;
@@ -51,7 +56,9 @@ body.page-dark-mode .stg{--stg-ink:#e4e6eb;--stg-paper:#2d333b;--stg-shadow:#8c8
 .stg__play:hover{transform:rotate(-1deg) translate(-1px,-1px);box-shadow:4px 5px 0 var(--stg-shadow)}
 .stg__play:active{transform:rotate(-1deg) translate(2px,3px);box-shadow:1px 1px 0 var(--stg-shadow)}
 .stg__play:focus-visible{outline:3px dashed #8c8c8c;outline-offset:4px}
-.stg__play::after{content:" \2192"}
+.stg__knob svg{width:26px;height:14px}
+.stg__play svg{width:1.1em;height:.7em;margin-left:.35em;vertical-align:-.02em}
+.stg svg path{fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 </style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -106,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
     <span class="stg__tag stg__tag--sketch">{{ t.sketch }}</span>
     <span class="stg__tag stg__tag--game">{{ t.game }}</span>
     <input class="stg__range" type="range" min="0" max="100" step="0.5" value="50" aria-label="{{ t.slider_label }}">
-    <span class="stg__line"><span class="stg__knob" aria-hidden="true">&#8596;</span></span>
+    <span class="stg__line"><span class="stg__knob" aria-hidden="true"><svg viewBox="0 0 26 14"><path d="M2 7.3C9 6.6 17 7.4 24 6.8M6.5 2.6 2 7.3l4.6 4.3M19.6 2.4 24 6.8l-4.3 4.6"/></svg></span></span>
   </div>
   <p class="stg__hint">{{ t.slider_hint }}</p>
-  <a class="stg__play" href="{{ include.url }}{% if include.url contains '?' %}&amp;{% else %}?{% endif %}lang={{ lang }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}</a>
+  <a class="stg__play" href="{{ include.url }}{% if include.url contains '?' %}&amp;{% else %}?{% endif %}lang={{ lang }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}<svg viewBox="0 0 22 14" aria-hidden="true"><path d="M2 7.4C8 6.7 14 7.3 20 6.9M14.6 2.2 20 6.9l-5.2 4.8"/></svg></a>
 </div>
