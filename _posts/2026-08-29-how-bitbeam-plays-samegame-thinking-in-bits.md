@@ -183,7 +183,7 @@ sgbust is missing from the table, and not because it lost. For the build reasons
 
 ## What it looks like
 
-This is easier to show than to describe. Below is a bot playing [the browser version of SameGame](/public/samegame){:target="_blank"} with bitbeam choosing the moves. Real clicks on a real page, seven 30×20 three-colour boards cleared one after another.
+This is easier to show than to describe. Below is a bot playing [the browser version of SameGame](/public/samegame/?lang=en){:target="_blank"} with bitbeam choosing the moves. Real clicks on a real page, seven 30×20 three-colour boards cleared one after another.
 
 ![A bot playing SameGame in the browser, clearing board after board with moves found by bitbeam](/assets/img/2026-08-29-how-bitbeam-plays-samegame-thinking-in-bits/bitbeam-bot-playing-samegame.gif){:style="border-radius: 8px; display: block; margin: 0 auto;"}
 

@@ -43,14 +43,14 @@ Finde zwei Kreise mit derselben Zahl und tippe sie an. Aber Vorsicht vor den sch
 
 ## Scribble Slide
 
-Tippst du eine Form an, rutscht sie in die Richtung, in die ihr Pfeil zeigt. Ziel ist, die ganze Seite leer zu räumen, bevor die Zeit abläuft. Das Spiel ist auf Englisch.
+Tippst du eine Form an, rutscht sie in die Richtung, in die ihr Pfeil zeigt. Ziel ist, die ganze Seite leer zu räumen, bevor die Zeit abläuft. Den Namen hat sich mein Kind auf Englisch ausgedacht, spielen kannst du auf Deutsch oder Englisch.
 
 {% include sketch-to-game.html
    sketch="/assets/img/2026-11-14-sketch-to-game/slide-sketch.jpg"
    game="/assets/img/2026-11-14-sketch-to-game/slide-game.jpg"
    ratio="800 / 1143"
    sketch_alt="Bleistiftskizze: ineinandergreifende Blockformen auf einem Blatt Papier"
-   game_alt="Das Spiel: bunte, ineinandergreifende Formen mit Pfeilen auf einer Skizzenbuchseite"
+   game_alt="Das Spiel: bunte, ineinandergreifende Formen mit Pfeilen auf einem Notizblockblatt"
    url="/public/child15/scribble-slide/"
    game_id="scribble-slide"
    label="Jetzt spielen: Scribble Slide" %}

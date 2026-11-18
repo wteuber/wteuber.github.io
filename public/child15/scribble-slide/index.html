@@ -18,6 +18,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='6' width='52' height='52' rx='9' fill='%23fdf3c4' stroke='%232d2b2a' stroke-width='4'/%3E%3Cpath d='M18 32h26M34 21l11 11-11 11' fill='none' stroke='%232446ad' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <title>Scribble Slide</title>
+<script src="../../game-lang.js"></script>
 <style>
   :root {
     --paper: #fdfcf7;
@@ -165,7 +166,7 @@
   #btnContinue { font-size: 22px; min-height: 54px; padding: 10px 26px; margin-bottom: 2.5vh; --bg: #fdf0b0; }
   .seg { display: flex; gap: clamp(6px, 2vw, 10px); width: 100%; max-width: 460px; margin-bottom: 2.2vh; }
   .seg button { flex: 1 1 0; min-width: 0; padding: 0 4px; font-size: clamp(16px, 4.7vw, 19px); color: var(--pencil); }
-  .seg button.sel { color: var(--ink); --bg: #d6e2ff; --bd: var(--blue); box-shadow: none; transform: translate(2px, 3px); }
+  .seg button.sel, .seg button[aria-checked="true"] { color: var(--ink); --bg: #d6e2ff; --bd: var(--blue); box-shadow: none; transform: translate(2px, 3px); }
   .pager { display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1.6vw, 8px); margin-top: 2.5vh; width: 100%; }
   .pager button { padding: 0; width: 48px; height: 48px; flex: none; }
   /* six digits and up: leading digits small on top, the last three large */
@@ -189,6 +190,9 @@
     line-height: 1.35;
   }
   .how b { color: var(--blue); }
+  /* language switch: a small version of the difficulty buttons, top right of the page */
+  .seg.langSw { align-self: flex-end; width: auto; gap: 6px; margin: 0 0 -2vh; position: relative; z-index: 1; }
+  .seg.langSw button { flex: none; width: 46px; min-height: 0; height: 34px; padding: 0; font-size: 15px; }
 
   /* ---------- game ---------- */
   #game { overflow: hidden; }
@@ -378,43 +382,47 @@
   <svg id="doodles" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
 
   <section id="menu" class="screen">
+    <div class="seg langSw" role="radiogroup" aria-label="Language" data-ta="lang">
+      <button role="radio" data-lang="en" lang="en">EN</button>
+      <button role="radio" data-lang="de" lang="de">DE</button>
+    </div>
     <h1>Scribble <span>Slide</span></h1>
     <svg class="underline" viewBox="0 0 360 16" preserveAspectRatio="none" aria-hidden="true">
       <path d="M4 9 Q 90 2 180 8 T 356 6 M14 13 Q 120 8 230 12 T 340 11" fill="none" stroke="#2d2b2a" stroke-width="2.4" stroke-linecap="round"/>
     </svg>
-    <p class="sub">an endless sketchbook sliding puzzle</p>
+    <p class="sub" data-t="sub">an endless sketchbook sliding puzzle</p>
     <button id="btnContinue">Start</button>
-    <div class="seg" role="radiogroup" aria-label="Difficulty">
-      <button id="diffE" role="radio">Easy</button>
-      <button id="diffM" role="radio">Medium</button>
-      <button id="diffH" role="radio">Hard</button>
+    <div class="seg" role="radiogroup" aria-label="Difficulty" data-ta="difficulty">
+      <button id="diffE" role="radio" data-t="easy">Easy</button>
+      <button id="diffM" role="radio" data-t="medium">Medium</button>
+      <button id="diffH" role="radio" data-t="hard">Hard</button>
     </div>
     <div id="levels"></div>
     <div class="pager">
-      <button id="btnFirst" class="ibtn" aria-label="First page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
-      <button id="btnPrev" class="ibtn" aria-label="Previous page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button id="btnFirst" class="ibtn" aria-label="First page" data-ta="first"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l-6 6 6 6M19 6l-6 6 6 6"/></svg></button>
+      <button id="btnPrev" class="ibtn" aria-label="Previous page" data-ta="prev"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
       <span id="pageLabel"></span>
-      <button id="btnNext" class="ibtn" aria-label="Next page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
-      <button id="btnLast" class="ibtn" aria-label="Latest page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>
+      <button id="btnNext" class="ibtn" aria-label="Next page" data-ta="next"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button id="btnLast" class="ibtn" aria-label="Latest page" data-ta="last"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6l6 6-6 6M5 6l6 6-6 6"/></svg></button>
     </div>
     <div id="jumpRow" class="pager hidden">
-      <span>Test mode &middot; go to level</span>
-      <input id="jumpTo" type="number" min="1" step="1" inputmode="numeric" aria-label="Level number">
-      <button id="btnJump">Go</button>
-      <button id="btnPlay">Play</button>
+      <span data-t="test">Test mode &middot; go to level</span>
+      <input id="jumpTo" type="number" min="1" step="1" inputmode="numeric" aria-label="Level number" data-ta="levelNo">
+      <button id="btnJump" data-t="go">Go</button>
+      <button id="btnPlay" data-t="play">Play</button>
     </div>
-    <p class="how">Tap a shape and it slides the way its <b>arrow</b> points.<br>
+    <p class="how" data-th="how">Tap a shape and it slides the way its <b>arrow</b> points.<br>
       Clear the whole page before the clock runs out. A blocked shape bumps back and costs a heart.
       Easy gives the most time, Hard the least.</p>
   </section>
 
   <section id="game" class="screen hidden">
     <div class="bar">
-      <button id="btnBack" class="ibtn" aria-label="Back to levels"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Levels</span></button>
+      <button id="btnBack" class="ibtn" aria-label="Back to levels" data-ta="back"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span data-t="levels">Levels</span></button>
       <div class="title" id="lvlTitle">Level 1</div>
-      <div id="hearts" aria-label="Hearts left" title="Lives: a blocked tap costs one heart"></div>
+      <div id="hearts" aria-label="Hearts left" data-ta="hearts" title="Lives: a blocked tap costs one heart" data-tt="heartsTitle"></div>
     </div>
-    <div id="timer" class="timer" aria-label="Time left">
+    <div id="timer" class="timer" aria-label="Time left" data-ta="timeLeft">
       <span id="diffTag">Medium</span>
       <div class="track"><i id="timeFill"></i></div>
       <b id="timeText">0:00</b>
@@ -424,9 +432,9 @@
     </div>
     <p id="tip"></p>
     <div class="bar tools">
-      <button id="btnHint" class="ibtn" aria-label="Hint"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5.9 1.2.9 2.2h5.4c0-1 .3-1.7.9-2.2A6 6 0 0 0 12 3zM9.6 18.6h4.8M10.6 21h2.8"/></svg><span>Hint</span><b id="hintCount">3</b></button>
-      <button id="btnRestart" class="ibtn" aria-label="Restart level"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7M17.3 2.2v4.4h-4.4"/></svg><span>Restart</span></button>
-      <button id="btnSound" class="ibtn" aria-label="Sound on"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5v5H7l4.5 4v-13L7 9.5z"/><path class="on" d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"/><path class="off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span>Sound</span></button>
+      <button id="btnHint" class="ibtn" aria-label="Hint"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.6 10.8c.6.5.9 1.2.9 2.2h5.4c0-1 .3-1.7.9-2.2A6 6 0 0 0 12 3zM9.6 18.6h4.8M10.6 21h2.8"/></svg><span data-t="hint">Hint</span><b id="hintCount">3</b></button>
+      <button id="btnRestart" class="ibtn" aria-label="Restart level" data-ta="restartLevel"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7M17.3 2.2v4.4h-4.4"/></svg><span data-t="restart">Restart</span></button>
+      <button id="btnSound" class="ibtn" aria-label="Sound on"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5v5H7l4.5 4v-13L7 9.5z"/><path class="on" d="M15 9.2a4 4 0 0 1 0 5.6M17.6 6.6a7.6 7.6 0 0 1 0 10.8"/><path class="off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg><span data-t="sound">Sound</span></button>
     </div>
   </section>
 
@@ -463,10 +471,56 @@
   // stars: best result on any difficulty (this is what unlocks levels)
   // rec:   per difficulty, by level index: s = stars, t = best time in tenths of a second
   var DIFFS = {                             // seconds allowed = base + per * number of shapes
-    e: { name: 'Easy', base: 8, per: 2.2 },
-    m: { name: 'Medium', base: 5, per: 1.3 },
-    h: { name: 'Hard', base: 3, per: 0.8 }
+    e: { name: 'easy', base: 8, per: 2.2 },
+    m: { name: 'medium', base: 5, per: 1.3 },
+    h: { name: 'hard', base: 3, per: 0.8 }
   };
+
+  // ---------- language ----------
+  var TEXT = {
+    en: {
+      sub: 'an endless sketchbook sliding puzzle', difficulty: 'Difficulty', easy: 'Easy', medium: 'Medium', hard: 'Hard',
+      first: 'First page', prev: 'Previous page', next: 'Next page', last: 'Latest page',
+      test: 'Test mode \u00b7 go to level', levelNo: 'Level number', go: 'Go', play: 'Play',
+      how: 'Tap a shape and it slides the way its <b>arrow</b> points.<br> Clear the whole page before the clock runs out. ' +
+        'A blocked shape bumps back and costs a heart. Easy gives the most time, Hard the least.',
+      lang: 'Language', back: 'Back to levels', levels: 'Levels', hearts: 'Hearts left',
+      heartsTitle: 'Lives: a blocked tap costs one heart', timeLeft: 'Time left',
+      hint: 'Hint', hintLeft: 'Hint, {n} left', restart: 'Restart', restartLevel: 'Restart level',
+      sound: 'Sound', soundOn: 'Sound on', soundOff: 'Sound off',
+      tipFirst: 'Tap a shape and it slides the way its arrow points. Clear the page!',
+      tipSecond: 'Careful: a blocked shape bumps back and costs a heart.',
+      pageCleared: 'Page cleared!', shapesLeft1: '1 shape left', shapesLeft: '{n} shapes left',
+      blocked: 'Blocked! That cost a heart. {n} of {max} left.',
+      locked: 'locked', best: 'best time {t}', pageLabel: 'Levels {a}\u2013{b}', start: 'Start', cont: 'Continue',
+      again: 'Again', next2: 'Next', newBest: 'new best!', bestShort: 'best {t}',
+      bumps0: 'No bumps. Perfect!', bumps1: 'One bump.', bumps2: 'Two bumps.', cleared: 'Level {n} cleared!',
+      timeUp: 'Time\u2019s up!', noHearts: 'Out of hearts!', decimal: '.', unit: 's', thousands: ','
+    },
+    de: {
+      sub: 'ein endloses Schiebepuzzle im Notizblock', difficulty: 'Schwierigkeit', easy: 'Leicht', medium: 'Mittel', hard: 'Schwer',
+      first: 'Erste Seite', prev: 'Vorherige Seite', next: 'N\u00e4chste Seite', last: 'Neueste Seite',
+      test: 'Testmodus \u00b7 gehe zu Level', levelNo: 'Levelnummer', go: 'Los', play: 'Spielen',
+      how: 'Tippst du eine Form an, rutscht sie in die Richtung, in die ihr <b>Pfeil</b> zeigt.<br> R\u00e4um die ganze Seite leer, bevor die Zeit abl\u00e4uft. ' +
+        'Eine blockierte Form prallt zur\u00fcck und kostet ein Herz. Bei Leicht hast du am meisten Zeit, bei Schwer am wenigsten.',
+      lang: 'Sprache', back: 'Zur\u00fcck zur Levelauswahl', levels: 'Level', hearts: '\u00dcbrige Herzen',
+      heartsTitle: 'Leben: Jede blockierte Form kostet ein Herz', timeLeft: 'Restzeit',
+      hint: 'Tipp', hintLeft: 'Tipp, noch {n}', restart: 'Neustart', restartLevel: 'Level neu starten',
+      sound: 'Ton', soundOn: 'Ton an', soundOff: 'Ton aus',
+      tipFirst: 'Tippe eine Form an. Sie rutscht in die Richtung ihres Pfeils. R\u00e4um die Seite leer!',
+      tipSecond: 'Vorsicht: Eine blockierte Form prallt zur\u00fcck und kostet ein Herz.',
+      pageCleared: 'Seite leer!', shapesLeft1: 'Noch 1 Form', shapesLeft: 'Noch {n} Formen',
+      blocked: 'Blockiert! Das hat ein Herz gekostet. Noch {n} von {max}.',
+      locked: 'gesperrt', best: 'Bestzeit {t}', pageLabel: 'Level {a}\u2013{b}', start: 'Start', cont: 'Weiter',
+      again: 'Nochmal', next2: 'Weiter', newBest: 'neue Bestzeit!', bestShort: 'Bestzeit {t}',
+      bumps0: 'Kein Abpraller. Perfekt!', bumps1: 'Ein Abpraller.', bumps2: 'Zwei Abpraller.', cleared: 'Level {n} geschafft!',
+      timeUp: 'Zeit abgelaufen!', noHearts: 'Keine Herzen mehr!', decimal: ',', unit: ' s', thousands: '.'
+    }
+  };
+  // A switch keeps the doodle layout and only redraws it with words in the new language.
+  var LANG = GameLang.init(TEXT, function (lang) { LANG = lang; L = TEXT[lang]; renderMenu(true); });
+  var L = TEXT[LANG];
+  function T(key, vars) { return GameLang.t(L[key], vars); }
   var save = { stars: [], mute: false, diff: 'm', rec: { e: { s: {}, t: {} }, m: { s: {}, t: {} }, h: { s: {}, t: {} } } };
   try {
     var raw = JSON.parse(localStorage.getItem(STORE_KEY));
@@ -491,7 +545,7 @@
   function timeLimit(shapes) { var d = DIFFS[save.diff]; return Math.ceil(d.base + d.per * shapes) * 1000; }
   function fmtTime(tenths) {                // 234 -> "23.4s", 653 -> "1:05.3"
     var sec = Math.floor(tenths / 10), t = tenths % 10;
-    return sec < 60 ? sec + '.' + t + 's' : Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + sec % 60 + '.' + t;
+    return sec < 60 ? sec + L.decimal + t + L.unit : Math.floor(sec / 60) + ':' + (sec % 60 < 10 ? '0' : '') + sec % 60 + L.decimal + t;
   }
   function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify(save)); } catch (e) {} }
   function starsOf(i) { return save.stars[i] | 0; }
@@ -581,16 +635,16 @@
   var S = null, token = 0;
 
   function startLevel(index) {
-    var L = getLevel(index);
+    var lv = getLevel(index);
     token++;
     S = {
-      index: index, w: L.w, h: L.h, grid: new Int16Array(L.w * L.h).fill(-1),
-      pieces: [], left: L.p.length, lives: MAX_LIVES, hints: MAX_HINTS, bumps: 0, over: false, token: token,
-      limit: timeLimit(L.p.length), used: 0, t0: Date.now(), lastSec: -1
+      index: index, w: lv.w, h: lv.h, grid: new Int16Array(lv.w * lv.h).fill(-1),
+      pieces: [], left: lv.p.length, lives: MAX_LIVES, hints: MAX_HINTS, bumps: 0, over: false, token: token,
+      limit: timeLimit(lv.p.length), used: 0, t0: Date.now(), lastSec: -1
     };
-    L.p.forEach(function (a, i) {
+    lv.p.forEach(function (a, i) {
       var cells = [];
-      for (var k = 1; k < a.length; k += 2) { cells.push([a[k], a[k + 1]]); S.grid[a[k + 1] * L.w + a[k]] = i; }
+      for (var k = 1; k < a.length; k += 2) { cells.push([a[k], a[k + 1]]); S.grid[a[k + 1] * lv.w + a[k]] = i; }
       S.pieces.push({ d: a[0], cells: cells, alive: true, busy: false, g: null, inner: null });
     });
     draw();
@@ -599,7 +653,7 @@
     $('overlay').classList.add('hidden');
     $('menu').classList.add('hidden');
     $('game').classList.remove('hidden');
-    $('diffTag').textContent = DIFFS[save.diff].name;
+    $('diffTag').textContent = L[DIFFS[save.diff].name];
     hud();
     paintTimer();
     drawDoodles(114);
@@ -673,7 +727,7 @@
 
   function soundUi() {
     $('btnSound').className = 'ibtn' + (save.mute ? ' muted' : '');
-    $('btnSound').setAttribute('aria-label', save.mute ? 'Sound off' : 'Sound on');
+    $('btnSound').setAttribute('aria-label', save.mute ? L.soundOff : L.soundOn);
   }
   function buzz(ms) {     // short vibration on phones that support it; follows the sound switch
     try { if (!save.mute && typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(ms); } catch (e) {}
@@ -684,13 +738,13 @@
     for (var i = 0; i < MAX_LIVES; i++) h += '<i class="' + (i < S.lives ? '' : 'gone' + (lost && i === S.lives ? ' lost' : '')) + '">' + HEART_ICON + '</i>';
     $('hearts').innerHTML = h;
     $('hintCount').textContent = S.hints;
-    $('btnHint').setAttribute('aria-label', 'Hint, ' + S.hints + ' left');
+    $('btnHint').setAttribute('aria-label', T('hintLeft', { n: S.hints }));
     $('btnHint').disabled = S.hints <= 0 || S.over;
     soundUi();
     var tip;
-    if (S.index === 0 && S.left === S.pieces.length) tip = 'Tap a shape – it slides the way its arrow points. Clear the page!';
-    else if (S.index === 1 && S.left === S.pieces.length) tip = 'Careful: a blocked shape bumps back and costs a heart.';
-    else tip = S.left === 0 ? 'Page cleared!' : S.left + (S.left === 1 ? ' shape' : ' shapes') + ' left';
+    if (S.index === 0 && S.left === S.pieces.length) tip = L.tipFirst;
+    else if (S.index === 1 && S.left === S.pieces.length) tip = L.tipSecond;
+    else tip = S.left === 0 ? L.pageCleared : S.left === 1 ? L.shapesLeft1 : T('shapesLeft', { n: S.left });
     $('tip').textContent = tip;
   }
 
@@ -772,7 +826,7 @@
       setTimeout(function () { if (S && S.token === my) fail(); }, fwd + 900);
     }
     hud(true);
-    $('tip').textContent = 'Blocked! That cost a heart \u2013 ' + S.lives + ' of ' + MAX_LIVES + ' left.';
+    $('tip').textContent = T('blocked', { n: S.lives, max: MAX_LIVES });
   }
 
   function hint() {
@@ -942,7 +996,7 @@
   }
 
   var PENS = ['#55524e', '#55524e', '#55524e', '#55524e', '#55524e', '#2446ad', '#2446ad', '#2446ad', '#c8443a', '#3f8f52'];
-  var DOODLES = DoodleLib.shapes, WORDS = DoodleLib.words;
+  var DOODLES = DoodleLib.shapes;
   var doodleSeed = null, doodleTop = 34;
 
   // Scatters a fresh, random set of doodles over the page. Pass keep = true to redraw the same set (on resize).
@@ -959,6 +1013,7 @@
     // a shuffled deck of drawings, words and made-up shapes, dealt without repeats
     var deck = [], i, j;
     for (i = 0; i < DOODLES.length; i++) deck.push(['d', i]);
+    var WORDS = LANG === 'de' ? DoodleLib.wordsDe : DoodleLib.words;
     for (i = 0; i < WORDS.length; i++) deck.push(['w', i]);
     for (i = 0; i < 40; i++) deck.push(['m', i % 10]);
     for (i = deck.length - 1; i > 0; i--) { j = Math.floor(R() * (i + 1)); var t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
@@ -1018,9 +1073,9 @@
     return Math.floor(top / PAGE);
   }
 
-  function group(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, ','); }   // 99999981 -> 99,999,981
+  function group(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, L.thousands); }   // 99999981 -> 99,999,981 (99.999.981 in German)
 
-  function renderMenu() {
+  function renderMenu(keepDoodles) {
     var fr = frontier(), maxPage = TEST ? 1e7 : Math.floor(fr / PAGE);
     menuPage = Math.max(0, Math.min(menuPage, maxPage));
     var box = $('levels');
@@ -1030,29 +1085,28 @@
       var open = unlocked(i);
       b.className = 'lvl' + (open ? '' : ' locked') + (i + 1 >= 100000 ? ' split' : i + 1 >= 1000 ? ' tiny' : '');
       b.disabled = !open;
-      b.setAttribute('aria-label', 'Level ' + (i + 1) + (open ? '' : ' (locked)'));
       var best = recTime(i);
-      b.setAttribute('aria-label', 'Level ' + (i + 1) + (open ? (best ? ', best time ' + fmtTime(best) : '') : ' (locked)'));
+      b.setAttribute('aria-label', 'Level ' + (i + 1) + (open ? (best ? ', ' + T('best', { t: fmtTime(best) }) : '') : ' (' + L.locked + ')'));
       b.style.setProperty('--n', String(i + 1).length);
       var num = String(i + 1);
-      if (i + 1 >= 100000) num = '<i>' + group(num.slice(0, -3)) + ',</i>' + num.slice(-3);
+      if (i + 1 >= 100000) num = '<i>' + group(num.slice(0, -3)) + L.thousands + '</i>' + num.slice(-3);
       b.innerHTML = '<span>' + num + '</span><small>' + starHtml(recStars(i)) + '</small><em>' + (best ? fmtTime(best) : '&nbsp;') + '</em>';
       if (open) b.style.setProperty('--bg', COLORS[i % COLORS.length][0]);
       b.addEventListener('click', function () { startLevel(i); });
       box.appendChild(b);
     })(k);
     var from = menuPage * PAGE + 1, to = (menuPage + 1) * PAGE, long = to >= 100000;   // long ranges: two lines, grouped digits
-    $('pageLabel').textContent = long ? group(from) + ' \u2013 ' + group(to) : 'Levels ' + from + '\u2013' + to;
+    $('pageLabel').textContent = long ? group(from) + ' \u2013 ' + group(to) : T('pageLabel', { a: from, b: to });
     $('pageLabel').className = long ? 'long' : '';
     $('btnFirst').disabled = $('btnPrev').disabled = menuPage === 0;
     $('btnNext').disabled = menuPage >= maxPage;
     $('btnLast').disabled = menuPage === lastPage();
-    $('btnContinue').textContent = (fr === 0 ? 'Start' : 'Continue') + ' \u00b7 Level ' + (fr + 1);
+    $('btnContinue').textContent = (fr === 0 ? L.start : L.cont) + ' \u00b7 Level ' + (fr + 1);
     [['diffE', 'e'], ['diffM', 'm'], ['diffH', 'h']].forEach(function (p) {
       $(p[0]).className = save.diff === p[1] ? 'sel' : '';
       $(p[0]).setAttribute('aria-checked', save.diff === p[1] ? 'true' : 'false');
     });
-    drawDoodles(34);
+    drawDoodles(34, keepDoodles);
   }
 
   function showMenu() {
@@ -1068,9 +1122,9 @@
   // Card buttons: a big icon over one word. A tapped button slides off like a shape
   // (again: up, levels: down, next: right) and then does its job.
   var ACTS = {
-    again: ['Again', '<path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7M17.3 2.2v4.4h-4.4"/>'],
-    levels: ['Levels', '<path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/>'],
-    next: ['Next', '<path d="M5.5 5l7 7-7 7M12.5 5l7 7-7 7"/>']
+    again: ['again', '<path d="M19.5 12a7.5 7.5 0 1 1-2.6-5.7M17.3 2.2v4.4h-4.4"/>'],
+    levels: ['levels', '<path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/>'],
+    next: ['next2', '<path d="M5.5 5l7 7-7 7M12.5 5l7 7-7 7"/>']
   };
   function card(html, actions, main) {
     var c = $('card'), busy = false;
@@ -1079,7 +1133,7 @@
     actions.forEach(function (a) {
       var b = document.createElement('button'), act = ACTS[a[0]];
       b.className = a[0] + (a[0] === main ? ' main' : '');
-      b.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + act[1] + '</svg><span>' + act[0] + '</span>';
+      b.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">' + act[1] + '</svg><span>' + L[act[0]] + '</span>';
       b.addEventListener('click', function () {
         if (busy) return;
         busy = true;
@@ -1100,12 +1154,12 @@
     if (stars > (rec.s[idx] | 0)) rec.s[idx] = stars;
     if (!old || time < old) rec.t[idx] = time;
     persist();
-    var note = !old ? '' : time < old ? ' <i>new best!</i>' : ' \u00b7 best ' + fmtTime(old);
+    var note = !old ? '' : time < old ? ' <i>' + L.newBest + '</i>' : ' \u00b7 ' + T('bestShort', { t: fmtTime(old) });
     sndWin();
-    var msg = S.bumps === 0 ? 'No bumps. Perfect!' : S.bumps === 1 ? 'One bump.' : 'Two bumps.';
-    var head = 'Level ' + (idx + 1) + ' cleared!';
+    var msg = S.bumps === 0 ? L.bumps0 : S.bumps === 1 ? L.bumps1 : L.bumps2;
+    var head = T('cleared', { n: idx + 1 });
     card('<h2>' + head + '</h2><div class="stars">' + starHtml(stars) + '</div>' +
-      '<p class="time">' + DIFFS[save.diff].name + ' \u00b7 <strong>' + fmtTime(time) + '</strong>' + note + '</p><p>' + msg + '</p>',
+      '<p class="time">' + L[DIFFS[save.diff].name] + ' \u00b7 <strong>' + fmtTime(time) + '</strong>' + note + '</p><p>' + msg + '</p>',
       [['again', function () { startLevel(idx); }], ['levels', showMenu], ['next', function () { startLevel(idx + 1); }]], 'next');
   }
 
@@ -1113,7 +1167,7 @@
     var idx = S.index;
     sndFail();
     hud();
-    var html = '<h2>' + (why === 'time' ? 'Time\u2019s up!' : 'Out of hearts!') + '</h2><p>' + S.left + (S.left === 1 ? ' shape' : ' shapes') + ' left</p>';
+    var html = '<h2>' + (why === 'time' ? L.timeUp : L.noHearts) + '</h2><p>' + (S.left === 1 ? L.shapesLeft1 : T('shapesLeft', { n: S.left })) + '</p>';
     if (why === 'time') buzz(120);
     card(html, [['again', function () { startLevel(idx); }], ['levels', showMenu]], 'again');
   }

@@ -18,6 +18,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='26' fill='%23fff' stroke='%23111' stroke-width='5'/%3E%3Ctext x='32' y='44' font-size='34' font-weight='700' font-family='sans-serif' text-anchor='middle' fill='%23111'%3E2%3C/text%3E%3C/svg%3E">
 <title>Dupliziere die Nummern</title>
+<script src="../game-lang.js"></script>
 <style>
   :root {
     --ink: #111;
@@ -105,7 +106,9 @@
   .tile.locked { background: var(--ink); color: var(--ink); cursor: default; border-radius: 46% 54% 40% 60% / 55% 42% 58% 45%; }
   .tile.next { box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--ink); }
   .tile:not(.locked):active { background: var(--light); }
-  .menuFoot { margin-top: 18px; padding-bottom: 10px; }
+  .menuFoot { display: flex; align-items: center; gap: 14px; margin-top: 18px; padding-bottom: 10px; }
+  .langSw { display: flex; gap: 6px; }
+  .langSw .btn[aria-pressed="true"] { background: var(--ink); color: var(--white); box-shadow: 2px 3px 0 var(--grey); cursor: default; }
 
   /* ---------- game ---------- */
   /* #side groups the controls; upright it dissolves so everything stacks in one column */
@@ -278,38 +281,44 @@
 <section id="menu" class="screen on">
   <h1><span>Dupliziere</span> <span>die</span> <span>Nummern</span></h1>
   <div class="demo" aria-hidden="true"><i>8</i><i>12</i><i class="rock"></i><i>8</i></div>
-  <p class="sub">Finde immer zwei gleiche Zahlen und tippe sie an. Aber Vorsicht: Die schwarzen Steine wandern &ndash; nicht ber&uuml;hren!</p>
+  <p class="sub" data-t="sub">Finde immer zwei gleiche Zahlen und tippe sie an. Aber Vorsicht: Die schwarzen Steine wandern. Nicht ber&uuml;hren!</p>
   <button id="btnContinue" class="btn dark">Start</button>
   <div class="pager">
-    <button id="pgPrev" class="btn small" aria-label="Vorherige Seite">&lsaquo;</button>
+    <button id="pgPrev" class="btn small" aria-label="Vorherige Seite" data-ta="prev">&lsaquo;</button>
     <span id="pageLabel">Level 1&ndash;20</span>
-    <button id="pgNext" class="btn small" aria-label="N&auml;chste Seite">&rsaquo;</button>
+    <button id="pgNext" class="btn small" aria-label="N&auml;chste Seite" data-ta="next">&rsaquo;</button>
   </div>
   <div id="levels"></div>
   <div id="testBar">
-    <span>Testmodus &middot; gehe zu Level</span>
-    <input id="jumpTo" type="number" min="1" step="1" inputmode="numeric" aria-label="Levelnummer">
-    <button id="btnJump" class="btn small">Los</button>
+    <span data-t="test">Testmodus &middot; gehe zu Level</span>
+    <input id="jumpTo" type="number" min="1" step="1" inputmode="numeric" aria-label="Levelnummer" data-ta="levelNo">
+    <button id="btnJump" class="btn small" data-t="go">Los</button>
   </div>
-  <div class="menuFoot"><button id="btnSound" class="btn small">Ton</button></div>
+  <div class="menuFoot">
+    <button id="btnSound" class="btn small">Ton</button>
+    <div class="langSw" role="group" aria-label="Sprache" data-ta="lang">
+      <button class="btn small" data-lang="de" lang="de">DE</button>
+      <button class="btn small" data-lang="en" lang="en">EN</button>
+    </div>
+  </div>
 </section>
 
 <section id="game" class="screen">
   <div id="side">
     <div class="bar">
-      <button id="btnBack" class="btn small" aria-label="Zur&uuml;ck zu den Levels">&lsaquo;<span> Levels</span></button>
+      <button id="btnBack" class="btn small" aria-label="Zur&uuml;ck zur Levelauswahl" data-ta="back">&lsaquo;<span data-t="levelsBack"> Level</span></button>
       <div class="title" id="lvlTitle">Level 1</div>
-      <div id="hearts" aria-label="Leben"></div>
+      <div id="hearts" aria-label="Leben" data-ta="lives"></div>
       <button id="btnPause" class="btn small" aria-label="Pause" aria-pressed="false">II</button>
-      <button id="btnRestart" class="btn small" aria-label="Level neu starten">&#8635;</button>
+      <button id="btnRestart" class="btn small" aria-label="Level neu starten" data-ta="restart">&#8635;</button>
     </div>
-    <div id="timer" aria-label="Restzeit"><div id="timeBar"><div id="timeFill"></div></div><span id="timeText">0:00</span></div>
+    <div id="timer" aria-label="Restzeit" data-ta="timeLeft"><div id="timeBar"><div id="timeFill"></div></div><span id="timeText">0:00</span></div>
     <div id="tip"></div>
   </div>
-  <div id="todo" aria-label="Diese Zahlen musst du noch finden"></div>
+  <div id="todo" aria-label="Diese Zahlen musst du noch finden" data-ta="todo"></div>
   <div id="fieldWrap"><canvas id="field"></canvas>
     <div id="toast" aria-live="polite"></div>
-    <div id="pauseCover"><h2>Pause</h2><p>Die Zeit steht still und die Zahlen sind versteckt.</p><button id="btnResume" class="btn dark">Weiter spielen</button></div>
+    <div id="pauseCover"><h2>Pause</h2><p data-t="paused">Die Zeit steht still und die Zahlen sind versteckt.</p><button id="btnResume" class="btn dark" data-t="resume">Weiter spielen</button></div>
   </div>
 </section>
 
@@ -330,6 +339,50 @@
   // test mode: open index.html?unlock (optionally &level=250) to make every level playable
   var UNLOCK = /[?&]unlock\b/i.test(location.search);
 
+  /* ---------------- language ---------------- */
+  var TEXT = {
+    de: {
+      sub: 'Finde immer zwei gleiche Zahlen und tippe sie an. Aber Vorsicht: Die schwarzen Steine wandern. Nicht ber\u00fchren!',
+      prev: 'Vorherige Seite', next: 'N\u00e4chste Seite', test: 'Testmodus \u00b7 gehe zu Level', levelNo: 'Levelnummer', go: 'Los',
+      lang: 'Sprache', back: 'Zur\u00fcck zur Levelauswahl', levelsBack: ' Level', lives: 'Leben', restart: 'Level neu starten', timeLeft: 'Restzeit',
+      todo: 'Diese Zahlen musst du noch finden', paused: 'Die Zeit steht still und die Zahlen sind versteckt.', resume: 'Weiter spielen',
+      pause: 'Pause', livesOf: '{n} von {max} Leben',
+      tipFirst: 'Tippe zwei gleiche Zahlen an, bevor die Zeit abl\u00e4uft. Die rollenden Steine nicht ber\u00fchren!',
+      tip: 'Finde alle Paare. Vorsicht vor den Steinen!',
+      livesLeft1: 'Noch 1 Leben.', livesLeft: 'Noch {n} Leben.',
+      stone: 'Autsch, ein Stein!', noMatch: '{a} und {b} passen nicht.',
+      pairLeft1: 'Nur noch ein Paar!', pairsLeft: 'Super! Noch {n} Paare.',
+      cleared: 'Level {n} geschafft', newBest: 'neue Bestzeit!',
+      timeUp: 'Zeit abgelaufen!', noLives: 'Keine Leben mehr!',
+      failLeft1: 'Noch ein Paar \u00fcbrig.', failLeft: 'Noch {n} Paare \u00fcbrig.',
+      failNote: 'Macht nichts, du kannst es so oft versuchen, wie du willst.',
+      levels: 'Level', again: 'Nochmal versuchen',
+      stars1: '1 Stern', stars: '{n} Sterne', best: 'Bestzeit {t}', locked: 'gesperrt', pageLabel: 'Level {a}\u2013{b}',
+      start: 'Start', cont: 'Weiter', soundOn: 'Ton an', soundOff: 'Ton aus', decimal: ',', unit: ' s'
+    },
+    en: {
+      sub: 'Find two matching numbers and tap them. But watch out: the black stones move around. Don\u2019t touch them!',
+      prev: 'Previous page', next: 'Next page', test: 'Test mode \u00b7 go to level', levelNo: 'Level number', go: 'Go',
+      lang: 'Language', back: 'Back to levels', levelsBack: ' Levels', lives: 'Lives', restart: 'Restart level', timeLeft: 'Time left',
+      todo: 'Numbers you still need to find', paused: 'Time stands still and the numbers are hidden.', resume: 'Keep playing',
+      pause: 'Pause', livesOf: '{n} of {max} lives',
+      tipFirst: 'Tap two matching numbers before time runs out. Don\u2019t touch the rolling stones!',
+      tip: 'Find all the pairs. Watch out for the stones!',
+      livesLeft1: '1 life left.', livesLeft: '{n} lives left.',
+      stone: 'Ouch, a stone!', noMatch: '{a} and {b} don\u2019t match.',
+      pairLeft1: 'Just one pair left!', pairsLeft: 'Great! {n} pairs to go.',
+      cleared: 'Level {n} cleared', newBest: 'new best time!',
+      timeUp: 'Time\u2019s up!', noLives: 'Out of lives!',
+      failLeft1: 'One pair left.', failLeft: '{n} pairs left.',
+      failNote: 'Never mind, you can try as often as you like.',
+      levels: 'Levels', again: 'Try again',
+      stars1: '1 star', stars: '{n} stars', best: 'best time {t}', locked: 'locked', pageLabel: 'Levels {a}\u2013{b}',
+      start: 'Start', cont: 'Continue', soundOn: 'Sound on', soundOff: 'Sound off', decimal: '.', unit: 's'
+    }
+  };
+  var L = TEXT[GameLang.init(TEXT, function (lang) { L = TEXT[lang]; drawMenu(); })];
+  function T(key, vars) { return GameLang.t(L[key], vars); }
+
   /* ---------------- save ---------------- */
   var STORE = 'dupliziere-die-nummern-v1';
   var save = { stars: [], times: [], mute: false };   // times: best time per level in tenths of a second
@@ -341,7 +394,7 @@
   function starsOf(i) { return save.stars[i] || 0; }
   function fmtTime(tenths) {                // 234 -> "23,4 s", 653 -> "1:05,3"
     var sec = Math.floor(tenths / 10), t = tenths % 10;
-    return sec < 60 ? sec + ',' + t + ' s' : Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2) + ',' + t;
+    return sec < 60 ? sec + L.decimal + t + L.unit : Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2) + L.decimal + t;
   }
   function frontier() { var i = 0; while (starsOf(i) > 0) i++; return i; }
 
@@ -567,7 +620,7 @@
       h += '<span class="' + (i < S.lives ? '' : 'gone' + (lost && i === S.lives ? ' lost' : '')) + '">' + HEART + '</span>';
     }
     $('hearts').innerHTML = h;
-    $('hearts').setAttribute('aria-label', S.lives + ' von ' + MAX_LIVES + ' Leben');
+    $('hearts').setAttribute('aria-label', T('livesOf', { n: S.lives, max: MAX_LIVES }));
   }
   function drawTodo() {
     $('todo').innerHTML = S.nums.map(function (n) { return '<span data-n="' + n + '">' + n + '</span>'; }).join('');
@@ -600,7 +653,7 @@
     $('game').classList.toggle('paused', on);
     $('btnPause').textContent = on ? '\u25b6' : 'II';
     $('btnPause').setAttribute('aria-pressed', on ? 'true' : 'false');
-    $('btnPause').setAttribute('aria-label', on ? 'Weiter spielen' : 'Pause');
+    $('btnPause').setAttribute('aria-label', on ? L.resume : L.pause);
     lastT = performance.now();
     if (on) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); }   // nothing left to peek at
   }
@@ -623,7 +676,7 @@
     drawTodo();
     drawHearts(false);
     timerCls = null; paintTimer();
-    tip(index === 0 ? 'Tippe zwei gleiche Zahlen an, bevor die Zeit abl\u00e4uft. Die rollenden Steine nicht ber\u00fchren!' : 'Finde alle Paare. Vorsicht vor den Steinen!');
+    tip(index === 0 ? L.tipFirst : L.tip);
     if (!running) { running = true; lastT = performance.now(); requestAnimationFrame(frame); }
   }
 
@@ -649,7 +702,7 @@
       var idx = S.index, state = S;
       setTimeout(function () { if (S === state) failCard(idx, 'lives'); }, 750);
     } else {
-      tip(why + ' Noch ' + S.lives + (S.lives === 1 ? ' Leben.' : ' Leben.'));
+      tip(why + ' ' + (S.lives === 1 ? L.livesLeft1 : T('livesLeft', { n: S.lives })));
     }
   }
 
@@ -671,7 +724,7 @@
         var sx = len > r.r * .15 ? -dx / len : r.vx / cur, sy = len > r.r * .15 ? -dy / len : r.vy / cur;
         r.boost = 6; r.vx = sx * r.sp * r.boost; r.vy = sy * r.sp * r.boost;
         sfx.rock(); sfx.shoot();
-        loseLife(px, py, 'Autsch, ein Stein!');
+        loseLife(px, py, L.stone);
         return;
       }
     }
@@ -704,12 +757,12 @@
         var idx = S.index, lives = S.lives, state = S, tenths = Math.max(1, Math.round(S.used * 10));
         setTimeout(function () { if (S === state) levelDone(idx, lives, tenths); }, 420);
       } else {
-        tip(S.left === 1 ? 'Nur noch ein Paar!' : 'Super! Noch ' + S.left + ' Paare.');
+        tip(S.left === 1 ? L.pairLeft1 : T('pairsLeft', { n: S.left }));
       }
     } else {
       a.shake = b.shake = 1;
       sfx.miss();
-      loseLife(px, py, a.n + ' und ' + b.n + ' passen nicht.');
+      loseLife(px, py, T('noMatch', { a: a.n, b: b.n }));
     }
   }
 
@@ -964,17 +1017,17 @@
     if (!old || tenths < old) save.times[idx] = tenths;
     persist();
     sfx.win();
-    var res = 'Level ' + (idx + 1) + ' geschafft \u00b7 ' + '\u2605\u2605\u2605'.slice(0, lives) + '\u2606\u2606\u2606'.slice(0, 3 - lives) + ' \u00b7 ' + fmtTime(tenths);
+    var res = T('cleared', { n: idx + 1 }) + ' \u00b7 ' + '\u2605\u2605\u2605'.slice(0, lives) + '\u2606\u2606\u2606'.slice(0, 3 - lives) + ' \u00b7 ' + fmtTime(tenths);
     startLevel(idx + 1);
     toast(res);
-    tip(res + (old && tenths < old ? ' \u00b7 neue Bestzeit!' : ''));
+    tip(res + (old && tenths < old ? ' \u00b7 ' + L.newBest : ''));
   }
   function failCard(idx, why) {
     sfx.fail();
     var left = S ? S.left : 0;
-    card('<h2>' + (why === 'time' ? 'Zeit abgelaufen!' : 'Keine Leben mehr!') + '</h2><p>Noch ' + (left === 1 ? 'ein Paar' : left + ' Paare') + ' \u00fcbrig. Macht nichts – du kannst es so oft versuchen, wie du willst.</p>', [
-      ['Levels', showMenu],
-      ['Nochmal versuchen', function () { startLevel(idx); }, true]
+    card('<h2>' + (why === 'time' ? L.timeUp : L.noLives) + '</h2><p>' + (left === 1 ? L.failLeft1 : T('failLeft', { n: left })) + ' ' + L.failNote + '</p>', [
+      [L.levels, showMenu],
+      [L.again, function () { startLevel(idx); }, true]
     ]);
   }
 
@@ -997,16 +1050,16 @@
       var b = document.createElement('button');
       b.className = 'tile' + (open ? '' : ' locked') + (i === fr ? ' next' : '');
       b.disabled = !open;
-      b.setAttribute('aria-label', 'Level ' + (i + 1) + (open ? (st ? ', ' + st + ' Sterne' : '') + (best ? ', Bestzeit ' + fmtTime(best) : '') : ' (gesperrt)'));
+      b.setAttribute('aria-label', 'Level ' + (i + 1) + (open ? (st ? ', ' + (st === 1 ? L.stars1 : T('stars', { n: st })) : '') + (best ? ', ' + T('best', { t: fmtTime(best) }) : '') : ' (' + L.locked + ')'));
       b.innerHTML = open ? (i + 1) + (st ? '<small>' + '\u2605\u2605\u2605'.slice(0, st) + '</small>' : '') + (best ? '<em>' + fmtTime(best) + '</em>' : '') : '';
       if (open) b.addEventListener('click', function () { startLevel(i); });
       box.appendChild(b);
     })(i);
-    $('pageLabel').textContent = 'Level ' + (page * PAGE + 1) + '–' + (page + 1) * PAGE;
+    $('pageLabel').textContent = T('pageLabel', { a: page * PAGE + 1, b: (page + 1) * PAGE });
     $('pgPrev').disabled = page === 0;
     $('pgNext').disabled = !UNLOCK && (page + 1) * PAGE > fr;
-    $('btnContinue').textContent = (fr === 0 ? 'Start' : 'Weiter') + ' · Level ' + (fr + 1);
-    $('btnSound').textContent = save.mute ? 'Ton aus' : 'Ton an';
+    $('btnContinue').textContent = (fr === 0 ? L.start : L.cont) + ' · Level ' + (fr + 1);
+    $('btnSound').textContent = save.mute ? L.soundOff : L.soundOn;
     $('btnSound').classList.toggle('off', save.mute);
   }
 

@@ -2,7 +2,8 @@
   Before/after slider: the paper sketch on the left of the handle, the finished game on the right,
   followed by a hand-drawn "play" button.
   Params: sketch, game (image URLs, same aspect ratio), ratio (CSS aspect-ratio, e.g. "1 / 1"),
-          sketch_alt, game_alt, url (link to the game), label (button text),
+          sketch_alt, game_alt, url (link to the game; the page's language is added as
+          ?lang= so the game opens in it), label (button text),
           game_id (optional analytics name for the play_game event; defaults to label).
 {% endcomment %}
 {%- include i18n.html -%}
@@ -108,5 +109,5 @@ document.addEventListener('DOMContentLoaded', function () {
     <span class="stg__line"><span class="stg__knob" aria-hidden="true">&#8596;</span></span>
   </div>
   <p class="stg__hint">{{ t.slider_hint }}</p>
-  <a class="stg__play" href="{{ include.url }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}</a>
+  <a class="stg__play" href="{{ include.url }}{% if include.url contains '?' %}&amp;{% else %}?{% endif %}lang={{ lang }}" data-game="{{ include.game_id | default: include.label }}" target="_blank" rel="noopener">{{ include.label }}</a>
 </div>
