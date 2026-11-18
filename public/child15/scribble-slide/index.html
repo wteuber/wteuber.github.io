@@ -166,7 +166,7 @@
   #btnContinue { font-size: 22px; min-height: 54px; padding: 10px 26px; margin-bottom: 2.5vh; --bg: #fdf0b0; }
   .seg { display: flex; gap: clamp(6px, 2vw, 10px); width: 100%; max-width: 460px; margin-bottom: 2.2vh; }
   .seg button { flex: 1 1 0; min-width: 0; padding: 0 4px; font-size: clamp(16px, 4.7vw, 19px); color: var(--pencil); }
-  .seg button.sel { color: var(--ink); --bg: #d6e2ff; --bd: var(--blue); box-shadow: none; transform: translate(2px, 3px); }
+  .seg button.sel, .seg button[aria-checked="true"] { color: var(--ink); --bg: #d6e2ff; --bd: var(--blue); box-shadow: none; transform: translate(2px, 3px); }
   .pager { display: flex; align-items: center; justify-content: center; gap: clamp(4px, 1.6vw, 8px); margin-top: 2.5vh; width: 100%; }
   .pager button { padding: 0; width: 48px; height: 48px; flex: none; }
   /* six digits and up: leading digits small on top, the last three large */
@@ -503,7 +503,7 @@
       test: 'Testmodus \u00b7 gehe zu Level', levelNo: 'Levelnummer', go: 'Los', play: 'Spielen',
       how: 'Tippst du eine Form an, rutscht sie in die Richtung, in die ihr <b>Pfeil</b> zeigt.<br> R\u00e4um die ganze Seite leer, bevor die Zeit abl\u00e4uft. ' +
         'Eine blockierte Form prallt zur\u00fcck und kostet ein Herz. Bei Leicht hast du am meisten Zeit, bei Schwer am wenigsten.',
-      lang: 'Sprache', back: 'Zur\u00fcck zu den Level', levels: 'Level', hearts: '\u00dcbrige Herzen',
+      lang: 'Sprache', back: 'Zur\u00fcck zur Levelauswahl', levels: 'Level', hearts: '\u00dcbrige Herzen',
       heartsTitle: 'Leben: Jede blockierte Form kostet ein Herz', timeLeft: 'Restzeit',
       hint: 'Tipp', hintLeft: 'Tipp, noch {n}', restart: 'Neustart', restartLevel: 'Level neu starten',
       sound: 'Ton', soundOn: 'Ton an', soundOff: 'Ton aus',
@@ -517,25 +517,10 @@
       timeUp: 'Zeit abgelaufen!', noHearts: 'Keine Herzen mehr!', decimal: ',', unit: ' s', thousands: '.'
     }
   };
-  var L;
-  function T(key, vars) {
-    var s = L[key];
-    for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
-    return s;
-  }
-  function applyLang(lang) {
-    L = TEXT[lang];
-    document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = L[el.getAttribute('data-t')]; });
-    document.querySelectorAll('[data-th]').forEach(function (el) { el.innerHTML = L[el.getAttribute('data-th')]; });
-    document.querySelectorAll('[data-ta]').forEach(function (el) { el.setAttribute('aria-label', L[el.getAttribute('data-ta')]); });
-    document.querySelectorAll('[data-tt]').forEach(function (el) { el.title = L[el.getAttribute('data-tt')]; });
-    document.querySelectorAll('[data-lang]').forEach(function (el) {
-      var on = el.getAttribute('data-lang') === lang;
-      el.className = on ? 'sel' : '';
-      el.setAttribute('aria-checked', on ? 'true' : 'false');
-    });
-  }
-  applyLang(GameLang.pick());
+  // A switch keeps the doodle layout and only redraws it with words in the new language.
+  var LANG = GameLang.init(TEXT, function (lang) { LANG = lang; L = TEXT[lang]; renderMenu(true); });
+  var L = TEXT[LANG];
+  function T(key, vars) { return GameLang.t(L[key], vars); }
   var save = { stars: [], mute: false, diff: 'm', rec: { e: { s: {}, t: {} }, m: { s: {}, t: {} }, h: { s: {}, t: {} } } };
   try {
     var raw = JSON.parse(localStorage.getItem(STORE_KEY));
@@ -1011,7 +996,7 @@
   }
 
   var PENS = ['#55524e', '#55524e', '#55524e', '#55524e', '#55524e', '#2446ad', '#2446ad', '#2446ad', '#c8443a', '#3f8f52'];
-  var DOODLES = DoodleLib.shapes, WORDS = DoodleLib.words;
+  var DOODLES = DoodleLib.shapes;
   var doodleSeed = null, doodleTop = 34;
 
   // Scatters a fresh, random set of doodles over the page. Pass keep = true to redraw the same set (on resize).
@@ -1028,6 +1013,7 @@
     // a shuffled deck of drawings, words and made-up shapes, dealt without repeats
     var deck = [], i, j;
     for (i = 0; i < DOODLES.length; i++) deck.push(['d', i]);
+    var WORDS = LANG === 'de' ? DoodleLib.wordsDe : DoodleLib.words;
     for (i = 0; i < WORDS.length; i++) deck.push(['w', i]);
     for (i = 0; i < 40; i++) deck.push(['m', i % 10]);
     for (i = deck.length - 1; i > 0; i--) { j = Math.floor(R() * (i + 1)); var t = deck[i]; deck[i] = deck[j]; deck[j] = t; }
@@ -1089,7 +1075,7 @@
 
   function group(n) { return String(n).replace(/\B(?=(\d{3})+$)/g, L.thousands); }   // 99999981 -> 99,999,981 (99.999.981 in German)
 
-  function renderMenu() {
+  function renderMenu(keepDoodles) {
     var fr = frontier(), maxPage = TEST ? 1e7 : Math.floor(fr / PAGE);
     menuPage = Math.max(0, Math.min(menuPage, maxPage));
     var box = $('levels');
@@ -1120,7 +1106,7 @@
       $(p[0]).className = save.diff === p[1] ? 'sel' : '';
       $(p[0]).setAttribute('aria-checked', save.diff === p[1] ? 'true' : 'false');
     });
-    drawDoodles(34);
+    drawDoodles(34, keepDoodles);
   }
 
   function showMenu() {
@@ -1196,9 +1182,6 @@
     });
   });
   $('btnContinue').addEventListener('click', function () { startLevel(frontier()); });
-  document.querySelectorAll('[data-lang]').forEach(function (el) {
-    el.addEventListener('click', function () { applyLang(GameLang.set(el.getAttribute('data-lang'))); renderMenu(); });
-  });
   $('btnFirst').addEventListener('click', function () { menuPage = 0; renderMenu(); });
   $('btnPrev').addEventListener('click', function () { menuPage--; renderMenu(); });
   $('btnNext').addEventListener('click', function () { menuPage++; renderMenu(); });

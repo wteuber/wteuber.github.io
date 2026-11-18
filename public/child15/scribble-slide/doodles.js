@@ -2,7 +2,8 @@
  * Scribble Slide doodle library: the things a bored teenager draws in the margins.
  * Every doodle is an SVG path drawn in a 40 x 40 box, stroke only.
  *   DoodleLib.shapes -> [[name, pathData], ...]
- *   DoodleLib.words  -> handwritten scribbles
+ *   DoodleLib.words  -> handwritten scribbles (English)
+ *   DoodleLib.wordsDe -> the same scribbles in German, in the same order
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -477,5 +478,11 @@
     'no way', 'yay', 'ugh', 'hmm\u2026', 'omg', 'so bored', 'ha ha', '100%', 'N S E W', 'pizza!', 'run!', '>:(', 'top secret', 'do not read',
     '1 2 3', 'bla bla', 'tick tock', 'x', 'I \u2665 U', 'Mon Tue Wed', 'nope', 'later!', '3.14159', '\u00bf?', 'sssh', 'whatever'];
 
-  return { shapes: shapes, words: words };
+  // Same length and order as `words`, so a page keeps its layout when the language changes.
+  var wordsDe = ['?', '!!', 'lol', 'xoxo', '1+', 'zzz', 'hallo!', '\u03c0', '2+2=5', 'E=mc\u00b2', '\u221ax', 'ok', 'wow', '#1', ':)', 'x\u00b2+y\u00b2',
+    'ja / nein', '<3', 'BFF', '\u00f6de', '42', 'a\u00b2+b\u00b2=c\u00b2', '\u266a\u266b', 'abc', '7\u00d78=56', 'Hilfe!', 'langweilig\u2026', 'warum?', 'hoppla', '\u2192 hier',
+    'niemals', 'juhu', 'b\u00e4h', 'hmm\u2026', 'omg', 'voll \u00f6de', 'haha', '100%', 'N O S W', 'Pizza!', 'lauf!', '>:(', 'geheim!', 'nicht lesen',
+    '1 2 3', 'bla bla', 'tick tack', 'x', 'ich \u2665 dich', 'Mo Di Mi', 'n\u00f6', 'sp\u00e4ter!', '3,14159', '\u00bf?', 'pssst', 'egal'];
+
+  return { shapes: shapes, words: words, wordsDe: wordsDe };
 });

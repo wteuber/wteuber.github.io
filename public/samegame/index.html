@@ -20,8 +20,8 @@
     <div id="config">
       <label for="rows" data-t="rows">Rows</label> <input type="range" name="rows" id="rows" min="4" max="20"/>
       <label for="cols" data-t="cols">Columns</label> <input type="range" name="cols" id="cols" min="12" max="30" />
-      <input type="button" name="new" value="New Game" class="button" />
-      <span class="lang" role="group" aria-label="Language">
+      <input type="button" name="new" value="New Game" class="button" data-tv="new" />
+      <span class="lang" role="group" aria-label="Language" data-ta="lang">
         <button type="button" class="button" data-lang="en" lang="en">EN</button><button type="button" class="button" data-lang="de" lang="de">DE</button>
       </span>
     </div>
@@ -37,34 +37,20 @@
 
     <script>
       (function () {
+        // The German score names match the board embedded in the blog post (_data/i18n.yml, samegame).
         var TEXT = {
           en: { rows: 'Rows', cols: 'Columns', new: 'New Game', round: 'Round', click: 'Click Score', total: 'Total Score',
-                lang: 'Language', over: 'Game over!\nYou scored {n} points.', over_one: 'Game over!\nYou scored 1 point.' },
-          de: { rows: 'Zeilen', cols: 'Spalten', new: 'Neues Spiel', round: 'Runde', click: 'Klickpunkte', total: 'Punkte gesamt',
-                lang: 'Sprache', over: 'Spiel vorbei!\nDu hast {n} Punkte geholt.', over_one: 'Spiel vorbei!\nDu hast 1 Punkt geholt.' }
+                lang: 'Language', over: 'Game over!\nYou scored {n} points.', over_one: 'Game over!\nYou scored {n} point.' },
+          de: { rows: 'Zeilen', cols: 'Spalten', new: 'Neues Spiel', round: 'Runde', click: 'Klick', total: 'Gesamt',
+                lang: 'Sprache', over: 'Spiel vorbei!\nDu hast {n} Punkte geholt.', over_one: 'Spiel vorbei!\nDu hast {n} Punkt geholt.' }
         };
-        var L;
-
-        function apply(lang) {
-          L = TEXT[lang];
-          document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = L[el.dataset.t]; });
-          document.querySelector('[name="new"]').value = L.new;
-          document.querySelector('.lang').setAttribute('aria-label', L.lang);
-          document.querySelectorAll('[data-lang]').forEach(function (b) {
-            b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
-          });
-        }
-
-        document.querySelectorAll('[data-lang]').forEach(function (b) {
-          b.addEventListener('click', function () { apply(GameLang.set(b.dataset.lang)); });
-        });
+        var L = TEXT[GameLang.init(TEXT, function (lang) { L = TEXT[lang]; })];
 
         SameGame.gameOver = function (total) {
-          alert((total === 1 ? L.over_one : L.over).replace('{n}', total));
+          alert(GameLang.t(total === 1 ? L.over_one : L.over, { n: total }));
           this.seed(true);
         };
 
-        apply(GameLang.pick());
         SameGame.initGame();
       })();
     </script>

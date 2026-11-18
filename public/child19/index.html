@@ -306,7 +306,7 @@
 <section id="game" class="screen">
   <div id="side">
     <div class="bar">
-      <button id="btnBack" class="btn small" aria-label="Zur&uuml;ck zu den Level" data-ta="back">&lsaquo;<span data-t="levelsBack"> Level</span></button>
+      <button id="btnBack" class="btn small" aria-label="Zur&uuml;ck zur Levelauswahl" data-ta="back">&lsaquo;<span data-t="levelsBack"> Level</span></button>
       <div class="title" id="lvlTitle">Level 1</div>
       <div id="hearts" aria-label="Leben" data-ta="lives"></div>
       <button id="btnPause" class="btn small" aria-label="Pause" aria-pressed="false">II</button>
@@ -344,7 +344,7 @@
     de: {
       sub: 'Finde immer zwei gleiche Zahlen und tippe sie an. Aber Vorsicht: Die schwarzen Steine wandern. Nicht ber\u00fchren!',
       prev: 'Vorherige Seite', next: 'N\u00e4chste Seite', test: 'Testmodus \u00b7 gehe zu Level', levelNo: 'Levelnummer', go: 'Los',
-      lang: 'Sprache', back: 'Zur\u00fcck zu den Level', levelsBack: ' Level', lives: 'Leben', restart: 'Level neu starten', timeLeft: 'Restzeit',
+      lang: 'Sprache', back: 'Zur\u00fcck zur Levelauswahl', levelsBack: ' Level', lives: 'Leben', restart: 'Level neu starten', timeLeft: 'Restzeit',
       todo: 'Diese Zahlen musst du noch finden', paused: 'Die Zeit steht still und die Zahlen sind versteckt.', resume: 'Weiter spielen',
       pause: 'Pause', livesOf: '{n} von {max} Leben',
       tipFirst: 'Tippe zwei gleiche Zahlen an, bevor die Zeit abl\u00e4uft. Die rollenden Steine nicht ber\u00fchren!',
@@ -380,21 +380,8 @@
       start: 'Start', cont: 'Continue', soundOn: 'Sound on', soundOff: 'Sound off', decimal: '.', unit: 's'
     }
   };
-  var L;
-  function T(key, vars) {
-    var s = L[key];
-    for (var k in vars) s = s.split('{' + k + '}').join(vars[k]);
-    return s;
-  }
-  function applyLang(lang) {
-    L = TEXT[lang];
-    document.querySelectorAll('[data-t]').forEach(function (el) { el.textContent = L[el.getAttribute('data-t')]; });
-    document.querySelectorAll('[data-ta]').forEach(function (el) { el.setAttribute('aria-label', L[el.getAttribute('data-ta')]); });
-    document.querySelectorAll('[data-lang]').forEach(function (el) {
-      el.setAttribute('aria-pressed', el.getAttribute('data-lang') === lang ? 'true' : 'false');
-    });
-  }
-  applyLang(GameLang.pick());
+  var L = TEXT[GameLang.init(TEXT, function (lang) { L = TEXT[lang]; drawMenu(); })];
+  function T(key, vars) { return GameLang.t(L[key], vars); }
 
   /* ---------------- save ---------------- */
   var STORE = 'dupliziere-die-nummern-v1';
@@ -1081,9 +1068,6 @@
   $('pgNext').addEventListener('click', function () { page++; drawMenu(); });
   $('btnSound').addEventListener('click', function () { save.mute = !save.mute; persist(); drawMenu(); sfx.pick(); });
   $('btnBack').addEventListener('click', showMenu);
-  document.querySelectorAll('[data-lang]').forEach(function (el) {
-    el.addEventListener('click', function () { applyLang(GameLang.set(el.getAttribute('data-lang'))); drawMenu(); });
-  });
   $('btnRestart').addEventListener('click', function () { if (S) startLevel(S.index); });
   $('btnPause').addEventListener('click', function () { if (S) setPaused(!S.paused); });
   $('btnResume').addEventListener('click', function () { setPaused(false); });
