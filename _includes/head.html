@@ -66,6 +66,11 @@
   {% include cloudflare_analytics.html %}
   {% include mathjax.html %}
 
+  {%- comment -%} Fetch the sketch slider's font with the page CSS, not once the parser reaches the slider. {%- endcomment -%}
+  {% if page.content contains 'sketch-to-game.html' or page.content contains 'class="stg"' %}
+  <link rel="preload" href="{{ '/assets/fonts/comic-neue/comic-neue-700-latin.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  {% endif %}
+
   {% if layout.common-ext-css %}
     {% for css in layout.common-ext-css %}
       {% include ext-css.html css=css %}
